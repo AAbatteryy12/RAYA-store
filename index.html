@@ -113,8 +113,12 @@
 
 <script src="config.js"></script>
 <script>
-const {createClient}=supabase;
-const db=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const cfg = window.SUPABASE_CONFIG || { url: window.SUPABASE_URL, anonKey: window.SUPABASE_ANON_KEY };
+const authConfigError = !cfg?.url || !cfg?.anonKey || cfg.url.includes("YOUR-PROJECT-REF") || cfg.anonKey.includes("YOUR_SUPABASE");
+let db = null;
+if (!authConfigError && window.supabase?.createClient) {
+  db = window.supabase.createClient(cfg.url, cfg.anonKey);
+}
 let products=[],orders=[],selectedProduct=null,selectedImageData="",editImageData="";
 
 const $=id=>document.getElementById(id);
@@ -195,13 +199,57 @@ async function deleteOrder(id){if(!confirm("Delete this order? Stock will not be
 $("orderForm").onsubmit=async e=>{e.preventDefault();const customer=$("customerName").value.trim(),pid=$("orderItem").value,q=Number($("orderQuantity").value),status=$("paymentStatus").value;if(!customer||!pid||!Number.isInteger(q)||q<1)return notify("Please complete the order form.");try{const {error}=await db.rpc("record_order",{p_customer_name:customer,p_product_id:pid,p_quantity:q,p_payment_status:status});if(error)throw error;$("orderForm").reset();await loadData();notify("Order recorded successfully.")}catch(err){notify(err.message,true)}};
 
 $("showSignUp").onclick=()=>showAuth("signup");$("showReset").onclick=()=>showAuth("reset");$("showSignIn").onclick=()=>showAuth("signin");
-$("signInForm").onsubmit=async e=>{e.preventDefault();const {data,error}=await db.auth.signInWithPassword({email:$("authEmail").value,password:$("authPassword").value});if(error)return $("authMessage").textContent=error.message,$("authMessage").classList.add("show");showApp(data.user)};
-$("signUpForm").onsubmit=async e=>{e.preventDefault();const {data,error}=await db.auth.signUp({email:$("signUpEmail").value,password:$("signUpPassword").value});if(error)return $("authMessage").textContent=error.message,$("authMessage").classList.add("show");showAuth("signin","Account created. Check your email if confirmation is enabled, then sign in.")};
-$("resetForm").onsubmit=async e=>{e.preventDefault();const email=$("resetEmail").value;const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)return $("authMessage").textContent=error.message,$("authMessage").classList.add("show");showAuth("signin","Password reset email sent. Check your inbox.")};
-$("newPasswordForm").onsubmit=async e=>{e.preventDefault();if($("newPassword").value!==$("newPassword2").value)return $("authMessage").textContent="Passwords do not match.",$("authMessage").classList.add("show");const {error}=await db.auth.updateUser({password:$("newPassword").value});if(error)return $("authMessage").textContent=error.message,$("authMessage").classList.add("show");showAuth("signin","Password updated successfully. You can now sign in.")};
-$("signOutBtn").onclick=async()=>{await db.auth.signOut();showAuth("signin","Signed out.")};
-db.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){showAuth("newpassword","Enter your new password.");return}if(session?.user)showApp(session.user);else showAuth("signin")});
-(async()=>{const {data}=await db.auth.getSession();if(data.session)showApp(data.session.user);else showAuth("signin")})();
+
+if(authConfigError){
+  showAuth("signin","Supabase is not configured yet. Open config.js and enter your Supabase Project URL and public anon/publishable key.");
+  ["signInForm","signUpForm","resetForm"].forEach(id=>{ $(id).querySelector("button[type=submit]").disabled=true; });
+} else {
+  $("signInForm").onsubmit=async e=>{
+    e.preventDefault();
+    const {data,error}=await db.auth.signInWithPassword({email:$('authEmail').value.trim(),password:$('authPassword').value});
+    if(error){
+      const msg = /email not confirmed/i.test(error.message)
+        ? "Your email has not been confirmed yet. Check your inbox, then sign in again."
+        : error.message;
+      return $("authMessage").textContent=msg,$("authMessage").classList.add("show");
+    }
+    showApp(data.user);
+  };
+  $("signUpForm").onsubmit=async e=>{
+    e.preventDefault();
+    const email=$("signUpEmail").value.trim(), password=$("signUpPassword").value;
+    const {data,error}=await db.auth.signUp({email,password});
+    if(error)return $("authMessage").textContent=error.message,$("authMessage").classList.add("show");
+    if(data.session) showApp(data.user);
+    else showAuth("signin","Account created. Supabase may require email confirmation. Check your inbox before signing in.");
+  };
+  $("resetForm").onsubmit=async e=>{
+    e.preventDefault();
+    const email=$("resetEmail").value.trim();
+    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+    if(error)return $("authMessage").textContent=error.message,$("authMessage").classList.add("show");
+    showAuth("signin","Password reset email sent. Check your inbox.");
+  };
+  $("newPasswordForm").onsubmit=async e=>{
+    e.preventDefault();
+    if($("newPassword").value!==$("newPassword2").value)return $("authMessage").textContent="Passwords do not match.",$("authMessage").classList.add("show");
+    const {error}=await db.auth.updateUser({password:$('newPassword').value});
+    if(error)return $("authMessage").textContent=error.message,$("authMessage").classList.add("show");
+    showAuth("signin","Password updated successfully. You can now sign in.");
+  };
+  $("signOutBtn").onclick=async()=>{await db.auth.signOut();showAuth("signin","Signed out.")};
+  db.auth.onAuthStateChange((event,session)=>{
+    if(event==="PASSWORD_RECOVERY"){showAuth("newpassword","Enter your new password.");return}
+    if(session?.user)showApp(session.user);
+    else showAuth("signin");
+  });
+  (async()=>{
+    const {data,error}=await db.auth.getSession();
+    if(error) showAuth("signin",error.message);
+    else if(data.session) showApp(data.session.user);
+    else showAuth("signin");
+  })();
+}
 </script>
 </body>
 </html>
