@@ -62,7 +62,26 @@
   .order-mobile-date{margin-top:6px!important;font-size:10px!important;color:var(--g600)!important}
   .order-mobile-actions{display:flex!important;flex-wrap:wrap!important;gap:5px!important;margin-top:7px!important}
 }
-</style></head>
+</style><style id="order-history-readability-fix">
+.history-item-line{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:14px;line-height:1.35;flex-wrap:wrap}
+.history-item-name{font-weight:700}
+.history-item-qty{font-weight:600;white-space:nowrap}
+.history-item-price{color:var(--g700);font-weight:600;white-space:nowrap}
+.order-mobile-line .order-name{font-size:15px!important}
+.order-mobile-total{font-size:14px!important;font-weight:700}
+.order-mobile-date{font-size:12px!important}
+.order-mobile-actions .btn,.order-mobile-actions .status-toggle{font-size:12px!important}
+@media(min-width:701px){.compact-order-table th,.compact-order-table td{font-size:13px}.compact-order-table td{vertical-align:top}.compact-order-table td:nth-child(2) .history-item-line{font-size:13px}}
+@media(max-width:700px){
+  .history-items{margin-top:6px}
+  .history-item-line{font-size:13px;padding:3px 0;gap:6px;border-bottom:1px solid var(--g100)}
+  .history-item-line:last-child{border-bottom:0}
+  .history-item-name{font-size:13px}
+  .history-item-price{font-size:12px}
+  .order-mobile-total{margin-top:8px!important}
+}
+</style>
+</head>
 <body>
 <div id="authScreen" class="auth">
   <div class="auth-card">
@@ -287,17 +306,26 @@ function reorderOrder(id){return editOrder(id);}
 
 async function togglePayment(id){const o=orders.find(x=>x.id===id);if(!o)return;const {error}=await db.from("orders").update({payment_status:o.payment_status==="Paid"?"Unpaid":"Paid"}).eq("id",id);if(error)return notify(error.message);await loadData()}
 async function deleteOrder(id){if(!confirm("Delete this order? Stock will not be automatically restored."))return;const {error}=await db.from("orders").delete().eq("id",id);if(error)return notify(error.message);await loadData()}
-async function orderRows(){return [...document.querySelectorAll('.order-line')].map(r=>({product_id:r.querySelector('.order-product').value,quantity:Number(r.querySelector('.order-qty').value)}));}
+async function orderRows(){return [...document.querySelectorAll('#orderItems .order-line')].map(r=>({product_id:String(r.dataset.productId||''),quantity:Number(r.querySelector('.order-qty')?.value)}));}
 $("orderForm").onsubmit=async e=>{e.preventDefault();const customerId=$("customerSelect").value,status=$("paymentStatus").value,items=await orderRows();if(!customerId||!items.length)return notify("Select a customer and at least one item.");const seen=new Set();for(const x of items){if(!x.product_id||!Number.isInteger(x.quantity)||x.quantity<1)return notify("Please complete every item row.");if(seen.has(x.product_id))return notify("The same product appears more than once. Combine its quantity into one row.");seen.add(x.product_id);const p=products.find(y=>y.id===x.product_id);if(!p||x.quantity>p.stock)return notify(`${p?.name||"Item"}: not enough stock. Available: ${p?.stock??0}`);}try{const {error}=await db.rpc("record_order_multi",{p_customer_id:customerId,p_items:items,p_payment_status:status});if(error)throw error;$('orderForm').reset();await loadData();notify("Order recorded successfully.")}catch(err){notify(err.message)}};
 function renderOrders(){
-  const filter=$('historyCustomerFilter')?.value||'';let list=filter?orders.filter(o=>String(o.customer_id||'')===String(filter)):orders.slice();
+  const filter=$('historyCustomerFilter')?.value||'';
+  let list=filter?orders.filter(o=>String(o.customer_id||'')===String(filter)):orders.slice();
   list.sort((a,b)=>{const au=a.payment_status!=='Paid',bu=b.payment_status!=='Paid';if(au!==bu)return au?-1:1;return new Date(b.created_at)-new Date(a.created_at);});
   if(!list.length){$("ordersTable").innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-icon">☷</div><p>No transactions for this customer.</p></div></td></tr>';return}
   $("ordersTable").innerHTML=list.map(o=>{
-    const paid=o.payment_status==='Paid',summary=esc(o.item_summary||o.item_name||'Order');
-    return `<tr><td><div class="order-mobile-card"><div class="order-mobile-line"><strong class="order-name">${esc(o.customer_name||'')}</strong><span>•</span><span>${summary}</span><span>•</span><span>${o.total_quantity||o.quantity||0} qty</span></div><div class="order-mobile-total">Total: ${money(o.total_price)} <span class="badge ${paid?'paid':'unpaid'}">${paid?'Paid':'Unpaid'}</span></div><div class="order-mobile-date">${date(o.created_at)}</div><div class="order-mobile-actions"><button class="btn btn-secondary btn-small" onclick="editOrder('${o.id}')">Edit</button><button class="btn btn-danger btn-small" onclick="deleteOrder('${o.id}')">Delete</button><button class="status-toggle" onclick="togglePayment('${o.id}')"><span class="badge ${paid?'unpaid':'paid'}">Mark ${paid?'Unpaid':'Paid'}</span></button></div></div></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;}).join('');
+    const paid=o.payment_status==='Paid';
+    const its=orderItemsData.filter(x=>String(x.order_id)===String(o.id));
+    const lines=its.length?its.map(x=>`<div class="history-item-line"><span class="history-item-name">${esc(x.item_name||'Item')}</span><span class="history-item-qty">× ${Number(x.quantity)||0}</span><span class="history-item-price">${money(x.sale_price||0)} each</span></div>`).join(''): `<div class="history-item-line"><span class="history-item-name">${esc(o.item_name||'Order')}</span><span class="history-item-qty">× ${o.total_quantity||o.quantity||0}</span><span class="history-item-price">${money(o.unit_price||0)} each</span></div>`;
+    return `<tr><td><div class="order-mobile-card">
+      <div class="order-mobile-line"><strong class="order-name">${esc(o.customer_name||'')}</strong></div>
+      <div class="history-items">${lines}</div>
+      <div class="order-mobile-total">Total: ${money(o.total_price)} <span class="badge ${paid?'paid':'unpaid'}">${paid?'Paid':'Unpaid'}</span></div>
+      <div class="order-mobile-date">${date(o.created_at)}</div>
+      <div class="order-mobile-actions"><button class="btn btn-secondary btn-small" onclick="editOrder('${o.id}')">Edit</button><button class="btn btn-danger btn-small" onclick="deleteOrder('${o.id}')">Delete</button><button class="status-toggle" onclick="togglePayment('${o.id}')"><span class="badge ${paid?'unpaid':'paid'}">Mark ${paid?'Unpaid':'Paid'}</span></button></div>
+    </div></td><td>${lines}</td><td>${o.total_quantity||o.quantity||0}</td><td>${money(o.total_price)}</td><td>${date(o.created_at)}</td><td><span class="badge ${paid?'paid':'unpaid'}">${paid?'Paid':'Unpaid'}</span></td><td><button class="btn btn-secondary btn-small" onclick="editOrder('${o.id}')">Edit</button> <button class="btn btn-danger btn-small" onclick="deleteOrder('${o.id}')">Delete</button> <button class="status-toggle" onclick="togglePayment('${o.id}')"><span class="badge ${paid?'unpaid':'paid'}">${paid?'Mark Unpaid':'Mark Paid'}</span></button></td></tr>`;
+  }).join('');
 }
-
 function renderBestSeller(){const totals={};orderItemsData.forEach(x=>{if(!x.product_id)return;const key=x.product_id;totals[key]=(totals[key]||0)+Number(x.quantity||0);});if(!Object.keys(totals).length){$('bestSeller').innerHTML='<div class="empty"><div class="empty-icon">★</div><p>No sales yet.</p></div>';return}const bestId=Object.keys(totals).sort((a,b)=>totals[b]-totals[a])[0],p=products.find(x=>String(x.id)===String(bestId)),name=p?.name||orderItemsData.find(x=>String(x.product_id)===String(bestId))?.item_name||'Unknown item';$('bestSeller').innerHTML=`<div class="recent-order"><div><div class="best-seller-name">${esc(name)}</div><div class="best-seller-meta">${totals[bestId]} unit${totals[bestId]===1?'':'s'} sold</div></div><div style="font-size:24px">★</div></div>`;}
 function renderRecent(){if(!orders.length){$("recentOrders").innerHTML='<div class="empty"><div class="empty-icon">☷</div><p>No orders yet.</p></div>';return}$("recentOrders").innerHTML=orders.slice(0,6).map(o=>`<div class="recent-order"><div><div class="recent-customer">${esc(o.customer_name||"")}</div><div class="recent-item">${esc(o.item_summary||o.item_name||"")} × ${o.total_quantity||o.quantity||0}</div></div><div style="text-align:right"><div class="recent-total">${money(o.total_price)}</div><span class="badge ${o.payment_status==="Paid"?"paid":"unpaid"}">${o.payment_status}</span></div></div>`).join("")}
 function renderOverview(){if(!products.length){$("inventoryOverview").innerHTML='<div class="empty"><div class="empty-icon">▣</div><p>No products yet.</p></div>';return}$("inventoryOverview").innerHTML=[...products].sort((a,b)=>a.stock-b.stock).slice(0,7).map(p=>`<div class="recent-order"><div><div class="recent-customer">${esc(p.name)}</div><div class="recent-item">Selling ${money(p.price)} · Principal ${money(p.principal_price||0)}</div></div><div class="stock ${p.stock===0?"out":p.stock<=5?"low":""}">${p.stock===0?"Out of stock":p.stock+" left"}</div></div>`).join("")}
