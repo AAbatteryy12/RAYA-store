@@ -46,7 +46,23 @@
   .topbar{top:56px}
 }
 </style>
-</head>
+<style id="order-history-mobile-fix">
+@media(max-width:700px){
+  .compact-order-table{display:block!important;width:100%!important;min-width:0!important}
+  .compact-order-table thead{display:none!important}
+  .compact-order-table tbody{display:block!important;width:100%!important}
+  .compact-order-table tr{display:block!important;width:100%!important;margin:0 0 10px!important;padding:11px!important;border:1px solid var(--g200)!important;border-radius:11px!important;background:#fff!important}
+  .compact-order-table td{display:none!important}
+  .compact-order-table td:first-child{display:block!important;width:100%!important;padding:0!important;border:0!important}
+  .order-mobile-line{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:5px!important;line-height:1.35!important}
+  .order-mobile-line strong{font-size:12px!important}
+  .order-mobile-line span{font-size:10px!important}
+  .order-mobile-total{margin-top:6px!important;font-size:12px!important}
+  .order-mobile-total .badge{margin-left:5px!important}
+  .order-mobile-date{margin-top:6px!important;font-size:10px!important;color:var(--g600)!important}
+  .order-mobile-actions{display:flex!important;flex-wrap:wrap!important;gap:5px!important;margin-top:7px!important}
+}
+</style></head>
 <body>
 <div id="authScreen" class="auth">
   <div class="auth-card">
@@ -277,7 +293,9 @@ function renderOrders(){
   const filter=$('historyCustomerFilter')?.value||'';let list=filter?orders.filter(o=>String(o.customer_id||'')===String(filter)):orders.slice();
   list.sort((a,b)=>{const au=a.payment_status!=='Paid',bu=b.payment_status!=='Paid';if(au!==bu)return au?-1:1;return new Date(b.created_at)-new Date(a.created_at);});
   if(!list.length){$("ordersTable").innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-icon">☷</div><p>No transactions for this customer.</p></div></td></tr>';return}
-  $("ordersTable").innerHTML=list.map(o=>{const paid=o.payment_status==='Paid',summary=esc(o.item_summary||o.item_name||'Order');return `<tr><td><div class="order-name">${esc(o.customer_name||'')}</div></td><td><div class="order-item"><span>${summary}</span></div></td><td>${o.total_quantity||o.quantity||0}</td><td><strong>${money(o.total_price)}</strong></td><td>${date(o.created_at)}</td><td><button class="status-toggle" onclick="togglePayment('${o.id}')"><span class="badge ${paid?'paid':'unpaid'}">${paid?'Paid':'Unpaid'}</span></button></td><td><button class="btn btn-secondary btn-small" onclick="editOrder('${o.id}')">Edit</button> <button class="btn btn-danger btn-small" onclick="deleteOrder('${o.id}')">Delete</button></td></tr>`;}).join('');
+  $("ordersTable").innerHTML=list.map(o=>{
+    const paid=o.payment_status==='Paid',summary=esc(o.item_summary||o.item_name||'Order');
+    return `<tr><td><div class="order-mobile-card"><div class="order-mobile-line"><strong class="order-name">${esc(o.customer_name||'')}</strong><span>•</span><span>${summary}</span><span>•</span><span>${o.total_quantity||o.quantity||0} qty</span></div><div class="order-mobile-total">Total: ${money(o.total_price)} <span class="badge ${paid?'paid':'unpaid'}">${paid?'Paid':'Unpaid'}</span></div><div class="order-mobile-date">${date(o.created_at)}</div><div class="order-mobile-actions"><button class="btn btn-secondary btn-small" onclick="editOrder('${o.id}')">Edit</button><button class="btn btn-danger btn-small" onclick="deleteOrder('${o.id}')">Delete</button><button class="status-toggle" onclick="togglePayment('${o.id}')"><span class="badge ${paid?'unpaid':'paid'}">Mark ${paid?'Unpaid':'Paid'}</span></button></div></div></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;}).join('');
 }
 
 function renderBestSeller(){const totals={};orderItemsData.forEach(x=>{if(!x.product_id)return;const key=x.product_id;totals[key]=(totals[key]||0)+Number(x.quantity||0);});if(!Object.keys(totals).length){$('bestSeller').innerHTML='<div class="empty"><div class="empty-icon">★</div><p>No sales yet.</p></div>';return}const bestId=Object.keys(totals).sort((a,b)=>totals[b]-totals[a])[0],p=products.find(x=>String(x.id)===String(bestId)),name=p?.name||orderItemsData.find(x=>String(x.product_id)===String(bestId))?.item_name||'Unknown item';$('bestSeller').innerHTML=`<div class="recent-order"><div><div class="best-seller-name">${esc(name)}</div><div class="best-seller-meta">${totals[bestId]} unit${totals[bestId]===1?'':'s'} sold</div></div><div style="font-size:24px">★</div></div>`;}
