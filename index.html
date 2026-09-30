@@ -6,6 +6,7 @@
 <title>Raya Store</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 :root{--blue:#0b1f3a;--blue2:#12345b;--white:#fff;--g50:#f5f7fa;--g100:#eef1f5;--g200:#dfe4ea;--g400:#9aa5b1;--g600:#5b6573;--g800:#252b33;--green:#198754;--red:#dc3545;--orange:#e67e22;--shadow:0 8px 25px rgba(11,31,58,.08);--radius:14px}
 *{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;background:var(--g50);color:var(--g800);min-height:100vh}button,input,select{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh}
@@ -83,6 +84,21 @@
 </style>
 <style id="raya-store-new-features">.history-filter-grid{display:grid;grid-template-columns:repeat(5,minmax(140px,1fr)) auto;gap:10px;align-items:end;margin-bottom:16px}.history-filter-grid .customer-filter{display:flex;flex-direction:column;align-items:stretch;gap:5px}.history-filter-grid select,.history-filter-grid input{height:40px;border:1px solid var(--g200);border-radius:9px;padding:0 10px;background:#fff;min-width:0}.clickable-stat{cursor:pointer;transition:.15s}.clickable-stat:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(0,0,0,.1)}.stat-hint{font-size:10px;color:var(--g400);margin-top:7px}.delivered{background:#e8f7ef;color:var(--green)}.not-delivered{background:#fff0f1;color:var(--red)}.product-picker-menu{padding:7px}.product-picker-search{width:100%;height:38px;border:1px solid var(--g200);border-radius:8px;padding:0 10px;margin-bottom:6px;outline:0}.product-picker-search:focus{border-color:#d94f8a;box-shadow:0 0 0 3px rgba(217,79,138,.1)}.breakdown-total{display:flex;justify-content:space-between;align-items:center;padding:14px;margin-bottom:10px;background:var(--g50);border-radius:10px;color:var(--blue)}.breakdown-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--g200)}.breakdown-row:last-child{border-bottom:0}@media(max-width:1000px){.history-filter-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:600px){.history-filter-grid{grid-template-columns:1fr 1fr}.history-filter-grid .btn{width:100%}.breakdown-row{font-size:12px}.breakdown-row strong:last-child{white-space:nowrap}}
 </style>
+<style id="raya-v3">
+.cal-nav{display:flex;align-items:center;gap:10px}.cal-nav strong{min-width:130px;text-align:center;color:var(--blue)}
+.cal-layout{display:grid;grid-template-columns:minmax(280px,1.3fr) 1fr;gap:20px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dow{font-size:11px;color:var(--g600);text-align:center;padding:4px 0;font-weight:700}
+.cal-cell{aspect-ratio:1;border:1px solid var(--g200);border-radius:8px;background:#fff;font-size:13px;position:relative;color:var(--g800)}
+.cal-cell.empty{border:0;background:none;cursor:default}
+.cal-cell.has::after{content:"";position:absolute;bottom:5px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--green)}
+.cal-cell.today{border-color:var(--blue);font-weight:700}.cal-cell.sel{background:var(--blue);color:#fff}
+.cal-day{background:var(--g50);border-radius:12px;padding:16px}.cal-day h4{color:var(--blue);margin-bottom:12px;font-size:14px}
+.cal-day .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--g200);font-size:14px}.cal-day .row:last-child{border:0}
+.unpaid-summary{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#fff4e5;border:1px solid #f5c98b;color:#8a4b00;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:14px}
+.bd-sort{width:100%;height:40px;border:1px solid var(--g200);border-radius:8px;padding:0 10px;margin:10px 0}
+@media(max-width:700px){.cal-layout{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <div id="authScreen" class="auth">
@@ -133,12 +149,13 @@
 <section id="dashboard" class="section active">
 <div class="stats">
 <div class="stat-card"><div class="stat-top"><span class="stat-label">Total Products</span><span class="stat-icon">▣</span></div><div class="stat-value" id="statProducts">0</div></div>
-<div class="stat-card"><div class="stat-top"><span class="stat-label">Stock Value</span><span class="stat-icon">₱</span></div><div class="stat-value" id="statStockValue">₱0.00</div></div>
-<div class="stat-card"><div class="stat-top"><span class="stat-label">Total Orders</span><span class="stat-icon">☷</span></div><div class="stat-value" id="statOrders">0</div></div>
+<div class="stat-card clickable-stat" onclick="openStatBreakdown('stock')"><div class="stat-top"><span class="stat-label">Stock Value</span><span class="stat-icon">₱</span></div><div class="stat-value" id="statStockValue">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
+<div class="stat-card clickable-stat" onclick="openStatBreakdown('orders')"><div class="stat-top"><span class="stat-label">Total Orders</span><span class="stat-icon">☷</span></div><div class="stat-value" id="statOrders">0</div><div class="stat-hint">Click for breakdown</div></div>
 <div class="stat-card clickable-stat" onclick="openFinancialBreakdown('revenue')"><div class="stat-top"><span class="stat-label">Total Revenue</span><span class="stat-icon">₱</span></div><div class="stat-value" id="statRevenue">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
-<div class="stat-card"><div class="stat-top"><span class="stat-label">Pending Balance</span><span class="stat-icon">!</span></div><div class="stat-value" id="statPending">₱0.00</div></div>
+<div class="stat-card clickable-stat" onclick="openStatBreakdown('pending')"><div class="stat-top"><span class="stat-label">Pending Balance</span><span class="stat-icon">!</span></div><div class="stat-value" id="statPending">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
 <div class="stat-card clickable-stat" onclick="openFinancialBreakdown('profit')"><div class="stat-top"><span class="stat-label">Profit</span><span class="stat-icon">↗</span></div><div class="stat-value" id="statProfit">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
 </div>
+<div class="card" style="margin-bottom:20px"><div class="card-header"><div><h3>Sales Calendar</h3><p>Click a date to see that day's sales, orders and profit.</p></div><div class="cal-nav"><button class="btn btn-secondary btn-small" id="calPrev" type="button">‹</button><strong id="calTitle"></strong><button class="btn btn-secondary btn-small" id="calNext" type="button">›</button></div></div><div class="cal-layout"><div class="cal-grid" id="calGrid"></div><div class="cal-day" id="calDay"></div></div></div>
 <div class="dashboard-layout">
 <div class="card"><div class="card-header"><div><h3>Recent Orders</h3><p>Your latest transactions</p></div></div><div id="recentOrders"></div></div>
 <div class="card"><div class="card-header"><div><h3>Inventory Overview</h3><p>Current stock levels</p></div></div><div id="inventoryOverview"></div></div>
@@ -155,7 +172,7 @@
 <div class="field"><label>Stock Quantity</label><input id="itemStock" type="number" min="0" step="1" placeholder="0" required></div>
 <div class="field"><label>Product Image</label><div class="image-options"><input class="file-input" id="itemImageFile" type="file" accept="image/*"><input id="itemImageUrl" type="url" placeholder="Or paste image URL"></div><img id="imagePreview" class="image-preview" alt="Preview"></div>
 </div><div class="form-actions"><button type="reset" class="btn btn-secondary">Clear</button><button type="submit" class="btn btn-primary">+ Add Product</button></div></form></div>
-<div class="card"><div class="card-header"><div><h3>Inventory</h3><p id="inventoryCount">0 products</p></div></div><div class="inventory-tools" style="margin-bottom:16px"><input id="inventorySearch" class="inventory-search" type="search" placeholder="Search inventory..." autocomplete="off"><button id="exportInventoryBtn" class="btn btn-secondary">Export Excel</button></div><div id="productsGrid" class="products-grid"></div></div>
+<div class="card"><div class="card-header"><div><h3>Inventory</h3><p id="inventoryCount">0 products</p></div></div><div class="inventory-tools" style="margin-bottom:16px"><input id="inventorySearch" class="inventory-search" type="search" placeholder="Search inventory..." autocomplete="off"><button id="exportInventoryBtn" class="btn btn-secondary">Export Excel</button><button id="exportPdfBtn" class="btn btn-secondary">Export PDF</button></div><div id="productsGrid" class="products-grid"></div></div>
 </section>
 
 <section id="orders" class="section">
@@ -171,7 +188,7 @@
 </div>
 <div id="orderSummary" class="card" style="margin-top:14px;padding:14px;background:var(--g50);box-shadow:none;text-align:right;font-size:14px;color:var(--blue)">0 items · 0 total quantity · ₱0.00</div><div class="form-actions"><button type="reset" class="btn btn-secondary">Clear</button><button type="submit" class="btn btn-primary">+ Record Order</button></div>
 </form></div>
-<div class="card"><div class="card-header"><div><h3>Order History</h3><p>Use multiple filters at the same time.</p></div></div><div class="history-filter-grid"><div class="customer-filter"><label class="muted">Name</label><select id="historyCustomerFilter"><option value="">All names</option></select></div><div class="customer-filter"><label class="muted">Product</label><select id="historyProductFilter"><option value="">All products</option></select></div><div class="customer-filter"><label class="muted">Payment</label><select id="historyPaymentFilter"><option value="">All payment</option><option value="Paid">Paid</option><option value="Unpaid">Unpaid</option></select></div><div class="customer-filter"><label class="muted">Delivery</label><select id="historyDeliveryFilter"><option value="">All delivery</option><option value="Delivered">Delivered</option><option value="Not Delivered">Not delivered</option></select></div><div class="customer-filter"><label class="muted">Date</label><input id="historyDateFilter" type="date"></div><button class="btn btn-secondary btn-small" type="button" id="clearHistoryFilters">Clear filters</button></div><div class="table-wrap"><table class="compact-order-table"><thead><tr><th>Customer</th><th>Items</th><th>Qty.</th><th>Total</th><th>Date / Time</th><th>Payment</th><th>Delivery</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+<div class="card"><div class="card-header"><div><h3>Order History</h3><p>Use multiple filters at the same time.</p></div></div><div class="history-filter-grid"><div class="customer-filter"><label class="muted">Name</label><select id="historyCustomerFilter"><option value="">All names</option></select></div><div class="customer-filter"><label class="muted">Product</label><select id="historyProductFilter"><option value="">All products</option></select></div><div class="customer-filter"><label class="muted">Payment</label><select id="historyPaymentFilter"><option value="">All payment</option><option value="Paid">Paid</option><option value="Unpaid">Unpaid</option></select></div><div class="customer-filter"><label class="muted">Delivery</label><select id="historyDeliveryFilter"><option value="">All delivery</option><option value="Delivered">Delivered</option><option value="Not Delivered">Not delivered</option></select></div><div class="customer-filter"><label class="muted">Date</label><input id="historyDateFilter" type="date"></div><button class="btn btn-secondary btn-small" type="button" id="clearHistoryFilters">Clear filters</button></div><div id="historyUnpaidSummary"></div><div class="table-wrap"><table class="compact-order-table"><thead><tr><th>Customer</th><th>Items</th><th>Qty.</th><th>Total</th><th>Date / Time</th><th>Payment</th><th>Delivery</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
 </section>
 </div></main></div>
 
@@ -230,7 +247,7 @@ async function loadData(){
   const bad=[pr.error,or.error,cr.error,oi.error].find(Boolean);if(bad)return notify(bad.message);
   products=pr.data||[];orders=or.data||[];customers=cr.data||[];orderItemsData=oi.data||[];render();
 }
-function render(){renderStats();renderProducts();renderCustomers();renderHistoryFilters();renderOrderItems();renderOrders();renderRecent();renderOverview();renderBestSeller();}
+function render(){renderStats();renderProducts();renderCustomers();renderHistoryFilters();renderOrderItems();renderOrders();renderRecent();renderOverview();renderBestSeller();renderCalendar();}
 function renderStats(){
   const stock=products.reduce((s,p)=>s+Number(p.price)*Number(p.stock),0);
   const rev=orders.filter(o=>o.payment_status==="Paid").reduce((s,o)=>s+Number(o.total_price),0);
@@ -324,6 +341,7 @@ function renderOrders(){
     if(productFilter){const its=orderItemsData.filter(x=>String(x.order_id)===String(o.id));if(!its.some(x=>String(x.product_id)===String(productFilter)))return false;}
     return true;
   });
+  const us=$('historyUnpaidSummary');if(us){if(customerFilter){const uo=orders.filter(o=>String(o.customer_id||'')===String(customerFilter)&&o.payment_status!=='Paid');const ids=new Set(uo.map(o=>String(o.id)));const qty=orderItemsData.filter(x=>ids.has(String(x.order_id))).reduce((s,x)=>s+Number(x.quantity||0),0);const amt=uo.reduce((s,o)=>s+Number(o.total_price||0),0);const nm=customers.find(c=>String(c.id)===String(customerFilter))?.name||'';us.innerHTML=`<div class="unpaid-summary"><span><strong>${esc(nm)}</strong> — total unpaid</span><span>${uo.length} order${uo.length===1?'':'s'} · ${qty} product${qty===1?'':'s'}</span><strong>${money(amt)}</strong></div>`}else us.innerHTML=''}
   list.sort((a,b)=>{const au=a.payment_status!=='Paid',bu=b.payment_status!=='Paid';if(au!==bu)return au?-1:1;return new Date(b.created_at)-new Date(a.created_at);});
   if(!list.length){$("ordersTable").innerHTML='<tr><td colspan="8"><div class="empty"><div class="empty-icon">☷</div><p>No matching transactions.</p></div></td></tr>';return}
   $("ordersTable").innerHTML=list.map(o=>{
@@ -332,13 +350,56 @@ function renderOrders(){
     return `<tr><td><div class="order-mobile-card"><div class="order-mobile-line"><strong class="order-name">${esc(o.customer_name||'')}</strong></div><div class="history-items">${lines}</div><div class="order-mobile-total">Total: ${money(o.total_price)} <span class="badge ${paid?'paid':'unpaid'}">${paid?'Paid':'Unpaid'}</span> <span class="badge ${delivered?'delivered':'not-delivered'}">${delivered?'Delivered':'Not delivered'}</span></div><div class="order-mobile-date">${date(o.created_at)}</div><div class="order-mobile-actions"><button class="btn btn-secondary btn-small" onclick="editOrder('${o.id}')">Edit</button><button class="btn btn-danger btn-small" onclick="deleteOrder('${o.id}')">Delete</button><button class="status-toggle" onclick="togglePayment('${o.id}')"><span class="badge ${paid?'unpaid':'paid'}">Mark ${paid?'Unpaid':'Paid'}</span></button><button class="status-toggle" onclick="toggleDelivery('${o.id}')"><span class="badge ${delivered?'not-delivered':'delivered'}">${delivered?'Mark Not Delivered':'Mark Delivered'}</span></button></div></div></td><td>${lines}</td><td>${o.total_quantity||o.quantity||0}</td><td>${money(o.total_price)}</td><td>${date(o.created_at)}</td><td><span class="badge ${paid?'paid':'unpaid'}">${paid?'Paid':'Unpaid'}</span></td><td><span class="badge ${delivered?'delivered':'not-delivered'}">${delivered?'Delivered':'Not delivered'}</span></td><td><button class="btn btn-secondary btn-small" onclick="editOrder('${o.id}')">Edit</button> <button class="btn btn-danger btn-small" onclick="deleteOrder('${o.id}')">Delete</button> <button class="status-toggle" onclick="togglePayment('${o.id}')"><span class="badge ${paid?'unpaid':'paid'}">${paid?'Mark Unpaid':'Mark Paid'}</span></button> <button class="status-toggle" onclick="toggleDelivery('${o.id}')"><span class="badge ${delivered?'not-delivered':'delivered'}">${delivered?'Mark Not Delivered':'Mark Delivered'}</span></button></td></tr>`;
   }).join('');
 }
-async function toggleDelivery(id){const o=orders.find(x=>String(x.id)===String(id));if(!o)return;const next=!deliveredState(o);const attempts=[{delivery_status:next?'Delivered':'Not Delivered'},{delivered:next}];let saved=false,lastErr=null;for(const payload of attempts){const {error}=await db.from('orders').update(payload).eq('id',id);if(!error){saved=true;break}lastErr=error;}if(!saved){try{localStorage.setItem('raya_delivery_'+id,next?'Delivered':'Not Delivered')}catch(e){} if(lastErr)notify('Delivery status saved on this device. To sync it across devices, add a delivery_status column to the Supabase orders table.');}await loadData();}
+async function toggleDelivery(id){const o=orders.find(x=>String(x.id)===String(id));if(!o)return;const next=!deliveredState(o);const attempts=[{delivery_status:next?'Delivered':'Not Delivered'},{delivered:next}];let saved=false,lastErr=null;for(const payload of attempts){const {error}=await db.from('orders').update(payload).eq('id',id);if(!error){saved=true;break}lastErr=error;}if(!saved){try{localStorage.setItem('raya_delivery_'+id,next?'Delivered':'Not Delivered')}catch(e){} if(lastErr)notify('Delivery status saved on this device. To sync it across devices, run the delivery SQL (supabase-delivery.sql) in the Supabase SQL Editor.');}await loadData();}
 function renderBestSeller(){const totals={};orderItemsData.forEach(x=>{if(!x.product_id)return;totals[x.product_id]=(totals[x.product_id]||0)+Number(x.quantity||0);});const ranked=Object.keys(totals).sort((a,b)=>totals[b]-totals[a]).slice(0,20);if(!ranked.length){$('bestSeller').innerHTML='<div class="empty"><div class="empty-icon">★</div><p>No sales yet.</p></div>';return}$('bestSeller').innerHTML=ranked.map((id,i)=>{const p=products.find(x=>String(x.id)===String(id));const name=p?.name||orderItemsData.find(x=>String(x.product_id)===String(id))?.item_name||'Unknown item';return `<div class="recent-order"><div><div class="best-seller-name">#${i+1} ${esc(name)}</div><div class="best-seller-meta">${totals[id]} unit${totals[id]===1?'':'s'} sold</div></div><div style="font-size:20px">★</div></div>`}).join('');}
-function openFinancialBreakdown(type){const paid=orders.filter(o=>o.payment_status==='Paid');const total=paid.reduce((s,o)=>s+Number(o.total_price||0),0);const profit=paid.reduce((s,o)=>s+Number(o.profit_total||0),0);const title=type==='profit'?'Profit breakdown':'Revenue breakdown';const rows=paid.map(o=>{const its=orderItemsData.filter(x=>String(x.order_id)===String(o.id));const revenue=Number(o.total_price||0);const pr=Number(o.profit_total||0);return `<div class="breakdown-row"><div><strong>${esc(o.customer_name||'Order')}</strong><div class="muted">${date(o.created_at)} · ${its.map(x=>esc(x.item_name||'Item')).join(', ')}</div></div><strong>${money(type==='profit'?pr:revenue)}</strong></div>`}).join('');$('financialBreakdownTitle').textContent=title;$('financialBreakdownBody').innerHTML=`<div class="breakdown-total"><span>${type==='profit'?'Total Profit':'Total Revenue'}</span><strong>${money(type==='profit'?profit:total)}</strong></div>${rows||'<div class="empty">No paid orders yet.</div>'}`;$('financialBreakdownModal').classList.add('show');}
+function openFinancialBreakdown(type){const paid=orders.filter(o=>o.payment_status==='Paid');const total=paid.reduce((s,o)=>s+Number(o.total_price||0),0);const profit=paid.reduce((s,o)=>s+Number(o.profit_total||0),0);const title=type==='profit'?'Profit breakdown':'Revenue breakdown';const rows=paid.map(o=>{const its=orderItemsData.filter(x=>String(x.order_id)===String(o.id));const revenue=Number(o.total_price||0);const pr=Number(o.profit_total||0);return `<div class="breakdown-row"><div><strong>${esc(o.customer_name||'Order')}</strong><div class="muted">${date(o.created_at)} · ${its.map(x=>esc(x.item_name||'Item')).join(', ')}</div></div><strong>${money(type==='profit'?pr:revenue)}</strong></div>`}).join('');$('financialBreakdownTitle').textContent=title;$('financialBreakdownSub').textContent='Paid orders only.';$('financialBreakdownBody').innerHTML=`<div class="breakdown-total"><span>${type==='profit'?'Total Profit':'Total Revenue'}</span><strong>${money(type==='profit'?profit:total)}</strong></div>${rows||'<div class="empty">No paid orders yet.</div>'}`;$('financialBreakdownModal').classList.add('show');}
 function closeFinancialBreakdown(){$('financialBreakdownModal').classList.remove('show');}
 function renderRecent(){if(!orders.length){$("recentOrders").innerHTML='<div class="empty"><div class="empty-icon">☷</div><p>No orders yet.</p></div>';return}$("recentOrders").innerHTML=orders.slice(0,6).map(o=>`<div class="recent-order"><div><div class="recent-customer">${esc(o.customer_name||"")}</div><div class="recent-item">${esc(o.item_summary||o.item_name||"")} × ${o.total_quantity||o.quantity||0}</div></div><div style="text-align:right"><div class="recent-total">${money(o.total_price)}</div><span class="badge ${o.payment_status==="Paid"?"paid":"unpaid"}">${o.payment_status}</span></div></div>`).join("")}
 function renderOverview(){if(!products.length){$("inventoryOverview").innerHTML='<div class="empty"><div class="empty-icon">▣</div><p>No products yet.</p></div>';return}$("inventoryOverview").innerHTML=[...products].sort((a,b)=>a.stock-b.stock).slice(0,7).map(p=>`<div class="recent-order"><div><div class="recent-customer">${esc(p.name)}</div><div class="recent-item">Selling ${money(p.price)} · Principal ${money(p.principal_price||0)}</div></div><div class="stock ${p.stock===0?"out":p.stock<=5?"low":""}">${p.stock===0?"Out of stock":p.stock+" left"}</div></div>`).join("")}
 
+
+let bdType='',bdSort='desc';
+function openStatBreakdown(t){bdType=t;bdSort='desc';renderStatBreakdown();$('financialBreakdownModal').classList.add('show');}
+function renderStatBreakdown(){let rows,title,label,sub;
+ if(bdType==='stock'){rows=products.map(p=>({t:p.name,s:`${Number(p.stock)||0} pcs × ${money(p.price)}`,v:(Number(p.price)||0)*(Number(p.stock)||0)}));title='Stock value breakdown';label='Total Stock Value';sub='Selling price × stock, per product.';}
+ else{const pend=bdType==='pending';const list=pend?orders.filter(o=>o.payment_status!=='Paid'):orders;rows=list.map(o=>({t:o.customer_name||'Order',s:date(o.created_at)+' · '+(o.item_summary||o.item_name||''),v:Number(o.total_price)||0}));title=pend?'Pending balance breakdown':'Total orders breakdown';label=pend?'Total Pending':`Total of ${rows.length} orders`;sub=pend?'Unpaid orders only.':'All orders.';}
+ rows.sort((a,b)=>bdSort==='desc'?b.v-a.v:a.v-b.v);const total=rows.reduce((s,r)=>s+r.v,0);
+ $('financialBreakdownTitle').textContent=title;$('financialBreakdownSub').textContent=sub;
+ $('financialBreakdownBody').innerHTML=`<div class="breakdown-total"><span>${label}</span><strong>${money(total)}</strong></div><select class="bd-sort" onchange="bdSort=this.value;renderStatBreakdown()"><option value="desc" ${bdSort==='desc'?'selected':''}>Sort: Highest first</option><option value="asc" ${bdSort==='asc'?'selected':''}>Sort: Lowest first</option></select>`+(rows.map(r=>`<div class="breakdown-row"><div><strong>${esc(r.t)}</strong><div class="muted">${esc(r.s)}</div></div><strong>${money(r.v)}</strong></div>`).join('')||'<div class="empty">No data.</div>');}
+const dkey=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+let calY=new Date().getFullYear(),calM=new Date().getMonth(),calSel=dkey(new Date());
+function renderCalendar(){const g=$('calGrid');if(!g)return;const first=new Date(calY,calM,1),days=new Date(calY,calM+1,0).getDate(),today=dkey(new Date());
+ const has=new Set(orders.map(o=>dkey(o.created_at)));
+ $('calTitle').textContent=first.toLocaleDateString('en-PH',{month:'long',year:'numeric'});
+ let h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
+ for(let i=0;i<first.getDay();i++)h+='<button class="cal-cell empty" disabled></button>';
+ for(let d=1;d<=days;d++){const k=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;h+=`<button type="button" class="cal-cell ${has.has(k)?'has':''} ${k===today?'today':''} ${k===calSel?'sel':''}" data-k="${k}">${d}</button>`;}
+ g.innerHTML=h;g.querySelectorAll('.cal-cell[data-k]').forEach(b=>b.onclick=()=>{calSel=b.dataset.k;renderCalendar();});
+ const os=orders.filter(o=>dkey(o.created_at)===calSel),paid=os.filter(o=>o.payment_status==='Paid');
+ const sales=os.reduce((s,o)=>s+Number(o.total_price||0),0),profit=paid.reduce((s,o)=>s+Number(o.profit_total||0),0);
+ const [y,m,d]=calSel.split('-').map(Number);
+ $('calDay').innerHTML=`<h4>${new Date(y,m-1,d).toLocaleDateString('en-PH',{dateStyle:'full'})}</h4><div class="row"><span>Total Sales</span><strong>${money(sales)}</strong></div><div class="row"><span>Orders</span><strong>${os.length}</strong></div><div class="row"><span>Profit (paid orders)</span><strong>${money(profit)}</strong></div><div class="row"><span>Unpaid</span><strong>${money(sales-paid.reduce((s,o)=>s+Number(o.total_price||0),0))}</strong></div>`;}
+$('calPrev').onclick=()=>{calM--;if(calM<0){calM=11;calY--}renderCalendar();};
+$('calNext').onclick=()=>{calM++;if(calM>11){calM=0;calY++}renderCalendar();};
+const loadImg=s=>new Promise(r=>{if(!s)return r(null);const i=new Image();i.crossOrigin='anonymous';i.onload=()=>r(i);i.onerror=()=>r(null);i.src=s;});
+async function exportPricesPdf(){const J=window.jspdf?.jsPDF;if(!J)return notify('PDF library not loaded. Check your internet connection.');if(!products.length)return notify('No products to export.');
+ const btn=$('exportPdfBtn');btn.disabled=true;btn.textContent='Preparing...';
+ try{const imgs=await Promise.all(products.map(p=>loadImg(p.image_url)));
+  const W=1240,H=1754,M=60,G=28,HEAD=110,cols=3,rws=4,per=12,cw=(W-2*M-(cols-1)*G)/cols,ch=(H-HEAD-M-(rws-1)*G)/rws,pages=Math.ceil(products.length/per);
+  const pdf=new J({unit:'mm',format:'a4',orientation:'portrait'});
+  for(let pg=0;pg<pages;pg++){const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);
+   x.fillStyle='#0b1f3a';x.font='bold 40px Arial';x.textAlign='left';x.fillText('Raya Store — Price List',M,72);
+   x.font='20px Arial';x.fillStyle='#5b6573';x.textAlign='right';x.fillText(new Date().toLocaleDateString('en-PH',{dateStyle:'long'})+' · Page '+(pg+1)+'/'+pages,W-M,72);
+   products.slice(pg*per,pg*per+per).forEach((p,i)=>{const cx=M+(i%cols)*(cw+G),cy=HEAD+Math.floor(i/cols)*(ch+G),ih=ch-92,im=imgs[pg*per+i];
+    x.strokeStyle='#dfe4ea';x.lineWidth=2;x.strokeRect(cx,cy,cw,ch);
+    if(im){const s=Math.min((cw-16)/im.width,(ih-16)/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,cx+(cw-w)/2,cy+8+(ih-16-h)/2,w,h);}
+    else{x.fillStyle='#eef1f5';x.fillRect(cx+8,cy+8,cw-16,ih-16);x.fillStyle='#9aa5b1';x.font='44px Arial';x.textAlign='center';x.fillText('▣',cx+cw/2,cy+ih/2+14);}
+    x.textAlign='center';x.fillStyle='#252b33';x.font='bold 22px Arial';let n=String(p.name);while(x.measureText(n).width>cw-20&&n.length>3)n=n.slice(0,-2);if(n!==p.name)n=n.trimEnd()+'…';x.fillText(n,cx+cw/2,cy+ih+30);
+    x.fillStyle='#198754';x.font='bold 30px Arial';x.fillText(money(p.price),cx+cw/2,cy+ih+70);});
+   if(pg>0)pdf.addPage();pdf.addImage(c.toDataURL('image/jpeg',.85),'JPEG',0,0,210,297);}
+  pdf.save('Raya_Store_Price_List.pdf');
+ }catch(e){notify('PDF export failed: '+e.message)}finally{btn.disabled=false;btn.textContent='Export PDF';}}
+$('exportPdfBtn')?.addEventListener('click',exportPricesPdf);
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>{const s=b.dataset.section;document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(s).classList.add("active");const info={dashboard:["Dashboard","Overview of your store"],inventory:["Inventory","Manage your products and stock"],orders:["Orders","Track customer orders and payments"]};$("pageTitle").textContent=info[s][0];$("pageSubtitle").textContent=info[s][1]});
 
 if(authConfigError){showAuth("signin","Supabase is not configured yet. Open config.js and enter your Supabase Project URL and public anon/publishable key.");["signInForm","signUpForm","resetForm"].forEach(id=>{$(id).querySelector("button[type=submit]").disabled=true});}
@@ -353,6 +414,6 @@ db.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){show
 (async()=>{const {data,error}=await db.auth.getSession();if(error)showAuth("signin",error.message);else if(data.session)showApp(data.session.user);else showAuth("signin")})();
 }
 </script>
-<div id="financialBreakdownModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3 id="financialBreakdownTitle">Financial breakdown</h3><p class="muted">Paid orders only.</p></div><button class="close" onclick="closeFinancialBreakdown()">×</button></div><div id="financialBreakdownBody"></div></div></div>
+<div id="financialBreakdownModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3 id="financialBreakdownTitle">Financial breakdown</h3><p class="muted" id="financialBreakdownSub">Paid orders only.</p></div><button class="close" onclick="closeFinancialBreakdown()">×</button></div><div id="financialBreakdownBody"></div></div></div>
 </body>
 </html>
