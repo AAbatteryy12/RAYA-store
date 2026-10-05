@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Raya Store</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -99,6 +99,110 @@
 .bd-sort{width:100%;height:40px;border:1px solid var(--g200);border-radius:8px;padding:0 10px;margin:10px 0}
 @media(max-width:700px){.cal-layout{grid-template-columns:1fr}}
 </style>
+<style id="minimal-app">
+/* ===== Minimal commercial-app look ===== */
+:root{--blue:#d6336c;--blue2:#e64980;--g50:#faf6f8;--g100:#f7eaf0;--g200:#f1e3ea;--g600:#7a6b73;--g800:#2a2227;--radius:20px;--shadow:0 1px 2px rgba(42,34,39,.04),0 10px 30px rgba(214,51,108,.07)}
+html,body{max-width:100%;overflow-x:clip}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--g50);-webkit-font-smoothing:antialiased}
+.section,.card,.stat-card,.dashboard-layout>*{min-width:0}
+/* nav */
+.sidebar{background:#fff!important;color:var(--g800)!important;border-bottom:1px solid var(--g200);box-shadow:none}
+.brand h1{color:var(--g800)}.brand small{color:var(--g600)!important}
+.brand-icon{background:var(--blue)!important;color:#fff!important;border-radius:12px}
+.sidebar .nav-btn{color:var(--g600)!important;border-radius:12px;font-weight:600}
+.sidebar .nav-btn:hover{background:var(--g100)!important;color:var(--blue)!important}
+.sidebar .nav-btn.active{background:var(--g100)!important;color:var(--blue)!important}
+.topbar{background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--g200)}
+.topbar h2{color:var(--g800);font-weight:800;letter-spacing:-.3px}
+.store-status{background:transparent!important;border:0!important;color:var(--g600)!important}
+/* cards */
+.card,.stat-card{border:0!important;border-radius:var(--radius)!important;box-shadow:var(--shadow)!important}
+.card-header h3{color:var(--g800);font-size:17px;font-weight:800;letter-spacing:-.2px}
+.card-header p{color:var(--g600)}
+.stat-card{padding:18px}
+.stat-label{font-size:12px!important;font-weight:600;color:var(--g600)!important;text-transform:none!important;letter-spacing:0!important}
+.stat-icon{width:30px;height:30px;border-radius:50%;background:var(--g100)!important;color:var(--blue)!important;display:inline-flex;align-items:center;justify-content:center;font-size:13px!important}
+.stat-value{font-size:24px!important;font-weight:800;letter-spacing:-.5px;color:var(--g800)!important;margin-top:6px}
+.stat-hint{font-size:11px;color:var(--blue);margin-top:4px;font-weight:600}
+.clickable-stat{transition:transform .15s}.clickable-stat:active{transform:scale(.98)}
+/* controls */
+.btn{border-radius:12px;font-weight:700}
+.btn-primary{background:var(--blue)!important;color:#fff!important}
+.btn-secondary{background:var(--g100)!important;color:var(--blue)!important;border:0!important}
+input,select,textarea{border-radius:12px!important;border:1px solid var(--g200)!important;background:#fff}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)!important;box-shadow:0 0 0 3px rgba(214,51,108,.12)!important}
+/* products */
+.product-card{border:0!important;border-radius:18px!important;box-shadow:var(--shadow)}
+.product-image,.placeholder-image{height:auto!important;aspect-ratio:1/1}
+.product-name{font-weight:700}.product-price{color:var(--blue);font-weight:800}
+/* thumbs */
+.thumb{width:44px;height:44px;border-radius:12px;object-fit:cover;flex:0 0 44px;background:var(--g100);display:block}
+.thumb.lg{width:56px;height:56px;flex-basis:56px;border-radius:14px}
+.thumb.ph{display:flex;align-items:center;justify-content:center;color:#d9a9bf;font-size:18px}
+.ro-main{flex:1;min-width:0}.ro-main .recent-customer,.ro-main .best-seller-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-order{gap:12px;border-bottom:1px solid var(--g100)}
+.history-item-line{display:flex!important;flex-wrap:nowrap!important;align-items:center;gap:10px;padding:5px 0}
+.hi-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.hi-info .history-item-name{font-size:14px;font-weight:700;color:var(--g800)}
+.hi-sub{display:flex;gap:8px;font-size:12px;color:var(--g600)}
+.hi-sub .history-item-qty,.hi-sub .history-item-price{font-size:12px!important;font-weight:600}
+.compact-order-table tr{border-radius:16px}
+/* best sellers */
+.bs-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--g100)}
+.bs-row:last-child{border:0}
+.bs-rank{width:24px;text-align:center;font-weight:800;font-size:14px;color:#c9b4be;flex:0 0 24px}
+.bs-rank.r1,.bs-rank.r2,.bs-rank.r3{color:var(--blue)}
+.best-seller-name{font-size:14px!important;font-weight:700!important;color:var(--g800)!important;margin:0}
+.best-seller-meta{margin-top:2px!important}
+.bs-sold{font-size:12px;color:var(--blue);background:var(--g100);border-radius:999px;padding:5px 10px;white-space:nowrap}
+.bs-sold b{font-weight:800}
+/* calendar */
+.cal-nav{gap:4px}.cal-nav strong{min-width:120px;color:var(--g800);font-size:15px}
+.cal-nav .btn{width:34px;height:34px;padding:0;border-radius:50%}
+.cal-layout{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+.cal-grid{grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-dow{font-weight:600;color:var(--g600)}
+.cal-cell{padding:0;min-width:0;border:0!important;background:transparent;border-radius:50%;font-size:14px;font-weight:600;color:var(--g800)}
+.cal-cell.empty{background:none}
+.cal-cell.today{color:var(--blue);box-shadow:inset 0 0 0 1.5px var(--blue)}
+.cal-cell.sel{background:var(--blue)!important;color:#fff!important;box-shadow:none}
+.cal-cell.has::after{bottom:15%}.cal-cell.sel.has::after{background:#fff}
+.cal-day{background:var(--g50);border-radius:18px;padding:16px}
+.cal-day h4{color:var(--g800)}
+.cal-day .row{border-color:var(--g200)}
+.unpaid-summary{border-radius:14px}
+@media(max-width:800px){
+  .sidebar{top:auto!important;bottom:0;height:calc(62px + env(safe-area-inset-bottom))!important;padding:6px 10px calc(6px + env(safe-area-inset-bottom))!important;justify-content:space-around;gap:4px!important;border-bottom:0;border-top:1px solid var(--g200);box-shadow:0 -6px 24px rgba(42,34,39,.06);overflow:hidden}
+  .sidebar .nav-btn{flex:1;flex-direction:column;gap:2px!important;padding:6px 4px!important;font-size:11px!important;justify-content:center}
+  .sidebar .nav-icon{font-size:18px;width:auto!important}
+  .main{padding-top:0!important;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+  .topbar{top:0!important;height:60px}
+  .user-email{display:none!important}
+  .store-status{font-size:0!important}
+}
+@media(max-width:600px){
+  .content{padding:14px 14px 30px!important}
+  .card{padding:16px!important;border-radius:18px!important}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .stat-value{font-size:19px!important}
+  .stat-card{padding:14px!important}
+  /* calendar: fit phone width */
+  .cal-card .card-header{flex-direction:column;align-items:stretch;gap:10px}
+  .cal-nav{justify-content:space-between;width:100%}
+  .cal-nav strong{min-width:0;flex:1;text-align:center}
+  .cal-layout{grid-template-columns:minmax(0,1fr)!important;gap:14px}
+  .cal-grid{gap:2px}
+  .cal-cell{font-size:13px}
+  .cal-day{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:12px;background:var(--g50)}
+  .cal-day h4{grid-column:1/-1;margin:0 0 2px}
+  .cal-day .row{flex-direction:column;gap:2px;background:#fff;border:0;border-radius:14px;padding:11px 12px;font-size:12px;color:var(--g600)}
+  .cal-day .row strong{font-size:16px;color:var(--g800)}
+  .thumb{width:40px;height:40px;flex-basis:40px}
+  .thumb.lg{width:50px;height:50px;flex-basis:50px}
+  .bs-row{gap:10px}
+  .compact-order-table tr{border:0!important;box-shadow:var(--shadow)}
+}
+</style>
 </head>
 <body>
 <div id="authScreen" class="auth">
@@ -155,7 +259,7 @@
 <div class="stat-card clickable-stat" onclick="openStatBreakdown('pending')"><div class="stat-top"><span class="stat-label">Pending Balance</span><span class="stat-icon">!</span></div><div class="stat-value" id="statPending">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
 <div class="stat-card clickable-stat" onclick="openStatBreakdown('profit')"><div class="stat-top"><span class="stat-label">Profit</span><span class="stat-icon">↗</span></div><div class="stat-value" id="statProfit">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
 </div>
-<div class="card" style="margin-bottom:20px"><div class="card-header"><div><h3>Sales Calendar</h3><p>Click a date to see that day's sales, orders and profit.</p></div><div class="cal-nav"><button class="btn btn-secondary btn-small" id="calPrev" type="button">‹</button><strong id="calTitle"></strong><button class="btn btn-secondary btn-small" id="calNext" type="button">›</button></div></div><div class="cal-layout"><div class="cal-grid" id="calGrid"></div><div class="cal-day" id="calDay"></div></div></div>
+<div class="card cal-card" style="margin-bottom:20px"><div class="card-header"><div><h3>Sales Calendar</h3><p>Click a date to see that day's sales, orders and profit.</p></div><div class="cal-nav"><button class="btn btn-secondary btn-small" id="calPrev" type="button">‹</button><strong id="calTitle"></strong><button class="btn btn-secondary btn-small" id="calNext" type="button">›</button></div></div><div class="cal-layout"><div class="cal-grid" id="calGrid"></div><div class="cal-day" id="calDay"></div></div></div>
 <div class="dashboard-layout">
 <div class="card"><div class="card-header"><div><h3>Recent Orders</h3><p>Your latest transactions</p></div></div><div id="recentOrders"></div></div>
 <div class="card"><div class="card-header"><div><h3>Inventory Overview</h3><p>Current stock levels</p></div></div><div id="inventoryOverview"></div></div>
@@ -347,16 +451,16 @@ function renderOrders(){
   if(!list.length){$("ordersTable").innerHTML='<tr><td colspan="8"><div class="empty"><div class="empty-icon">☷</div><p>No matching transactions.</p></div></td></tr>';return}
   $("ordersTable").innerHTML=list.map(o=>{
     const paid=o.payment_status==='Paid', delivered=deliveredState(o), its=orderItemsData.filter(x=>String(x.order_id)===String(o.id));
-    const lines=its.length?its.map(x=>`<div class="history-item-line"><span class="history-item-name">${esc(x.item_name||'Item')}</span><span class="history-item-qty">× ${Number(x.quantity)||0}</span><span class="history-item-price">${money(x.sale_price||0)} each</span></div>`).join(''): `<div class="history-item-line"><span class="history-item-name">${esc(o.item_name||'Order')}</span><span class="history-item-qty">× ${o.total_quantity||o.quantity||0}</span><span class="history-item-price">${money(o.unit_price||0)} each</span></div>`;
+    const lines=its.length?its.map(x=>`<div class="history-item-line">${thumbFor(x.product_id,x.item_name)}<div class="hi-info"><span class="history-item-name">${esc(x.item_name||'Item')}</span><span class="hi-sub"><span class="history-item-qty">× ${Number(x.quantity)||0}</span><span class="history-item-price">${money(x.sale_price||0)} each</span></span></div></div>`).join(''): `<div class="history-item-line">${thumbFor(o.product_id,o.item_name)}<div class="hi-info"><span class="history-item-name">${esc(o.item_name||'Order')}</span><span class="hi-sub"><span class="history-item-qty">× ${o.total_quantity||o.quantity||0}</span><span class="history-item-price">${money(o.unit_price||0)} each</span></span></div></div>`;
     return `<tr><td><div class="order-mobile-card"><div class="order-mobile-line"><strong class="order-name">${esc(o.customer_name||'')}</strong></div><div class="history-items">${lines}</div><div class="order-mobile-total">Total: ${money(o.total_price)} <span class="badge ${paid?'paid':'unpaid'}">${paid?'Paid':'Unpaid'}</span> <span class="badge ${delivered?'delivered':'not-delivered'}">${delivered?'Delivered':'Not delivered'}</span></div><div class="order-mobile-date">${date(o.created_at)}</div><div class="order-mobile-actions"><button class="btn btn-secondary btn-small" onclick="editOrder('${o.id}')">Edit</button><button class="btn btn-danger btn-small" onclick="deleteOrder('${o.id}')">Delete</button><button class="status-toggle" onclick="togglePayment('${o.id}')"><span class="badge ${paid?'unpaid':'paid'}">Mark ${paid?'Unpaid':'Paid'}</span></button><button class="status-toggle" onclick="toggleDelivery('${o.id}')"><span class="badge ${delivered?'not-delivered':'delivered'}">${delivered?'Mark Not Delivered':'Mark Delivered'}</span></button></div></div></td><td>${lines}</td><td>${o.total_quantity||o.quantity||0}</td><td>${money(o.total_price)}</td><td>${date(o.created_at)}</td><td><span class="badge ${paid?'paid':'unpaid'}">${paid?'Paid':'Unpaid'}</span></td><td><span class="badge ${delivered?'delivered':'not-delivered'}">${delivered?'Delivered':'Not delivered'}</span></td><td><button class="btn btn-secondary btn-small" onclick="editOrder('${o.id}')">Edit</button> <button class="btn btn-danger btn-small" onclick="deleteOrder('${o.id}')">Delete</button> <button class="status-toggle" onclick="togglePayment('${o.id}')"><span class="badge ${paid?'unpaid':'paid'}">${paid?'Mark Unpaid':'Mark Paid'}</span></button> <button class="status-toggle" onclick="toggleDelivery('${o.id}')"><span class="badge ${delivered?'not-delivered':'delivered'}">${delivered?'Mark Not Delivered':'Mark Delivered'}</span></button></td></tr>`;
   }).join('');
 }
 async function toggleDelivery(id){const o=orders.find(x=>String(x.id)===String(id));if(!o)return;const next=!deliveredState(o);const attempts=[{delivery_status:next?'Delivered':'Not Delivered'},{delivered:next}];let saved=false,lastErr=null;for(const payload of attempts){const {error}=await db.from('orders').update(payload).eq('id',id);if(!error){saved=true;break}lastErr=error;}if(!saved){try{localStorage.setItem('raya_delivery_'+id,next?'Delivered':'Not Delivered')}catch(e){} if(lastErr)notify('Delivery status saved on this device. To sync it across devices, run the delivery SQL (supabase-delivery.sql) in the Supabase SQL Editor.');}await loadData();}
-function renderBestSeller(){const totals={};orderItemsData.forEach(x=>{if(!x.product_id)return;totals[x.product_id]=(totals[x.product_id]||0)+Number(x.quantity||0);});const ranked=Object.keys(totals).sort((a,b)=>totals[b]-totals[a]).slice(0,20);if(!ranked.length){$('bestSeller').innerHTML='<div class="empty"><div class="empty-icon">★</div><p>No sales yet.</p></div>';return}$('bestSeller').innerHTML=ranked.map((id,i)=>{const p=products.find(x=>String(x.id)===String(id));const name=p?.name||orderItemsData.find(x=>String(x.product_id)===String(id))?.item_name||'Unknown item';return `<div class="recent-order"><div><div class="best-seller-name">#${i+1} ${esc(name)}</div><div class="best-seller-meta">${totals[id]} unit${totals[id]===1?'':'s'} sold</div></div><div style="font-size:20px">★</div></div>`}).join('');}
+function renderBestSeller(){const totals={};orderItemsData.forEach(x=>{if(!x.product_id)return;totals[x.product_id]=(totals[x.product_id]||0)+Number(x.quantity||0);});const ranked=Object.keys(totals).sort((a,b)=>totals[b]-totals[a]).slice(0,20);if(!ranked.length){$('bestSeller').innerHTML='<div class="empty"><div class="empty-icon">★</div><p>No sales yet.</p></div>';return}$('bestSeller').innerHTML=ranked.map((id,i)=>{const p=products.find(x=>String(x.id)===String(id));const name=p?.name||orderItemsData.find(x=>String(x.product_id)===String(id))?.item_name||'Unknown item';return `<div class="bs-row"><span class="bs-rank r${i<3?i+1:0}">${i+1}</span>${thumbFor(id,name,'lg')}<div class="ro-main"><div class="best-seller-name">${esc(name)}</div><div class="best-seller-meta">${p?money(p.price):''}</div></div><span class="bs-sold"><b>${totals[id]}</b> sold</span></div>`}).join('');}
 function openFinancialBreakdown(type){const paid=orders.filter(o=>o.payment_status==='Paid');const total=paid.reduce((s,o)=>s+Number(o.total_price||0),0);const profit=paid.reduce((s,o)=>s+Number(o.profit_total||0),0);const title=type==='profit'?'Profit breakdown':'Revenue breakdown';const rows=paid.map(o=>{const its=orderItemsData.filter(x=>String(x.order_id)===String(o.id));const revenue=Number(o.total_price||0);const pr=Number(o.profit_total||0);return `<div class="breakdown-row"><div><strong>${esc(o.customer_name||'Order')}</strong><div class="muted">${date(o.created_at)} · ${its.map(x=>esc(x.item_name||'Item')).join(', ')}</div></div><strong>${money(type==='profit'?pr:revenue)}</strong></div>`}).join('');$('financialBreakdownTitle').textContent=title;$('financialBreakdownSub').textContent='Paid orders only.';$('financialBreakdownBody').innerHTML=`<div class="breakdown-total"><span>${type==='profit'?'Total Profit':'Total Revenue'}</span><strong>${money(type==='profit'?profit:total)}</strong></div>${rows||'<div class="empty">No paid orders yet.</div>'}`;$('financialBreakdownModal').classList.add('show');}
 function closeFinancialBreakdown(){$('financialBreakdownModal').classList.remove('show');}
 function renderRecent(){if(!orders.length){$("recentOrders").innerHTML='<div class="empty"><div class="empty-icon">☷</div><p>No orders yet.</p></div>';return}$("recentOrders").innerHTML=orders.slice(0,6).map(o=>`<div class="recent-order"><div><div class="recent-customer">${esc(o.customer_name||"")}</div><div class="recent-item">${esc(o.item_summary||o.item_name||"")} × ${o.total_quantity||o.quantity||0}</div></div><div style="text-align:right"><div class="recent-total">${money(o.total_price)}</div><span class="badge ${o.payment_status==="Paid"?"paid":"unpaid"}">${o.payment_status}</span></div></div>`).join("")}
-function renderOverview(){if(!products.length){$("inventoryOverview").innerHTML='<div class="empty"><div class="empty-icon">▣</div><p>No products yet.</p></div>';return}$("inventoryOverview").innerHTML=[...products].sort((a,b)=>a.stock-b.stock).slice(0,7).map(p=>`<div class="recent-order"><div><div class="recent-customer">${esc(p.name)}</div><div class="recent-item">Selling ${money(p.price)} · Principal ${money(p.principal_price||0)}</div></div><div class="stock ${p.stock===0?"out":p.stock<=5?"low":""}">${p.stock===0?"Out of stock":p.stock+" left"}</div></div>`).join("")}
+function renderOverview(){if(!products.length){$("inventoryOverview").innerHTML='<div class="empty"><div class="empty-icon">▣</div><p>No products yet.</p></div>';return}$("inventoryOverview").innerHTML=[...products].sort((a,b)=>a.stock-b.stock).slice(0,7).map(p=>`<div class="recent-order">${thumbFor(p.id,p.name)}<div class="ro-main"><div class="recent-customer">${esc(p.name)}</div><div class="recent-item">Selling ${money(p.price)} · Principal ${money(p.principal_price||0)}</div></div><div class="stock ${p.stock===0?"out":p.stock<=5?"low":""}">${p.stock===0?"Out of stock":p.stock+" left"}</div></div>`).join("")}
 
 
 let bdType='',bdSort='desc';
@@ -407,6 +511,8 @@ $('exportPdfBtn')?.addEventListener('click',exportPricesPdf);
 const PRICE_KEY=/price|profit|cost|total|principal|capital/i;
 async function snapshotOrderPrices(){const [o,i]=await Promise.all([db.from("orders").select("*"),db.from("order_items").select("*")]);const pick=r=>{const m={};for(const k in r)if(PRICE_KEY.test(k)&&typeof r[k]==="number"||(PRICE_KEY.test(k)&&r[k]!==null&&!isNaN(r[k])&&typeof r[k]!=="object"))m[k]=Number(r[k]);return m};return{orders:new Map((o.data||[]).map(r=>[r.id,pick(r)])),items:new Map((i.data||[]).map(r=>[r.id,pick(r)]))};}
 async function restoreOrderPrices(snap){let n=0;for(const [tbl,map] of [["orders",snap.orders],["order_items",snap.items]]){const {data}=await db.from(tbl).select("*");for(const r of data||[]){const old=map.get(r.id);if(!old)continue;const diff={};for(const k in old)if(Math.abs(Number(r[k])-old[k])>0.0001)diff[k]=old[k];if(Object.keys(diff).length){const {error}=await db.from(tbl).update(diff).eq("id",r.id);if(!error)n++;}}}return n;}
+
+function thumbFor(pid,name,size){const p=products.find(x=>pid&&String(x.id)===String(pid))||products.find(x=>name&&x.name===name);const u=p&&p.image_url;const c='thumb'+(size==='lg'?' lg':'');return u?`<img class="${c}" src="${esc(u)}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;${c} ph&quot;>▣</span>'">`:`<span class="${c} ph">▣</span>`;}
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>{const s=b.dataset.section;document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(s).classList.add("active");const info={dashboard:["Dashboard","Overview of your store"],inventory:["Inventory","Manage your products and stock"],orders:["Orders","Track customer orders and payments"]};$("pageTitle").textContent=info[s][0];$("pageSubtitle").textContent=info[s][1]});
 
 if(authConfigError){showAuth("signin","Supabase is not configured yet. Open config.js and enter your Supabase Project URL and public anon/publishable key.");["signInForm","signUpForm","resetForm"].forEach(id=>{$(id).querySelector("button[type=submit]").disabled=true});}
