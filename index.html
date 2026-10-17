@@ -8,6 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--blue:#c2185b;--blue2:#d81b78;--white:#fff;--g50:#fdf2f7;--g100:#fbe6ef;--g200:#f3d0e0;--g400:#9aa5b1;--g600:#5b6573;--g800:#252b33;--green:#198754;--red:#dc3545;--orange:#e67e22;--shadow:0 8px 25px rgba(194,24,91,.10);--radius:14px}
 *{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;background:var(--g50);color:var(--g800);min-height:100vh}button,input,select{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh}
@@ -204,6 +206,44 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)!impor
   .compact-order-table tr{border:0!important;box-shadow:var(--shadow)}
 }
 </style>
+<style id="ui-update">
+/* fonts */
+body,button,input,select,textarea{font-family:"Nunito","Segoe UI",Roboto,Arial,sans-serif!important}
+h1,h2,h3,.brand h1,.topbar h2,.card-header h3,.nav-title,.stat-label,.add-cta,.auth h1,.auth h2{font-family:"Fredoka","Nunito",sans-serif!important;letter-spacing:0!important}
+.card-header p,.topbar p,.brand small,.stat-hint{font-family:"Nunito",sans-serif!important}
+.topbar h2{font-size:22px;font-weight:600}.card-header h3{font-weight:600;font-size:18px}.brand h1{font-weight:600}
+/* pink headers with white text */
+.sidebar{background:linear-gradient(135deg,#d6336c,#e64980)!important;color:#fff!important;border-bottom:0!important;box-shadow:0 2px 10px rgba(214,51,108,.25)!important}
+.brand h1,.brand small{color:#fff!important}.brand small{opacity:.85}
+.brand-icon{background:#fff!important;color:var(--blue)!important}
+.sidebar .nav-btn{color:#fff!important;background:transparent!important}
+.sidebar .nav-btn:hover{background:rgba(255,255,255,.18)!important;color:#fff!important}
+.sidebar .nav-btn.active{background:rgba(255,255,255,.28)!important;color:#fff!important;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7)}
+.topbar{background:#e64980!important;backdrop-filter:none!important;border-bottom:0!important;box-shadow:0 2px 8px rgba(214,51,108,.18)}
+.topbar h2,.topbar p,.user-email,.store-status{color:#fff!important}.topbar p{opacity:.9}
+.status-dot{background:#fff!important}
+.topbar .btn-secondary{background:rgba(255,255,255,.25)!important;color:#fff!important}
+/* collapsible cards */
+.card-header{align-items:center}
+.collapsible>.card-header{cursor:pointer;gap:12px}
+.collapsible.collapsed>.card-header{margin-bottom:0}
+.collapsible.collapsed>.collapse-body,.collapsible.collapsed .cal-nav{display:none}
+.toggle-btn{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--g100);color:var(--blue);font-weight:800;font-size:12px;padding:8px 13px;border-radius:999px;flex:0 0 auto}
+.toggle-btn .chev{transition:transform .2s}.collapsible:not(.collapsed) .toggle-btn .chev{transform:rotate(180deg)}
+.collapsible:not(.collapsed)>.card-header{margin-bottom:16px}
+/* add buttons */
+.add-cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:340px;margin:0 0 18px;padding:15px 24px;border:0;border-radius:16px;background:linear-gradient(135deg,#d6336c,#f06595);color:#fff;font-size:18px;font-weight:600;box-shadow:0 8px 20px rgba(214,51,108,.35);transition:transform .15s,box-shadow .15s}
+.add-cta:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(214,51,108,.42)}.add-cta:active{transform:scale(.98)}
+.add-cta .plus{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#fff;color:var(--blue);font-size:22px;font-weight:700;line-height:1}
+.add-cta.open{background:#fff;color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue)}.add-cta.open .plus{background:var(--blue);color:#fff}
+.reveal-card[hidden]{display:none!important}
+@media(max-width:700px){.add-cta{max-width:none}}
+/* segmented toggle filters */
+.seg{display:flex;gap:4px;padding:4px;background:var(--g100);border-radius:12px;height:40px;align-items:stretch}
+.seg-btn{flex:1;border:0;background:transparent;color:var(--g600);font-weight:700;font-size:12px;border-radius:9px;padding:0 8px;white-space:nowrap}
+.seg-btn.active{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(214,51,108,.3)}
+.date-filter .seg{height:34px;margin-bottom:6px}
+</style>
 </head>
 <body>
 <div id="authScreen" class="auth">
@@ -260,16 +300,17 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)!impor
 <div class="stat-card clickable-stat" onclick="openStatBreakdown('pending')"><div class="stat-top"><span class="stat-label">Pending Balance</span><span class="stat-icon">!</span></div><div class="stat-value" id="statPending">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
 <div class="stat-card clickable-stat" onclick="openStatBreakdown('profit')"><div class="stat-top"><span class="stat-label">Profit</span><span class="stat-icon">↗</span></div><div class="stat-value" id="statProfit">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
 </div>
-<div class="card cal-card" style="margin-bottom:20px"><div class="card-header"><div><h3>Sales Calendar</h3><p>Click a date to see that day's sales, orders and profit.</p></div><div class="cal-nav"><button class="btn btn-secondary btn-small" id="calPrev" type="button">‹</button><strong id="calTitle"></strong><button class="btn btn-secondary btn-small" id="calNext" type="button">›</button></div></div><div class="cal-layout"><div class="cal-grid" id="calGrid"></div><div class="cal-day" id="calDay"></div></div></div>
+<div class="card cal-card collapsible collapsed" style="margin-bottom:20px"><div class="card-header"><div><h3>Sales Calendar</h3><p>Click a date to see that day's sales, orders and profit.</p></div><div class="cal-nav"><button class="btn btn-secondary btn-small" id="calPrev" type="button">‹</button><strong id="calTitle"></strong><button class="btn btn-secondary btn-small" id="calNext" type="button">›</button></div><button class="toggle-btn" type="button" aria-expanded="false"><span class="toggle-label">Show</span><span class="chev">▾</span></button></div><div class="collapse-body"><div class="cal-layout"><div class="cal-grid" id="calGrid"></div><div class="cal-day" id="calDay"></div></div></div></div>
 <div class="dashboard-layout">
-<div class="card"><div class="card-header"><div><h3>Recent Orders</h3><p>Your latest transactions</p></div></div><div id="recentOrders"></div></div>
-<div class="card"><div class="card-header"><div><h3>Inventory Overview</h3><p>Current stock levels</p></div></div><div id="inventoryOverview"></div></div>
-<div class="card"><div class="card-header"><div><h3>Top 20 Best Seller Products</h3><p>Ranked by units sold</p></div></div><div id="bestSeller"></div></div>
+<div class="card collapsible collapsed"><div class="card-header"><div><h3>Recent Orders</h3><p>Your latest transactions</p></div><button class="toggle-btn" type="button" aria-expanded="false"><span class="toggle-label">Show</span><span class="chev">▾</span></button></div><div class="collapse-body"><div id="recentOrders"></div></div></div>
+<div class="card collapsible collapsed"><div class="card-header"><div><h3>Inventory Overview</h3><p>Current stock levels</p></div><button class="toggle-btn" type="button" aria-expanded="false"><span class="toggle-label">Show</span><span class="chev">▾</span></button></div><div class="collapse-body"><div id="inventoryOverview"></div></div></div>
+<div class="card collapsible collapsed"><div class="card-header"><div><h3>Top 20 Best Seller Products</h3><p>Ranked by units sold</p></div><button class="toggle-btn" type="button" aria-expanded="false"><span class="toggle-label">Show</span><span class="chev">▾</span></button></div><div class="collapse-body"><div id="bestSeller"></div></div></div>
 </div>
 </section>
 
 <section id="inventory" class="section">
-<div class="card"><div class="card-header"><div><h3>Add New Product</h3><p>Add products to your Raya Store inventory.</p></div></div>
+<button type="button" id="toggleAddProduct" class="add-cta" aria-expanded="false" aria-controls="addProductCard"><span class="plus">+</span><span class="cta-text">Add Product</span></button>
+<div class="card reveal-card" id="addProductCard" hidden><div class="card-header"><div><h3>Add New Product</h3><p>Add products to your Raya Store inventory.</p></div></div>
 <form id="productForm"><div class="form-grid">
 <div class="field"><label>Item Name</label><input id="itemName" type="text" placeholder="e.g. Classic T-Shirt" required></div>
 <div class="field"><label>Selling Price (₱)</label><input id="itemPrice" type="number" min="0" step="0.01" placeholder="0.00" required></div>
@@ -281,7 +322,8 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)!impor
 </section>
 
 <section id="orders" class="section">
-<div class="card"><div class="card-header"><div><h3>Record New Order</h3><p>Add multiple or different items to one customer order.</p></div></div>
+<button type="button" id="toggleAddOrder" class="add-cta" aria-expanded="false" aria-controls="addOrderCard"><span class="plus">+</span><span class="cta-text">Add New Order</span></button>
+<div class="card reveal-card" id="addOrderCard" hidden><div class="card-header"><div><h3>Record New Order</h3><p>Add multiple or different items to one customer order.</p></div></div>
 <form id="orderForm">
 <div class="form-grid">
   <div class="field"><label>Customer</label><div style="display:flex;gap:8px"><select id="customerSelect" style="flex:1" required><option value="">Select customer</option></select><button class="btn btn-secondary" type="button" id="addCustomerBtn">+ New</button><button class="btn btn-danger" type="button" id="removeCustomerBtn">Remove</button></div></div>
@@ -294,7 +336,7 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue)!impor
 </div>
 <div id="orderSummary" class="card" style="margin-top:14px;padding:14px;background:var(--g50);box-shadow:none;text-align:right;font-size:14px;color:var(--blue)">0 items · 0 total quantity · ₱0.00</div><div class="form-actions"><button type="reset" class="btn btn-secondary">Clear</button><button type="submit" class="btn btn-primary">+ Record Order</button></div>
 </form></div>
-<div class="card"><div class="card-header"><div><h3>Order History</h3><p>Use multiple filters at the same time.</p></div></div><div class="history-filter-grid"><div class="customer-filter"><label class="muted">Name</label><select id="historyCustomerFilter"><option value="">All names</option></select></div><div class="customer-filter"><label class="muted">Product</label><select id="historyProductFilter"><option value="">All products</option></select></div><div class="customer-filter"><label class="muted">Payment</label><select id="historyPaymentFilter"><option value="">All payment</option><option value="Paid">Paid</option><option value="Unpaid">Unpaid</option></select></div><div class="customer-filter"><label class="muted">Delivery</label><select id="historyDeliveryFilter"><option value="">All delivery</option><option value="Delivered">Delivered</option><option value="Not Delivered">Not delivered</option></select></div><div class="customer-filter"><label class="muted">Date</label><input id="historyDateFilter" type="date"></div><button class="btn btn-secondary btn-small" type="button" id="clearHistoryFilters">Clear filters</button></div><div id="historyUnpaidSummary"></div><div class="table-wrap"><table class="compact-order-table"><thead><tr><th>Customer</th><th>Items</th><th>Qty.</th><th>Total</th><th>Date / Time</th><th>Payment</th><th>Delivery</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+<div class="card"><div class="card-header"><div><h3>Order History</h3><p>Use multiple filters at the same time.</p></div></div><div class="history-filter-grid"><div class="customer-filter"><label class="muted">Name</label><select id="historyCustomerFilter"><option value="">All names</option></select></div><div class="customer-filter"><label class="muted">Product</label><select id="historyProductFilter"><option value="">All products</option></select></div><div class="customer-filter"><label class="muted">Payment</label><div class="seg" data-for="historyPaymentFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Paid">Paid</button><button type="button" class="seg-btn" data-val="Unpaid">Unpaid</button></div></div><select id="historyPaymentFilter" hidden><option value=""></option><option value="Paid"></option><option value="Unpaid"></option></select><div class="customer-filter"><label class="muted">Delivery</label><div class="seg" data-for="historyDeliveryFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Delivered">Delivered</button><button type="button" class="seg-btn" data-val="Not Delivered">Not delivered</button></div></div><select id="historyDeliveryFilter" hidden><option value=""></option><option value="Delivered"></option><option value="Not Delivered"></option></select><div class="customer-filter date-filter"><label class="muted">Date</label><div class="seg" id="historyDateMode"><button type="button" class="seg-btn active" data-mode="day">Day</button><button type="button" class="seg-btn" data-mode="month">Month</button></div><input id="historyDateFilter" type="date"></div><button class="btn btn-secondary btn-small" type="button" id="clearHistoryFilters">Clear filters</button></div><div id="historyUnpaidSummary"></div><div class="table-wrap"><table class="compact-order-table"><thead><tr><th>Customer</th><th>Items</th><th>Qty.</th><th>Total</th><th>Date / Time</th><th>Payment</th><th>Delivery</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
 </section>
 </div></main></div>
 
@@ -443,7 +485,7 @@ function renderOrders(){
     if(customerFilter&&String(o.customer_id||'')!==String(customerFilter))return false;
     if(paymentFilter&&o.payment_status!==paymentFilter)return false;
     if(deliveryFilter&&((deliveryFilter==='Delivered')!==deliveredState(o)))return false;
-    if(dateFilter&&new Date(o.created_at).toISOString().slice(0,10)!==dateFilter)return false;
+    if(dateFilter){const d=new Date(o.created_at),k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');if(($('historyDateFilter').type==='month'?k.slice(0,7):k)!==dateFilter)return false;}
     if(productFilter){const its=orderItemsData.filter(x=>String(x.order_id)===String(o.id));if(!its.some(x=>String(x.product_id)===String(productFilter)))return false;}
     return true;
   });
@@ -547,6 +589,36 @@ $("signOutBtn").onclick=async()=>{await db.auth.signOut();showAuth("signin","Sig
 db.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){showAuth("newpassword","Enter your new password.");return}if(session?.user)showApp(session.user);else showAuth("signin")});
 (async()=>{const {data,error}=await db.auth.getSession();if(error)showAuth("signin",error.message);else if(data.session)showApp(data.session.user);else showAuth("signin")})();
 }
+
+/* ===== UI update: collapsibles, add buttons, filter toggles ===== */
+(function(){
+ document.addEventListener('click',function(e){
+  const h=e.target.closest('.collapsible > .card-header');
+  if(!h||e.target.closest('.cal-nav'))return;
+  const c=h.parentElement,open=c.classList.toggle('collapsed')===false;
+  const b=h.querySelector('.toggle-btn');if(b){b.setAttribute('aria-expanded',open);b.querySelector('.toggle-label').textContent=open?'Hide':'Show';}
+ });
+ function wireCta(btnId,cardId,openText,closeText){
+  const b=document.getElementById(btnId),c=document.getElementById(cardId);if(!b||!c)return;
+  b.addEventListener('click',function(){
+   const open=c.hidden;c.hidden=!open;b.classList.toggle('open',open);b.setAttribute('aria-expanded',open);
+   b.querySelector('.plus').textContent=open?'×':'+';b.querySelector('.cta-text').textContent=open?closeText:openText;
+   if(open)c.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+ }
+ wireCta('toggleAddProduct','addProductCard','Add Product','Close');
+ wireCta('toggleAddOrder','addOrderCard','Add New Order','Close');
+ /* segmented filters drive the hidden selects the existing code reads */
+ function syncSeg(seg){const sel=document.getElementById(seg.dataset.for);if(!sel)return;seg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.val===sel.value));}
+ document.querySelectorAll('.seg[data-for]').forEach(seg=>{
+  seg.addEventListener('click',function(e){const b=e.target.closest('.seg-btn');if(!b)return;const sel=document.getElementById(seg.dataset.for);sel.value=b.dataset.val;syncSeg(seg);sel.dispatchEvent(new Event('change'));});
+ });
+ /* day / month date filter */
+ const dateInput=document.getElementById('historyDateFilter'),modeSeg=document.getElementById('historyDateMode');
+ function setMode(m){dateInput.value='';dateInput.type=m;modeSeg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));dateInput.dispatchEvent(new Event('change'));}
+ modeSeg?.addEventListener('click',function(e){const b=e.target.closest('.seg-btn');if(b)setMode(b.dataset.mode);});
+ document.getElementById('clearHistoryFilters')?.addEventListener('click',function(){document.querySelectorAll('.seg[data-for]').forEach(syncSeg);if(dateInput.type!=='date'){dateInput.type='date';modeSeg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode==='day'));}});
+})();
 </script>
 <div id="financialBreakdownModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3 id="financialBreakdownTitle">Financial breakdown</h3><p class="muted" id="financialBreakdownSub">Paid orders only.</p></div><button class="close" onclick="closeFinancialBreakdown()">×</button></div><div id="financialBreakdownBody"></div></div></div>
 </body>
