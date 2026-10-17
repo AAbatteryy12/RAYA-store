@@ -280,6 +280,18 @@ h1,h2,h3,.brand h1,.topbar h2,.card-header h3,.nav-title,.stat-label,.add-cta,.a
  .history-filter-grid .btn{width:100%}
 }
 </style>
+<style id="ui-update-3">
+.qty-panel{padding:12px 14px}.qty-panel .stock-box{margin-top:10px}
+.img-wrap{position:relative;overflow:hidden;line-height:0}
+.img-wrap.is-out .product-image,.img-wrap.is-out .placeholder-image{filter:blur(4px) grayscale(.4);transform:scale(1.06)}
+.out-mark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.45);pointer-events:none}
+.out-mark span{transform:rotate(-24deg);font-family:"Fredoka",sans-serif;font-weight:700;font-size:20px;line-height:1.1;letter-spacing:1px;color:rgba(220,53,69,.95);border:3px solid rgba(220,53,69,.95);border-radius:10px;padding:5px 10px;background:rgba(255,255,255,.7);white-space:nowrap}
+.product-price{font-size:22px!important;font-weight:800!important;margin-bottom:8px}
+@media(max-width:600px){.product-price{font-size:20px!important}.out-mark span{font-size:15px;padding:3px 7px}}
+.rs-actions{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.rs-actions .btn{width:100%;justify-content:center;text-align:center;text-decoration:none;display:inline-flex;align-items:center;padding:12px}
+.rs-hint{font-size:11px;color:var(--g600);line-height:1.4}
+</style>
 </head>
 <body>
 <div id="authScreen" class="auth">
@@ -396,8 +408,7 @@ h1,h2,h3,.brand h1,.topbar h2,.card-header h3,.nav-title,.stat-label,.add-cta,.a
 </div>
 <div class="form-actions"><button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div></form>
 <div class="qty-panel"><div class="qty-current">Current stock: <strong id="currentStockLabel">0</strong></div>
-<label class="qty-label" for="adjustQty">Quantity to add / subtract</label>
-<div class="qty-row"><button type="button" class="qty-step" id="qtyMinus" aria-label="Decrease">−</button><input id="adjustQty" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" value="1" placeholder="Enter quantity"><button type="button" class="qty-step" id="qtyPlus" aria-label="Increase">+</button></div>
+<input id="adjustQty" type="hidden" value="1">
 <div class="stock-box"><button class="btn btn-primary" type="button" onclick="adjustSelectedStock(1)">+ Add Stock</button><button class="btn btn-secondary" type="button" onclick="adjustSelectedStock(-1)">− Use/Subtract Stock</button></div></div>
 <div class="history"><h3 style="color:var(--blue);font-size:14px;margin-bottom:8px">Stock History</h3><div id="stockHistory"></div></div>
 <div class="form-actions"><button type="button" class="btn btn-danger" onclick="deleteSelectedProduct()">Delete Product</button></div>
@@ -446,7 +457,7 @@ function renderProducts(){
   const shown=products.filter(p=>!q||String(p.name).toLowerCase().includes(q)).sort((a,b)=>(Number(a.stock)>0?0:1)-(Number(b.stock)>0?0:1));
   $("inventoryCount").textContent=q?`${shown.length} of ${products.length} products`:`${products.length} ${products.length===1?"product":"products"}`;
   if(!shown.length){$("productsGrid").innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">▣</div><p>No matching products.</p></div>';return}
-  $("productsGrid").innerHTML=shown.map(p=>{const c=p.stock===0?"out":p.stock<=5?"low":"";const im=p.image_url?`<img class="product-image" src="${esc(p.image_url)}" alt="${esc(p.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="placeholder-image" style="display:none">▣</div>`:'<div class="placeholder-image">▣</div>';return `<div class="product-card" onclick="openProductModal('${p.id}')">${im}<div class="product-info"><div class="product-name">${esc(p.name)}</div><div class="product-price">${money(p.price)}</div><div class="stock ${c}">${p.stock===0?"Out of stock":p.stock+" in stock"}</div></div><div class="product-actions"><button class="btn btn-secondary btn-small" style="width:100%" onclick="event.stopPropagation();openProductModal('${p.id}')">Edit / Stock</button></div></div>`}).join("");
+  $("productsGrid").innerHTML=shown.map(p=>{const c=(Number(p.stock)||0)<=0?"out":p.stock<=5?"low":"";const im=p.image_url?`<img class="product-image" src="${esc(p.image_url)}" alt="${esc(p.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="placeholder-image" style="display:none">▣</div>`:'<div class="placeholder-image">▣</div>';const out=(Number(p.stock)||0)<=0;return `<div class="product-card" onclick="openProductModal('${p.id}')"><div class="img-wrap${out?' is-out':''}">${im}${out?'<div class="out-mark"><span>OUT OF STOCK</span></div>':''}</div><div class="product-info"><div class="product-name">${esc(p.name)}</div><div class="product-price">${money(p.price)}</div><div class="stock ${c}">${(Number(p.stock)||0)<=0?"Out of stock":p.stock+" in stock"}</div></div><div class="product-actions"><button class="btn btn-secondary btn-small" style="width:100%" onclick="event.stopPropagation();openProductModal('${p.id}')">Edit / Stock</button></div></div>`}).join("");
 }
 function renderCustomers(){
   const cur=$("customerSelect").value;$("customerSelect").innerHTML='<option value="">Select customer</option>'+customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");if(customers.some(c=>c.id===cur))$("customerSelect").value=cur;
@@ -483,7 +494,7 @@ window.inventorySearchTerm="";
 $('inventorySearch')?.addEventListener('input',e=>{window.inventorySearchTerm=e.target.value;renderProducts();});
 $('exportInventoryBtn')?.addEventListener('click',exportInventoryExcel);
 ['historyCustomerFilter','historyProductFilter','historyPaymentFilter','historyDeliveryFilter','historyDateFilter'].forEach(id=>$(id)?.addEventListener(id==='historyDateFilter'?'change':'change',renderOrders)); $('clearHistoryFilters')?.addEventListener('click',()=>{['historyCustomerFilter','historyProductFilter','historyPaymentFilter','historyDeliveryFilter'].forEach(id=>$(id).value='');$('historyDateFilter').value='';renderOrders();});
-function exportInventoryExcel(){const rows=products.map(p=>({Name:p.name,Price:Number(p.price)||0,Stock:Number(p.stock)||0}));if(!window.XLSX)return notify('Excel export library is not loaded. Check your internet connection.');const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Inventory');XLSX.writeFile(wb,'Raya_Store_Inventory.xlsx');}
+function exportInventoryExcel(){const rows=products.map(p=>({Name:p.name,Price:Number(p.price)||0,Stock:Number(p.stock)||0}));if(!window.XLSX)return notify('Excel export library is not loaded. Check your internet connection.');const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Inventory');saveFile(new Blob([XLSX.write(wb,{type:'array',bookType:'xlsx'})],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'Raya_Store_Inventory.xlsx');}
 
 $("itemImageFile").onchange=e=>readImage(e.target,data=>{selectedImageData=data;$("imagePreview").src=data;$("imagePreview").style.display="block"});
 $("itemImageUrl").oninput=e=>{selectedImageData=e.target.value.trim();$("imagePreview").src=selectedImageData;$("imagePreview").style.display=selectedImageData?"block":"none"};
@@ -586,7 +597,7 @@ async function exportPricesPdf(){const J=window.jspdf?.jsPDF;if(!J)return notify
     x.textAlign='center';x.fillStyle='#252b33';x.font='bold 22px Arial';let n=String(p.name);while(x.measureText(n).width>cw-20&&n.length>3)n=n.slice(0,-2);if(n!==p.name)n=n.trimEnd()+'…';x.fillText(n,cx+cw/2,cy+ih+30);
     x.fillStyle='#c2185b';x.font='bold 30px Arial';x.fillText(money(p.price),cx+cw/2,cy+ih+70);});
    if(pg>0)pdf.addPage();pdf.addImage(c.toDataURL('image/jpeg',.85),'JPEG',0,0,210,297);}
-  pdf.save('Raya_Store_Price_List.pdf');
+  await saveFile(pdf.output('blob'),'Raya_Store_Price_List.pdf');
  }catch(e){notify('PDF export failed: '+e.message)}finally{btn.disabled=false;btn.textContent='Export PDF';}}
 $('exportPdfBtn')?.addEventListener('click',exportPricesPdf);
 const safeFile=t=>String(t||'product').replace(/[\\/:*?"<>|]+/g,'').replace(/\s+/g,' ').trim().slice(0,60)||'product';
@@ -604,7 +615,7 @@ async function exportImagesZip(){if(!window.JSZip)return notify('ZIP library not
    x.fillStyle='#c2185b';x.font='bold 56px Arial';x.fillText(money(p.price),W/2,IH+130);
    const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.9));
    zip.file(String(i+1).padStart(pad,'0')+' - '+(out?'OUT OF STOCK - ':'')+safeFile(p.name)+'.jpg',blob);}
-  const out=await zip.generateAsync({type:'blob'});const a=document.createElement('a');a.href=URL.createObjectURL(out);a.download='Raya_Store_Product_Images.zip';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  const out=await zip.generateAsync({type:'blob'});await saveFile(out,'Raya_Store_Product_Images.zip');
  }catch(e){notify('ZIP export failed: '+e.message)}finally{btn.disabled=false;btn.textContent='Export Images (ZIP)';}}
 $('exportZipBtn')?.addEventListener('click',exportImagesZip);
 
@@ -679,16 +690,40 @@ db.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){show
  };
  document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
 
- /* quantity textbox */
- var q=document.getElementById('adjustQty');
- if(q){
-  q.addEventListener('input',function(){var v=q.value.replace(/\D+/g,'');if(v!==q.value)q.value=v;});
-  q.addEventListener('focus',function(){q.select();});
-  q.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();}});
-  var step=function(d){var n=parseInt(q.value,10);if(isNaN(n))n=0;q.value=Math.max(1,n+d);};
-  document.getElementById('qtyMinus').addEventListener('click',function(){step(-1);});
-  document.getElementById('qtyPlus').addEventListener('click',function(){step(1);});
- }
+})();
+
+/* ===== file saving that works in desktop browsers and Android WebView apps ===== */
+(function(){
+ var isAndroid=/Android/i.test(navigator.userAgent);
+ var host=document.createElement('div');host.className='raya-prompt';host.id='rayaSave';
+ host.innerHTML='<div class="raya-prompt-card ok"><div class="rp-icon">⬇</div><h3 class="rp-title">Export ready</h3><p class="rp-msg" id="rsName"></p><div class="rs-actions"><button type="button" class="btn btn-primary" id="rsShare" style="display:none">Share / Save</button><a class="btn btn-primary rs-link" id="rsLink">Download</a><button type="button" class="btn btn-secondary" id="rsClose">Close</button></div><p class="rs-hint">If nothing happens, allow downloads or storage for this app in your phone settings.</p></div>';
+ document.body.appendChild(host);
+ var cur=null;
+ function close(){host.classList.remove('show');if(cur&&cur.url&&cur.url.indexOf('blob:')===0)setTimeout(function(){URL.revokeObjectURL(cur.url)},60000);}
+ host.querySelector('#rsClose').onclick=close;
+ host.addEventListener('click',function(e){if(e.target===host)close();});
+ host.querySelector('#rsLink').addEventListener('click',function(){setTimeout(close,400);});
+ host.querySelector('#rsShare').onclick=async function(){
+  try{await navigator.share({files:[cur.file],title:cur.name});close();}
+  catch(e){if(e&&e.name==='AbortError')return;host.querySelector('#rsShare').style.display='none';}
+ };
+ function toDataUrl(blob){return new Promise(function(res){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=function(){res(null)};r.readAsDataURL(blob);});}
+ window.saveFile=async function(blob,name){
+  var type=blob.type||'application/octet-stream',file=null,canShare=false;
+  try{file=new File([blob],name,{type:type});canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));}catch(e){}
+  var url=null;
+  if(isAndroid){url=await toDataUrl(blob);}
+  if(!url)url=URL.createObjectURL(blob);
+  if(!isAndroid&&!canShare){ /* normal desktop browser: direct download */
+   var a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},5000);
+   if(window.rayaPrompt)window.rayaPrompt(name+' saved to your downloads.');return true;
+  }
+  cur={name:name,file:file,url:url};
+  host.querySelector('#rsName').textContent=name;
+  var l=host.querySelector('#rsLink');l.href=url;l.setAttribute('download',name);
+  host.querySelector('#rsShare').style.display=canShare?'inline-flex':'none';
+  host.classList.add('show');return true;
+ };
 })();
 </script>
 <div id="financialBreakdownModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3 id="financialBreakdownTitle">Financial breakdown</h3><p class="muted" id="financialBreakdownSub">Paid orders only.</p></div><button class="close" onclick="closeFinancialBreakdown()">×</button></div><div id="financialBreakdownBody"></div></div></div>
