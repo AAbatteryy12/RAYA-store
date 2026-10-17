@@ -244,6 +244,42 @@ h1,h2,h3,.brand h1,.topbar h2,.card-header h3,.nav-title,.stat-label,.add-cta,.a
 .seg-btn.active{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(214,51,108,.3)}
 .date-filter .seg{height:34px;margin-bottom:6px}
 </style>
+<style id="ui-update-2">
+/* fixed square add buttons, top right */
+.add-cta{position:fixed!important;top:150px;right:16px;z-index:150;width:68px!important;max-width:none!important;height:68px;margin:0!important;padding:6px!important;border-radius:16px!important;flex-direction:column;gap:2px!important;font-size:11px!important;line-height:1.1;text-align:center}
+.add-cta .plus{width:26px;height:26px;font-size:20px}
+.add-cta .cta-text{display:block;font-size:11px;font-weight:600}
+@media(max-width:800px){.add-cta{top:72px;right:12px;width:64px!important;height:64px}}
+/* themed prompt */
+.raya-prompt{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(42,34,39,.45);backdrop-filter:blur(3px)}
+.raya-prompt.show{display:flex}
+.raya-prompt-card{width:100%;max-width:340px;background:#fff;border-radius:24px;padding:26px 22px 20px;text-align:center;box-shadow:0 20px 50px rgba(214,51,108,.3);animation:rpPop .22s ease-out}
+@keyframes rpPop{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+.rp-icon{width:64px;height:64px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#fff;font-family:"Fredoka",sans-serif}
+.raya-prompt-card.ok .rp-icon{background:linear-gradient(135deg,#d6336c,#f06595);box-shadow:0 8px 18px rgba(214,51,108,.35)}
+.raya-prompt-card.err .rp-icon{background:#f59f00;box-shadow:0 8px 18px rgba(245,159,0,.35)}
+.rp-title{font-family:"Fredoka",sans-serif!important;font-size:22px;font-weight:600;color:var(--blue);margin-bottom:6px}
+.raya-prompt-card.err .rp-title{color:#d9480f}
+.rp-msg{font-size:14px;color:var(--g600);line-height:1.45;margin-bottom:16px;word-break:break-word}
+.rp-ok{min-width:120px}
+/* quantity panel */
+.qty-panel{margin-top:14px;padding:14px;background:var(--g50);border-radius:16px}
+.qty-current{font-size:13px;color:var(--g600);margin-bottom:8px}.qty-current strong{color:var(--blue);font-size:16px}
+.qty-label{display:block;font-size:12px;font-weight:700;color:var(--g600);margin-bottom:6px}
+.qty-row{display:flex;gap:8px;margin-bottom:12px}
+.qty-row input{flex:1;min-width:0;height:46px;text-align:center;font-size:20px;font-weight:700;color:var(--g800);background:#fff;-webkit-user-select:text;user-select:text;pointer-events:auto}
+.qty-step{flex:0 0 46px;height:46px;border:0;border-radius:12px;background:var(--blue);color:#fff;font-size:24px;font-weight:700}
+.qty-panel .stock-box{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0}
+/* order history filters fit phone */
+@media(max-width:700px){
+ .history-filter-grid{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+ .history-filter-grid .customer-filter{min-width:0;width:100%}
+ .history-filter-grid .seg{width:100%;gap:3px;padding:3px}
+ .history-filter-grid .seg-btn{min-width:0;padding:0 4px;font-size:12px;overflow:hidden;text-overflow:ellipsis}
+ .history-filter-grid input,.history-filter-grid select:not([hidden]){width:100%}
+ .history-filter-grid .btn{width:100%}
+}
+</style>
 </head>
 <body>
 <div id="authScreen" class="auth">
@@ -336,7 +372,7 @@ h1,h2,h3,.brand h1,.topbar h2,.card-header h3,.nav-title,.stat-label,.add-cta,.a
 </div>
 <div id="orderSummary" class="card" style="margin-top:14px;padding:14px;background:var(--g50);box-shadow:none;text-align:right;font-size:14px;color:var(--blue)">0 items · 0 total quantity · ₱0.00</div><div class="form-actions"><button type="reset" class="btn btn-secondary">Clear</button><button type="submit" class="btn btn-primary">+ Record Order</button></div>
 </form></div>
-<div class="card"><div class="card-header"><div><h3>Order History</h3><p>Use multiple filters at the same time.</p></div></div><div class="history-filter-grid"><div class="customer-filter"><label class="muted">Name</label><select id="historyCustomerFilter"><option value="">All names</option></select></div><div class="customer-filter"><label class="muted">Product</label><select id="historyProductFilter"><option value="">All products</option></select></div><div class="customer-filter"><label class="muted">Payment</label><div class="seg" data-for="historyPaymentFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Paid">Paid</button><button type="button" class="seg-btn" data-val="Unpaid">Unpaid</button></div></div><select id="historyPaymentFilter" hidden><option value=""></option><option value="Paid"></option><option value="Unpaid"></option></select><div class="customer-filter"><label class="muted">Delivery</label><div class="seg" data-for="historyDeliveryFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Delivered">Delivered</button><button type="button" class="seg-btn" data-val="Not Delivered">Not delivered</button></div></div><select id="historyDeliveryFilter" hidden><option value=""></option><option value="Delivered"></option><option value="Not Delivered"></option></select><div class="customer-filter date-filter"><label class="muted">Date</label><div class="seg" id="historyDateMode"><button type="button" class="seg-btn active" data-mode="day">Day</button><button type="button" class="seg-btn" data-mode="month">Month</button></div><input id="historyDateFilter" type="date"></div><button class="btn btn-secondary btn-small" type="button" id="clearHistoryFilters">Clear filters</button></div><div id="historyUnpaidSummary"></div><div class="table-wrap"><table class="compact-order-table"><thead><tr><th>Customer</th><th>Items</th><th>Qty.</th><th>Total</th><th>Date / Time</th><th>Payment</th><th>Delivery</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+<div class="card"><div class="card-header"><div><h3>Order History</h3><p>Use multiple filters at the same time.</p></div></div><div class="history-filter-grid"><div class="customer-filter"><label class="muted">Name</label><select id="historyCustomerFilter"><option value="">All names</option></select></div><div class="customer-filter"><label class="muted">Product</label><select id="historyProductFilter"><option value="">All products</option></select></div><div class="customer-filter"><label class="muted">Payment</label><div class="seg" data-for="historyPaymentFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Paid">Paid</button><button type="button" class="seg-btn" data-val="Unpaid">Unpaid</button></div></div><select id="historyPaymentFilter" hidden><option value=""></option><option value="Paid"></option><option value="Unpaid"></option></select><div class="customer-filter"><label class="muted">Delivery</label><div class="seg" data-for="historyDeliveryFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Delivered">Delivered</button><button type="button" class="seg-btn" data-val="Not Delivered">Not delivered</button></div></div><select id="historyDeliveryFilter" hidden><option value=""></option><option value="Delivered"></option><option value="Not Delivered"></option></select><div class="customer-filter date-filter"><label class="muted">Date</label><div class="seg" id="historyDateMode"><button type="button" class="seg-btn active" data-mode="day">Date</button><button type="button" class="seg-btn" data-mode="month">Month</button></div><input id="historyDateFilter" type="date"></div><button class="btn btn-secondary btn-small" type="button" id="clearHistoryFilters">Clear filters</button></div><div id="historyUnpaidSummary"></div><div class="table-wrap"><table class="compact-order-table"><thead><tr><th>Customer</th><th>Items</th><th>Qty.</th><th>Total</th><th>Date / Time</th><th>Payment</th><th>Delivery</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
 </section>
 </div></main></div>
 
@@ -359,8 +395,10 @@ h1,h2,h3,.brand h1,.topbar h2,.card-header h3,.nav-title,.stat-label,.add-cta,.a
 <div class="field full"><label>Product Image</label><div class="image-options"><input class="file-input" id="editImageFile" type="file" accept="image/*"><input id="editImageUrl" type="url" placeholder="Or paste image URL"></div><img id="editImagePreview" class="image-preview" alt="Preview"></div>
 </div>
 <div class="form-actions"><button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div></form>
-<div class="stock-box"><button class="btn btn-primary" type="button" onclick="adjustSelectedStock(1)">+ Add Stock</button><button class="btn btn-secondary" type="button" onclick="adjustSelectedStock(-1)">− Use/Subtract Stock</button></div>
-<div class="field" style="margin-top:10px"><label>Quantity</label><input id="adjustQty" type="number" min="1" step="1" value="1"></div>
+<div class="qty-panel"><div class="qty-current">Current stock: <strong id="currentStockLabel">0</strong></div>
+<label class="qty-label" for="adjustQty">Quantity to add / subtract</label>
+<div class="qty-row"><button type="button" class="qty-step" id="qtyMinus" aria-label="Decrease">−</button><input id="adjustQty" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" value="1" placeholder="Enter quantity"><button type="button" class="qty-step" id="qtyPlus" aria-label="Increase">+</button></div>
+<div class="stock-box"><button class="btn btn-primary" type="button" onclick="adjustSelectedStock(1)">+ Add Stock</button><button class="btn btn-secondary" type="button" onclick="adjustSelectedStock(-1)">− Use/Subtract Stock</button></div></div>
 <div class="history"><h3 style="color:var(--blue);font-size:14px;margin-bottom:8px">Stock History</h3><div id="stockHistory"></div></div>
 <div class="form-actions"><button type="button" class="btn btn-danger" onclick="deleteSelectedProduct()">Delete Product</button></div>
 </div></div>
@@ -376,7 +414,7 @@ const $=id=>document.getElementById(id);
 const money=v=>new Intl.NumberFormat("en-PH",{style:"currency",currency:"PHP"}).format(Number(v)||0);
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const date=v=>new Intl.DateTimeFormat("en-PH",{dateStyle:"medium",timeStyle:"short"}).format(new Date(v));
-function notify(msg){alert(msg);}
+function notify(msg){window.rayaPrompt(msg);}
 function showAuth(mode="signin",message=""){
   $("authScreen").classList.remove("hidden");$("app").style.display="none";
   ["signInForm","signUpForm","resetForm","newPasswordForm"].forEach(x=>$(x).style.display="none");
@@ -453,12 +491,12 @@ $("productForm").onsubmit=async e=>{e.preventDefault();const name=$("itemName").
 $("productForm").onreset=()=>setTimeout(()=>{$("imagePreview").style.display="none";selectedImageData=""},0);
 function readImage(input,cb){const f=input.files[0];if(!f)return;if(!f.type.startsWith("image/")){input.value="";return notify("Please select an image.")}const r=new FileReader();r.onload=e=>cb(e.target.result);r.readAsDataURL(f)}
 async function uploadImage(data){const blob=await (await fetch(data)).blob();const ext=(blob.type.split("/")[1]||"jpg").replace("jpeg","jpg");const path=`${crypto.randomUUID()}.${ext}`;const {error}=await db.storage.from("product-images").upload(path,blob,{contentType:blob.type,upsert:false});if(error)throw error;return db.storage.from("product-images").getPublicUrl(path).data.publicUrl}
-async function openProductModal(id){selectedProduct=products.find(p=>p.id===id);if(!selectedProduct)return;$("modalTitle").textContent=`Edit: ${selectedProduct.name}`;$("editName").value=selectedProduct.name;$("editPrice").value=selectedProduct.price;$("editPrincipal").value=Number(selectedProduct.principal_price||0);$("editImageUrl").value=selectedProduct.image_url||"";editImageData=selectedProduct.image_url||"";$("editImagePreview").src=editImageData;$("editImagePreview").style.display=editImageData?"block":"none";$("adjustQty").value=1;$("productModal").classList.add("show");await renderHistory()}
+async function openProductModal(id){selectedProduct=products.find(p=>p.id===id);if(!selectedProduct)return;$("modalTitle").textContent=`Edit: ${selectedProduct.name}`;$("editName").value=selectedProduct.name;$("editPrice").value=selectedProduct.price;$("editPrincipal").value=Number(selectedProduct.principal_price||0);$("editImageUrl").value=selectedProduct.image_url||"";editImageData=selectedProduct.image_url||"";$("editImagePreview").src=editImageData;$("editImagePreview").style.display=editImageData?"block":"none";$("adjustQty").value=1;if($("currentStockLabel"))$("currentStockLabel").textContent=Number(selectedProduct.stock)||0;$("productModal").classList.add("show");await renderHistory()}
 function closeProductModal(){$("productModal").classList.remove("show");selectedProduct=null}
 $("editImageFile").onchange=e=>readImage(e.target,data=>{editImageData=data;$("editImagePreview").src=data;$("editImagePreview").style.display="block"});
 $("editImageUrl").oninput=e=>{editImageData=e.target.value.trim();$("editImagePreview").src=editImageData;$("editImagePreview").style.display=editImageData?"block":"none"};
 $("editProductForm").onsubmit=async e=>{e.preventDefault();if(!selectedProduct)return;try{let image=editImageData;if(image.startsWith("data:"))image=await uploadImage(image);const snap=await snapshotOrderPrices();const {error}=await db.from("products").update({name:$("editName").value.trim(),price:Number($("editPrice").value),principal_price:Number($("editPrincipal").value),image_url:image||null}).eq("id",selectedProduct.id);if(error)throw error;const fixed=await restoreOrderPrices(snap);await loadData();if(fixed)notify(`Product updated. ${fixed} old order record(s) were kept at their original prices.`);selectedProduct=products.find(p=>p.id===selectedProduct.id);await renderHistory();notify("Product updated.")}catch(err){notify(err.message)}};
-async function adjustSelectedStock(direction){if(!selectedProduct)return;const qty=Number($("adjustQty").value);if(!Number.isInteger(qty)||qty<1)return notify("Enter a valid whole-number quantity.");try{const {error}=await db.rpc("adjust_stock",{p_product_id:selectedProduct.id,p_change:direction*qty,p_reason:direction>0?"Stock added":"Stock used"});if(error)throw error;await loadData();selectedProduct=products.find(p=>p.id===selectedProduct.id);await renderHistory();$("modalTitle").textContent=`Edit: ${selectedProduct.name}`;notify(direction>0?"Stock added successfully.":"Stock subtracted successfully.")}catch(err){notify(err.message)}}
+async function adjustSelectedStock(direction){if(!selectedProduct)return;const qty=Number($("adjustQty").value);if(!Number.isInteger(qty)||qty<1)return notify("Enter a valid whole-number quantity.");try{const {error}=await db.rpc("adjust_stock",{p_product_id:selectedProduct.id,p_change:direction*qty,p_reason:direction>0?"Stock added":"Stock used"});if(error)throw error;await loadData();selectedProduct=products.find(p=>p.id===selectedProduct.id);await renderHistory();$("modalTitle").textContent=`Edit: ${selectedProduct.name}`;if($("currentStockLabel"))$("currentStockLabel").textContent=Number(selectedProduct.stock)||0;notify(direction>0?"Stock added successfully.":"Stock subtracted successfully.")}catch(err){notify(err.message)}}
 async function renderHistory(){if(!selectedProduct)return;const {data,error}=await db.from("inventory_transactions").select("*").eq("product_id",selectedProduct.id).order("created_at",{ascending:false}).limit(30);if(error){$("stockHistory").innerHTML='<p class="muted">Unable to load history.</p>';return}if(!data?.length){$("stockHistory").innerHTML='<p class="muted">No stock movements yet.</p>';return}$("stockHistory").innerHTML=data.map(x=>`<div class="history-row"><span>${esc(x.reason)}</span><span class="${x.change_quantity>=0?"positive":"negative"}">${x.change_quantity>=0?"+":""}${x.change_quantity} → ${x.balance_after}</span><span>${date(x.created_at)}</span></div>`).join("")}
 async function deleteSelectedProduct(){if(!selectedProduct)return;if(!confirm(`Delete "${selectedProduct.name}"? This will also remove its stock history.`))return;const {error}=await db.from("products").delete().eq("id",selectedProduct.id);if(error)return notify(error.message);closeProductModal();await loadData()}
 async function editOrder(id){
@@ -618,6 +656,39 @@ db.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){show
  function setMode(m){dateInput.value='';dateInput.type=m;modeSeg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));dateInput.dispatchEvent(new Event('change'));}
  modeSeg?.addEventListener('click',function(e){const b=e.target.closest('.seg-btn');if(b)setMode(b.dataset.mode);});
  document.getElementById('clearHistoryFilters')?.addEventListener('click',function(){document.querySelectorAll('.seg[data-for]').forEach(syncSeg);if(dateInput.type!=='date'){dateInput.type='date';modeSeg.querySelectorAll('.seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode==='day'));}});
+})();
+
+/* ===== themed prompt + quantity box + fixed add buttons ===== */
+(function(){
+ var host=document.createElement('div');host.id='rayaPrompt';host.className='raya-prompt';
+ host.innerHTML='<div class="raya-prompt-card" role="alertdialog" aria-live="assertive"><div class="rp-icon"></div><h3 class="rp-title"></h3><p class="rp-msg"></p><button type="button" class="btn btn-primary rp-ok">OK</button></div>';
+ document.body.appendChild(host);
+ var timer=null,card=host.querySelector('.raya-prompt-card'),icon=host.querySelector('.rp-icon'),title=host.querySelector('.rp-title'),msgEl=host.querySelector('.rp-msg');
+ function hide(){host.classList.remove('show');clearTimeout(timer);}
+ host.querySelector('.rp-ok').addEventListener('click',hide);
+ host.addEventListener('click',function(e){if(e.target===host)hide();});
+ window.rayaPrompt=function(msg){
+  msg=String(msg==null?'':msg);var m=msg.toLowerCase();
+  var ok=/success|updated|added|saved|recorded|created|deleted|removed|selected|subtracted/.test(m)&&!/fail|error|not enough|invalid|please|unable|not loaded/.test(m);
+  if(ok&&host.classList.contains('show')&&card.classList.contains('ok')){msgEl.innerHTML+='<br>'+msg.replace(/</g,'&lt;');clearTimeout(timer);timer=setTimeout(hide,3500);return;}
+  var t='Oops!';
+  if(ok){t=/deleted|removed/.test(m)?'Deleted!':/updated|subtracted/.test(m)?'Updated!':/added|recorded|created|saved/.test(m)?'Saved!':'Done!';}
+  card.classList.toggle('ok',ok);card.classList.toggle('err',!ok);
+  icon.textContent=ok?'✓':'!';title.textContent=t;msgEl.textContent=msg;
+  host.classList.add('show');clearTimeout(timer);if(ok)timer=setTimeout(hide,2600);
+ };
+ document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
+
+ /* quantity textbox */
+ var q=document.getElementById('adjustQty');
+ if(q){
+  q.addEventListener('input',function(){var v=q.value.replace(/\D+/g,'');if(v!==q.value)q.value=v;});
+  q.addEventListener('focus',function(){q.select();});
+  q.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();}});
+  var step=function(d){var n=parseInt(q.value,10);if(isNaN(n))n=0;q.value=Math.max(1,n+d);};
+  document.getElementById('qtyMinus').addEventListener('click',function(){step(-1);});
+  document.getElementById('qtyPlus').addEventListener('click',function(){step(1);});
+ }
 })();
 </script>
 <div id="financialBreakdownModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3 id="financialBreakdownTitle">Financial breakdown</h3><p class="muted" id="financialBreakdownSub">Paid orders only.</p></div><button class="close" onclick="closeFinancialBreakdown()">×</button></div><div id="financialBreakdownBody"></div></div></div>
