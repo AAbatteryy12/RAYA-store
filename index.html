@@ -349,6 +349,46 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 .sc-actions{display:flex;gap:10px}.sc-actions .btn{flex:1}
 @media(max-width:600px){.scan-card{padding:14px}.scan-open{padding:12px 20px}}
 </style>
+<style id="ui-update-6">
+/* out of stock: no blur, keep watermark */
+.img-wrap.is-out .product-image,.img-wrap.is-out .placeholder-image{filter:none!important;transform:none!important}
+.out-mark{background:rgba(255,255,255,.15)!important}
+/* compact sorting / filter toggles */
+.history-filter-grid{gap:6px 8px!important;margin-bottom:10px!important;align-items:end}
+.history-filter-grid .customer-filter{gap:2px!important}
+.history-filter-grid label{font-size:11px!important;margin:0!important;line-height:1.2}
+.history-filter-grid select:not([hidden]),.history-filter-grid input{height:34px!important;font-size:13px}
+.seg{height:30px!important;padding:2px!important;gap:2px!important;border-radius:9px!important}
+.seg-btn{font-size:11px!important;padding:0 8px!important;border-radius:7px!important}
+.date-filter .seg{height:28px!important;margin-bottom:3px!important}
+@media(max-width:700px){
+ .history-filter-grid{grid-template-columns:1fr 1fr!important}
+ .history-filter-grid .date-filter,.history-filter-grid>.btn{grid-column:1/-1}
+ .history-filter-grid .seg-btn{padding:0 5px!important;flex:1 1 auto!important;overflow:visible!important;text-overflow:clip!important;font-size:10.5px!important}
+ .history-filter-grid .date-filter{display:grid!important;grid-template-columns:1fr 1.3fr;column-gap:8px;align-items:center}
+ .history-filter-grid .date-filter>label{grid-column:1/-1}
+ .history-filter-grid .date-filter .seg{margin-bottom:0!important;height:34px!important}
+}
+/* category combobox */
+.combo{position:relative}.combo input{width:100%}
+.combo-list{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:80;background:#fff;border:1px solid var(--g200);border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,.16);max-height:220px;overflow-y:auto}
+.combo-list.show{display:block}
+.combo-row{display:flex;align-items:center;border-bottom:1px solid var(--g100)}.combo-row:last-child{border-bottom:0}
+.combo-pick{flex:1;text-align:left;border:0;background:none;padding:11px 12px;font-size:14px;color:var(--g800)}
+.combo-del{border:0;background:none;color:#d9480f;font-size:20px;font-weight:700;padding:6px 14px;line-height:1}
+.combo-add .combo-pick{color:var(--blue);font-weight:700}
+.combo-empty{padding:10px 12px;font-size:13px;color:var(--g600)}
+/* dashboard quick actions (icons only) */
+.quick-actions{display:flex;gap:12px;margin-bottom:18px}
+.qa-btn{width:68px;height:68px;border:0;border-radius:18px;background:linear-gradient(135deg,#d6336c,#f06595);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(214,51,108,.3);transition:transform .15s}
+.qa-btn:active{transform:scale(.94)}.qa-btn svg{width:32px;height:32px}
+#scanOrderItemBtn,#addOrderItemBtn{white-space:nowrap}
+/* scan-to-order quantity */
+.sc-note{font-size:12px;color:#ffd6e5;margin:0 0 8px}
+.sc-qty{background:#fff;color:var(--g800);border-radius:16px;padding:12px 14px;margin-bottom:12px}
+.sc-qty label{display:block;font-size:12px;font-weight:700;color:var(--g600);margin-bottom:6px}
+.sc-qty .qty-row{margin:0}
+</style>
 </head>
 <body>
 <div id="authScreen" class="auth">
@@ -397,7 +437,7 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 </header>
 <div class="content">
 <section id="dashboard" class="section active">
-<div class="card scan-card"><div><h3>Scan Barcode</h3><p>Scan a product to see its details instantly.</p></div><button type="button" class="btn btn-primary scan-open" id="openScanner"><span class="scan-ico">▣</span> Scan</button></div>
+<div class="quick-actions"><button type="button" class="qa-btn" id="openScanner" aria-label="Scan barcode" title="Scan barcode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8M11 8v8M15 8v8M18 8v8"/></svg></button><button type="button" class="qa-btn" id="quickAddOrder" aria-label="Add new order" title="Add new order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M12 10v6M9 13h6"/></svg></button><button type="button" class="qa-btn" id="quickAddItem" aria-label="Add new item" title="Add new item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 11l-7-4-7 4v6l7 4 7-4z"/><path d="M3 11l7 4 7-4M10 15v6"/><path d="M19 3v6M16 6h6"/></svg></button></div>
 <div class="stats">
 <div class="stat-card"><div class="stat-top"><span class="stat-label">Total Products</span><span class="stat-icon">▣</span></div><div class="stat-value" id="statProducts">0</div></div>
 <div class="stat-card clickable-stat" onclick="openStatBreakdown('stock')"><div class="stat-top"><span class="stat-label">Stock Value</span><span class="stat-icon">₱</span></div><div class="stat-value" id="statStockValue">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
@@ -422,7 +462,7 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 <div class="field"><label>Selling Price (₱)</label><input id="itemPrice" type="number" min="0" step="0.01" placeholder="0.00" required></div>
 <div class="field"><label>Principal / Cost (₱)</label><input id="itemPrincipal" type="number" min="0" step="0.01" placeholder="0.00" required></div>
 <div class="field"><label>Stock Quantity</label><input id="itemStock" type="number" min="0" step="1" placeholder="0" required></div>
-<div class="field"><label>Category</label><select id="itemCategory"><option value="">Select category</option><option value="Chocolate">Chocolate</option><option value="Detergent">Detergent</option><option value="Toothpaste">Toothpaste</option><option value="Soap">Soap</option><option value="Snack">Snack</option><option value="Milk">Milk</option><option value="Canned Goods">Canned Goods</option><option value="Other">Other</option></select></div>
+<div class="field"><label>Category</label><div class="combo"><input id="itemCategory" type="text" autocomplete="off" placeholder="Type or choose category"><div class="combo-list"></div></div></div>
 <div class="field"><label>Barcode Number</label><div class="bc-row"><input id="itemBarcode" type="text" inputmode="numeric" autocomplete="off" placeholder="Scan or type barcode"><button type="button" class="btn btn-secondary scan-fill" data-target="itemBarcode">Scan</button></div></div>
 <div class="field"><label>Product Image</label><div class="image-options"><input class="file-input" id="itemImageFile" type="file" accept="image/*"><input id="itemImageUrl" type="url" placeholder="Or paste image URL"></div><img id="imagePreview" class="image-preview" alt="Preview"></div>
 </div><div class="form-actions"><button type="reset" class="btn btn-secondary">Clear</button><button type="submit" class="btn btn-primary">+ Add Product</button></div></form></div>
@@ -435,16 +475,17 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 <form id="orderForm">
 <div class="form-grid">
   <div class="field"><label>Customer</label><div style="display:flex;gap:8px"><select id="customerSelect" style="flex:1" required><option value="">Select customer</option></select><button class="btn btn-secondary" type="button" id="addCustomerBtn">+ New</button><button class="btn btn-danger" type="button" id="removeCustomerBtn">Remove</button></div></div>
-  <div class="field"><label>Payment Status</label><select id="paymentStatus" required><option value="Unpaid" selected>Unpaid</option><option value="Paid">Paid</option></select></div>
+  <div class="field"><label>Order Date</label><input id="orderDate" type="date" required></div>
+   <div class="field"><label>Payment Status</label><select id="paymentStatus" required><option value="Unpaid" selected>Unpaid</option><option value="Paid">Paid</option></select></div>
   <div class="field"><label>Delivery Status</label><select id="deliveryStatus"><option value="Not Delivered" selected>Not Delivered</option><option value="Delivered">Delivered</option></select></div>
 </div>
 <div class="card" style="margin-top:18px;padding:16px;background:var(--g50);box-shadow:none">
-  <div class="card-header" style="margin-bottom:12px"><div><h3 style="font-size:14px">Order Items</h3><p>Choose products and quantities. Quantity defaults to 1.</p></div><button class="btn btn-secondary btn-small" type="button" id="addOrderItemBtn">+ Add Item</button></div>
+  <div class="card-header" style="margin-bottom:12px"><div><h3 style="font-size:14px">Order Items</h3><p>Choose products and quantities. Quantity defaults to 1.</p></div><div style="display:flex;gap:6px"><button class="btn btn-primary btn-small" type="button" id="scanOrderItemBtn">Scan</button><button class="btn btn-secondary btn-small" type="button" id="addOrderItemBtn">+ Add Item</button></div></div>
   <div id="orderItems"></div>
 </div>
 <div id="orderSummary" class="card" style="margin-top:14px;padding:14px;background:var(--g50);box-shadow:none;text-align:right;font-size:14px;color:var(--blue)">0 items · 0 total quantity · ₱0.00</div><div class="form-actions"><button type="reset" class="btn btn-secondary">Clear</button><button type="submit" class="btn btn-primary">+ Record Order</button></div>
 </form></div>
-<div class="card"><div class="card-header"><div><h3>Order History</h3><p>Use multiple filters at the same time.</p></div></div><div class="history-filter-grid"><div class="customer-filter"><label class="muted">Name</label><select id="historyCustomerFilter"><option value="">All names</option></select></div><div class="customer-filter"><label class="muted">Product</label><select id="historyProductFilter"><option value="">All products</option></select></div><div class="customer-filter"><label class="muted">Payment</label><div class="seg" data-for="historyPaymentFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Paid">Paid</button><button type="button" class="seg-btn" data-val="Unpaid">Unpaid</button></div></div><select id="historyPaymentFilter" hidden><option value=""></option><option value="Paid"></option><option value="Unpaid"></option></select><div class="customer-filter"><label class="muted">Delivery</label><div class="seg" data-for="historyDeliveryFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Delivered">Delivered</button><button type="button" class="seg-btn" data-val="Not Delivered">Not delivered</button></div></div><select id="historyDeliveryFilter" hidden><option value=""></option><option value="Delivered"></option><option value="Not Delivered"></option></select><div class="customer-filter date-filter"><label class="muted">Date</label><div class="seg" id="historyDateMode"><button type="button" class="seg-btn active" data-mode="day">Date</button><button type="button" class="seg-btn" data-mode="month">Month</button></div><input id="historyDateFilter" type="date"></div><button class="btn btn-secondary btn-small" type="button" id="clearHistoryFilters">Clear filters</button></div><div id="historyUnpaidSummary"></div><div class="table-wrap"><table class="compact-order-table"><thead><tr><th>Customer</th><th>Items</th><th>Qty.</th><th>Total</th><th>Date / Time</th><th>Payment</th><th>Delivery</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+<div class="card"><div class="card-header"><div><h3>Order History</h3><p>Use multiple filters at the same time.</p></div></div><div class="history-filter-grid"><div class="customer-filter"><label class="muted">Name</label><select id="historyCustomerFilter"><option value="">All names</option></select></div><div class="customer-filter"><label class="muted">Product</label><select id="historyProductFilter"><option value="">All products</option></select></div><div class="customer-filter"><label class="muted">Payment</label><div class="seg" data-for="historyPaymentFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Paid">Paid</button><button type="button" class="seg-btn" data-val="Unpaid">Unpaid</button></div></div><select id="historyPaymentFilter" hidden><option value=""></option><option value="Paid"></option><option value="Unpaid"></option></select><div class="customer-filter"><label class="muted">Delivery</label><div class="seg" data-for="historyDeliveryFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Delivered">Delivered</button><button type="button" class="seg-btn" data-val="Not Delivered">Pending</button></div></div><select id="historyDeliveryFilter" hidden><option value=""></option><option value="Delivered"></option><option value="Not Delivered"></option></select><div class="customer-filter date-filter"><label class="muted">Date</label><div class="seg" id="historyDateMode"><button type="button" class="seg-btn active" data-mode="day">Date</button><button type="button" class="seg-btn" data-mode="month">Month</button></div><input id="historyDateFilter" type="date"></div><button class="btn btn-secondary btn-small" type="button" id="clearHistoryFilters">Clear filters</button></div><div id="historyUnpaidSummary"></div><div class="table-wrap"><table class="compact-order-table"><thead><tr><th>Customer</th><th>Items</th><th>Qty.</th><th>Total</th><th>Date / Time</th><th>Payment</th><th>Delivery</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
 </section>
 </div></main></div>
 
@@ -464,7 +505,7 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 <div class="field"><label>Item Name</label><input id="editName" required></div>
 <div class="field"><label>Selling Price (₱)</label><input id="editPrice" type="number" min="0" step="0.01" required></div>
 <div class="field"><label>Principal / Cost (₱)</label><input id="editPrincipal" type="number" min="0" step="0.01" required></div>
-<div class="field"><label>Category</label><select id="editCategory"><option value="">Select category</option><option value="Chocolate">Chocolate</option><option value="Detergent">Detergent</option><option value="Toothpaste">Toothpaste</option><option value="Soap">Soap</option><option value="Snack">Snack</option><option value="Milk">Milk</option><option value="Canned Goods">Canned Goods</option><option value="Other">Other</option></select></div>
+<div class="field"><label>Category</label><div class="combo"><input id="editCategory" type="text" autocomplete="off" placeholder="Type or choose category"><div class="combo-list"></div></div></div>
 <div class="field"><label>Barcode Number</label><div class="bc-row"><input id="editBarcode" type="text" inputmode="numeric" autocomplete="off" placeholder="Scan or type barcode"><button type="button" class="btn btn-secondary scan-fill" data-target="editBarcode">Scan</button></div></div>
 <div class="field full"><label>Product Image</label><div class="image-options"><input class="file-input" id="editImageFile" type="file" accept="image/*"><input id="editImageUrl" type="url" placeholder="Or paste image URL"></div><img id="editImagePreview" class="image-preview" alt="Preview"></div>
 </div>
@@ -565,7 +606,7 @@ async function exportInventoryExcel(){try{if(!window.JSZip)return notify('Export
 
 $("itemImageFile").onchange=e=>readImage(e.target,data=>{selectedImageData=data;$("imagePreview").src=data;$("imagePreview").style.display="block"});
 $("itemImageUrl").oninput=e=>{selectedImageData=e.target.value.trim();$("imagePreview").src=selectedImageData;$("imagePreview").style.display=selectedImageData?"block":"none"};
-$("productForm").onsubmit=async e=>{e.preventDefault();const name=$("itemName").value.trim(),price=Number($("itemPrice").value),stock=Number($("itemStock").value),principal=Number($("itemPrincipal").value);if(!name||price<0||principal<0||stock<0||!Number.isInteger(stock))return notify("Please enter valid product information.");let image=selectedImageData;const bcA=$("itemBarcode").value.trim();if(bcA&&dupBarcode(bcA,null))return notify("Another product already uses barcode "+bcA+".");try{if(image.startsWith("data:"))image=await uploadImage(image);const {error}=await db.from("products").insert({name,price,principal_price:principal,stock,image_url:image||null,category:$("itemCategory").value||null,barcode:$("itemBarcode").value.trim()||null});if(error)throw error;$("productForm").reset();selectedImageData="";$("imagePreview").style.display="none";await loadData();notify("Product added successfully.")}catch(err){notify(dbMsg(err))}};
+$("productForm").onsubmit=async e=>{e.preventDefault();const name=$("itemName").value.trim(),price=Number($("itemPrice").value),stock=Number($("itemStock").value),principal=Number($("itemPrincipal").value);if(!name||price<0||principal<0||stock<0||!Number.isInteger(stock))return notify("Please enter valid product information.");let image=selectedImageData;const bcA=$("itemBarcode").value.trim();if(bcA&&dupBarcode(bcA,null))return notify("Another product already uses barcode "+bcA+".");try{if(image.startsWith("data:"))image=await uploadImage(image);const {error}=await db.from("products").insert({name,price,principal_price:principal,stock,image_url:image||null,category:canonCat($("itemCategory").value),barcode:$("itemBarcode").value.trim()||null});if(error)throw error;$("productForm").reset();selectedImageData="";$("imagePreview").style.display="none";await loadData();notify("Product added successfully.")}catch(err){notify(dbMsg(err))}};
 $("productForm").onreset=()=>setTimeout(()=>{$("imagePreview").style.display="none";selectedImageData=""},0);
 function readImage(input,cb){const f=input.files[0];if(!f)return;if(!f.type.startsWith("image/")){input.value="";return notify("Please select an image.")}const r=new FileReader();r.onload=e=>cb(e.target.result);r.readAsDataURL(f)}
 async function uploadImage(data){const blob=await (await fetch(data)).blob();const ext=(blob.type.split("/")[1]||"jpg").replace("jpeg","jpg");const path=`${crypto.randomUUID()}.${ext}`;const {error}=await db.storage.from("product-images").upload(path,blob,{contentType:blob.type,upsert:false});if(error)throw error;return db.storage.from("product-images").getPublicUrl(path).data.publicUrl}
@@ -573,7 +614,7 @@ async function openProductModal(id){selectedProduct=products.find(p=>p.id===id);
 function closeProductModal(){$("productModal").classList.remove("show");selectedProduct=null}
 $("editImageFile").onchange=e=>readImage(e.target,data=>{editImageData=data;$("editImagePreview").src=data;$("editImagePreview").style.display="block"});
 $("editImageUrl").oninput=e=>{editImageData=e.target.value.trim();$("editImagePreview").src=editImageData;$("editImagePreview").style.display=editImageData?"block":"none"};
-$("editProductForm").onsubmit=async e=>{e.preventDefault();if(!selectedProduct)return;const bcE=$("editBarcode").value.trim();if(bcE&&dupBarcode(bcE,selectedProduct.id))return notify("Another product already uses barcode "+bcE+".");try{let image=editImageData;if(image.startsWith("data:"))image=await uploadImage(image);const snap=await snapshotOrderPrices();const {error}=await db.from("products").update({name:$("editName").value.trim(),price:Number($("editPrice").value),principal_price:Number($("editPrincipal").value),image_url:image||null,category:$("editCategory").value||null,barcode:$("editBarcode").value.trim()||null}).eq("id",selectedProduct.id);if(error)throw error;const fixed=await restoreOrderPrices(snap);await loadData();if(fixed)notify(`Product updated. ${fixed} old order record(s) were kept at their original prices.`);selectedProduct=products.find(p=>p.id===selectedProduct.id);await renderHistory();notify("Product updated.")}catch(err){notify(dbMsg(err))}};
+$("editProductForm").onsubmit=async e=>{e.preventDefault();if(!selectedProduct)return;const bcE=$("editBarcode").value.trim();if(bcE&&dupBarcode(bcE,selectedProduct.id))return notify("Another product already uses barcode "+bcE+".");try{let image=editImageData;if(image.startsWith("data:"))image=await uploadImage(image);const snap=await snapshotOrderPrices();const {error}=await db.from("products").update({name:$("editName").value.trim(),price:Number($("editPrice").value),principal_price:Number($("editPrincipal").value),image_url:image||null,category:canonCat($("editCategory").value),barcode:$("editBarcode").value.trim()||null}).eq("id",selectedProduct.id);if(error)throw error;const fixed=await restoreOrderPrices(snap);await loadData();if(fixed)notify(`Product updated. ${fixed} old order record(s) were kept at their original prices.`);selectedProduct=products.find(p=>p.id===selectedProduct.id);await renderHistory();notify("Product updated.")}catch(err){notify(dbMsg(err))}};
 async function adjustSelectedStock(direction){if(!selectedProduct)return;const qty=Number($("adjustQty").value);if(!Number.isInteger(qty)||qty<1)return notify("Enter a valid whole-number quantity.");try{const {error}=await db.rpc("adjust_stock",{p_product_id:selectedProduct.id,p_change:direction*qty,p_reason:direction>0?"Stock added":"Stock used"});if(error)throw error;await loadData();selectedProduct=products.find(p=>p.id===selectedProduct.id);await renderHistory();$("modalTitle").textContent=`Edit: ${selectedProduct.name}`;if($("currentStockLabel"))$("currentStockLabel").textContent=Number(selectedProduct.stock)||0;notify(direction>0?"Stock added successfully.":"Stock subtracted successfully.")}catch(err){notify(err.message)}}
 async function renderHistory(){if(!selectedProduct)return;const {data,error}=await db.from("inventory_transactions").select("*").eq("product_id",selectedProduct.id).order("created_at",{ascending:false}).limit(30);if(error){$("stockHistory").innerHTML='<p class="muted">Unable to load history.</p>';return}if(!data?.length){$("stockHistory").innerHTML='<p class="muted">No stock movements yet.</p>';return}$("stockHistory").innerHTML=data.map(x=>`<div class="history-row"><span>${esc(x.reason)}</span><span class="${x.change_quantity>=0?"positive":"negative"}">${x.change_quantity>=0?"+":""}${x.change_quantity} → ${x.balance_after}</span><span>${date(x.created_at)}</span></div>`).join("")}
 async function deleteSelectedProduct(){if(!selectedProduct)return;if(!confirm(`Delete "${selectedProduct.name}"? This will also remove its stock history.`))return;const {error}=await db.from("products").delete().eq("id",selectedProduct.id);if(error)return notify(error.message);closeProductModal();await loadData()}
@@ -594,7 +635,7 @@ function reorderOrder(id){return editOrder(id);}
 async function togglePayment(id){const o=orders.find(x=>x.id===id);if(!o)return;const {error}=await db.from("orders").update({payment_status:o.payment_status==="Paid"?"Unpaid":"Paid"}).eq("id",id);if(error)return notify(error.message);await loadData()}
 async function deleteOrder(id){if(!confirm("Delete this order? Stock will not be automatically restored."))return;const {error}=await db.from("orders").delete().eq("id",id);if(error)return notify(error.message);await loadData()}
 async function orderRows(){return [...document.querySelectorAll('#orderItems .order-line')].map(r=>({product_id:String(r.dataset.productId||''),quantity:Number(r.querySelector('.order-qty')?.value)}));}
-$("orderForm").onsubmit=async e=>{e.preventDefault();const customerId=$("customerSelect").value,status=$("paymentStatus").value,items=await orderRows();if(!customerId||!items.length)return notify("Select a customer and at least one item.");const seen=new Set();for(const x of items){if(!x.product_id||!Number.isInteger(x.quantity)||x.quantity<1)return notify("Please complete every item row.");if(seen.has(x.product_id))return notify("The same product appears more than once. Combine its quantity into one row.");seen.add(x.product_id);const p=products.find(y=>y.id===x.product_id);if(!p||x.quantity>p.stock)return notify(`${p?.name||"Item"}: not enough stock. Available: ${p?.stock??0}`);}try{const {data:rd,error}=await db.rpc("record_order_multi",{p_customer_id:customerId,p_items:items,p_payment_status:status});if(error)throw error;const delivery=$("deliveryStatus").value;$('orderForm').reset();await loadData();if(delivery==="Delivered"){const oid=typeof rd==="string"?rd:(rd?.id||rd?.order_id||(Array.isArray(rd)?(rd[0]?.id||rd[0]):null));const no=oid?orders.find(o=>String(o.id)===String(oid)):(orders[0]&&String(orders[0].customer_id)===String(customerId)?orders[0]:null);if(no&&!deliveredState(no))await toggleDelivery(no.id);}notify("Order recorded successfully.")}catch(err){notify(err.message)}};
+$("orderForm").onsubmit=async e=>{e.preventDefault();const od=$("orderDate").value||todayStr();const customerId=$("customerSelect").value,status=$("paymentStatus").value,items=await orderRows();if(!customerId||!items.length)return notify("Select a customer and at least one item.");const seen=new Set();for(const x of items){if(!x.product_id||!Number.isInteger(x.quantity)||x.quantity<1)return notify("Please complete every item row.");if(seen.has(x.product_id))return notify("The same product appears more than once. Combine its quantity into one row.");seen.add(x.product_id);const p=products.find(y=>y.id===x.product_id);if(!p||x.quantity>p.stock)return notify(`${p?.name||"Item"}: not enough stock. Available: ${p?.stock??0}`);}try{const {data:rd,error}=await db.rpc("record_order_multi",{p_customer_id:customerId,p_items:items,p_payment_status:status});if(error)throw error;const delivery=$("deliveryStatus").value;$('orderForm').reset();await loadData();let newOrder=null;{const oid=typeof rd==="string"?rd:(rd?.id||rd?.order_id||(Array.isArray(rd)?(rd[0]?.id||rd[0]):null));newOrder=oid?orders.find(o=>String(o.id)===String(oid)):(orders[0]&&String(orders[0].customer_id)===String(customerId)?orders[0]:null);}if(newOrder&&od!==todayStr()){const t=new Date(),[yy,mm,dd]=od.split("-").map(Number);const iso=new Date(yy,mm-1,dd,t.getHours(),t.getMinutes(),t.getSeconds()).toISOString();const r1=await db.from("orders").update({created_at:iso}).eq("id",newOrder.id);if(r1.error)throw r1.error;await db.from("order_items").update({created_at:iso}).eq("order_id",newOrder.id);await loadData();}if(delivery==="Delivered"){const no=newOrder?orders.find(o=>String(o.id)===String(newOrder.id)):null;if(no&&!deliveredState(no))await toggleDelivery(no.id);}notify("Order recorded successfully.")}catch(err){notify(err.message)}};
 function renderOrders(){
   const customerFilter=$('historyCustomerFilter')?.value||'', productFilter=$('historyProductFilter')?.value||'', paymentFilter=$('historyPaymentFilter')?.value||'', deliveryFilter=$('historyDeliveryFilter')?.value||'', dateFilter=$('historyDateFilter')?.value||'';
   let list=orders.filter(o=>{
@@ -926,20 +967,53 @@ $('inventoryCategoryFilter')?.addEventListener('change',e=>{window.inventoryCate
   result.querySelector('#scEdit').onclick=()=>{close();openProductModal(p.id);};
   result.querySelector('#scAgain').onclick=startCamera;
  }
- function showMissing(code){
+ function showMissing(code,noAdd){
   result.innerHTML='<div class="sc-card miss"><div class="sc-info"><div class="sc-name">Product not found</div><p class="muted">No product in your inventory uses barcode <strong>'+esc(code)+'</strong>.</p></div></div>'
-   +'<div class="sc-actions"><button type="button" class="btn btn-primary" id="scAdd">Add as new product</button><button type="button" class="btn btn-secondary" id="scAgain">Scan again</button></div>';
+   +'<div class="sc-actions">'+(noAdd?'':'<button type="button" class="btn btn-primary" id="scAdd">Add as new product</button>')+'<button type="button" class="btn btn-secondary" id="scAgain">Scan again</button></div>';
   status('Not found');
   result.querySelector('#scAgain').onclick=startCamera;
-  result.querySelector('#scAdd').onclick=()=>{close();document.querySelector('.nav-btn[data-section="inventory"]')?.click();const card=$('addProductCard');if(card&&card.hidden)$('toggleAddProduct')?.click();$('itemBarcode').value=code;setTimeout(()=>$('itemName')?.focus(),300);};
+  const addB=result.querySelector('#scAdd');if(addB)addB.onclick=()=>{close();document.querySelector('.nav-btn[data-section="inventory"]')?.click();const card=$('addProductCard');if(card&&card.hidden)$('toggleAddProduct')?.click();$('itemBarcode').value=code;setTimeout(()=>$('itemName')?.focus(),300);};
+ }
+ function cardHtml(p){const im=p.image_url?'<img src="'+esc(p.image_url)+'" alt="" onerror="this.style.display=\'none\'">':'<div class="sc-noimg">▣</div>';const st=Number(p.stock)||0;return '<div class="sc-card ok">'+im+'<div class="sc-info"><div class="sc-name">'+esc(p.name)+'</div><div class="sc-price">'+money(p.price)+'</div><div class="stock '+(st<=0?'out':st<=5?'low':'')+'">'+(st<=0?'Out of stock':st+' in stock')+'</div></div></div>';}
+ function addToOrder(p,qty){
+  const rows=[...document.querySelectorAll('#orderItems .order-line')];
+  let row=rows.find(r=>String(r.dataset.productId)===String(p.id));
+  if(row){const q=row.querySelector('.order-qty');q.value=(parseInt(q.value,10)||0)+qty;}
+  else{row=rows.find(r=>!r.dataset.productId);if(!row)addOrderItem(p.id,qty);else{setProductForRow(row,p.id);row.querySelector('.order-qty').value=qty;}}
+  refreshOrderRowStates();updateOrderSummary();
+ }
+ function showOrderQty(p){
+  const stock=Number(p.stock)||0;
+  if(stock<=0){result.innerHTML=cardHtml(p)+'<p class="sc-note">This product is out of stock and cannot be added.</p><div class="sc-actions"><button type="button" class="btn btn-primary" id="scAgain">Scan again</button></div>';status('Out of stock');result.querySelector('#scAgain').onclick=startCamera;return;}
+  const ex=[...document.querySelectorAll('#orderItems .order-line')].find(r=>String(r.dataset.productId)===String(p.id));
+  const have=ex?(parseInt(ex.querySelector('.order-qty').value,10)||0):0;
+  result.innerHTML=cardHtml(p)+(have?'<p class="sc-note">Already in this order: '+have+'. The quantity will be added to it.</p>':'')
+   +'<div class="sc-qty"><label for="scQty">Quantity</label><div class="qty-row"><button type="button" class="qty-step" id="scMinus" aria-label="Less">−</button><input id="scQty" type="text" inputmode="numeric" pattern="[0-9]*" value="1" autocomplete="off"><button type="button" class="qty-step" id="scPlus" aria-label="More">+</button></div></div>'
+   +'<div class="sc-actions"><button type="button" class="btn btn-primary" id="scAddQty">Add to order</button><button type="button" class="btn btn-secondary" id="scAgain">Cancel</button></div>';
+  status('How many?');
+  const q=result.querySelector('#scQty');q.addEventListener('input',()=>{const v=q.value.replace(/\D+/g,'');if(v!==q.value)q.value=v;});q.addEventListener('focus',()=>q.select());
+  result.querySelector('#scMinus').onclick=()=>{q.value=Math.max(1,(parseInt(q.value,10)||1)-1);};
+  result.querySelector('#scPlus').onclick=()=>{q.value=(parseInt(q.value,10)||0)+1;};
+  result.querySelector('#scAgain').onclick=startCamera;
+  result.querySelector('#scAddQty').onclick=()=>{
+   const qty=parseInt(q.value,10);
+   if(!qty||qty<1){status('Enter a quantity of 1 or more.');return;}
+   if(have+qty>stock){status('Only '+stock+' available'+(have?' (already '+have+' in this order)':'')+'.');return;}
+   addToOrder(p,qty);vib(120);
+   result.innerHTML='<div class="sc-card ok"><div class="sc-info"><div class="sc-name">Added to order</div><p>'+esc(p.name)+' × '+qty+'</p></div></div><div class="sc-actions"><button type="button" class="btn btn-primary" id="scNext">Scan next item</button><button type="button" class="btn btn-secondary" id="scDone">Done</button></div>';
+   status('Item added');
+   result.querySelector('#scNext').onclick=startCamera;result.querySelector('#scDone').onclick=close;
+  };
  }
  function onCode(raw){
   if(handled)return;const code=String(raw||'').trim();if(!code)return;handled=true;stopCamera();
   if(mode==='fill'){vib(150);if(target){target.value=code;target.dispatchEvent(new Event('input'));}close();return;}
   const p=products.find(x=>normBc(x.barcode)===normBc(code));
+  if(mode==='order'){if(p){vib(200);showOrderQty(p);}else{vib([220,110,220]);showMissing(code,true);}return;}
   if(p){vib(200);showFound(p,code);}else{vib([220,110,220]);showMissing(code);}
  }
- function open(m,targetId){mode=m;target=targetId?document.getElementById(targetId):null;ov.querySelector('#scManual').value='';ov.classList.add('show');startCamera();}
+ function open(m,targetId){mode=m;ov.querySelector('.sc-bar strong').textContent=m==='order'?'Scan item for order':'Scan Barcode';target=targetId?document.getElementById(targetId):null;ov.querySelector('#scManual').value='';ov.classList.add('show');startCamera();}
+ window.openRayaScanner=open;
  ov.querySelector('#scClose').onclick=close;
  ov.querySelector('#scFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(f){handled=false;decodeFile(f);}});
  const go=()=>{const v=ov.querySelector('#scManual').value;handled=false;onCode(v);};
@@ -948,6 +1022,70 @@ $('inventoryCategoryFilter')?.addEventListener('change',e=>{window.inventoryCate
  $('openScanner')?.addEventListener('click',()=>open('lookup'));
  document.addEventListener('click',e=>{const b=e.target.closest('.scan-fill');if(b){e.preventDefault();open('fill',b.dataset.target);}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ov.classList.contains('show'))close();});
+})();
+
+/* ===== v6: category combobox, order date, scan-to-order, quick actions ===== */
+const todayStr=()=>{const x=new Date();return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');};
+(function(){
+ const KEY='raya_categories',DEFAULTS=['Chocolate','Detergent','Toothpaste','Soap','Snack','Milk','Canned Goods'];
+ const loadCats=()=>{let a=null;try{a=JSON.parse(localStorage.getItem(KEY)||'null');}catch(e){}return Array.isArray(a)?a:DEFAULTS.slice();};
+ const saveCats=a=>{try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}};
+ const sameCat=(a,b)=>String(a).trim().toLowerCase()===String(b).trim().toLowerCase();
+ window.allCats=function(){const m=new Map();[...loadCats(),...products.map(p=>p.category).filter(Boolean)].forEach(c=>{const t=String(c).trim();if(t&&!m.has(t.toLowerCase()))m.set(t.toLowerCase(),t);});return [...m.values()].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));};
+ window.canonCat=function(v){v=String(v||'').trim();if(!v)return null;const ex=window.allCats().find(c=>sameCat(c,v));if(ex)return ex;const a=loadCats();a.push(v);saveCats(a);return v;};
+ /* themed confirm */
+ const cf=document.createElement('div');cf.className='raya-prompt';cf.style.zIndex=10001;
+ cf.innerHTML='<div class="raya-prompt-card err"><div class="rp-icon">?</div><h3 class="rp-title">Please confirm</h3><p class="rp-msg" id="rcMsg"></p><div class="rs-actions"><button type="button" class="btn btn-danger" id="rcOk">Remove</button><button type="button" class="btn btn-secondary" id="rcNo">Cancel</button></div></div>';
+ document.body.appendChild(cf);
+ window.rayaConfirm=(msg,okText)=>new Promise(res=>{cf.querySelector('#rcMsg').textContent=msg;cf.querySelector('#rcOk').textContent=okText||'OK';cf.classList.add('show');
+  const done=v=>{cf.classList.remove('show');res(v);};cf.querySelector('#rcOk').onclick=()=>done(true);cf.querySelector('#rcNo').onclick=()=>done(false);});
+ async function removeCat(name){
+  const used=products.filter(p=>p.category&&sameCat(p.category,name)).length;
+  const ok=await rayaConfirm('Remove category “'+name+'”?'+(used?' '+used+' product'+(used>1?'s':'')+' using it will be left without a category.':''),'Remove');
+  if(!ok)return false;
+  try{
+   if(used){const {error}=await db.from('products').update({category:null}).ilike('category',name);if(error)throw error;}
+   saveCats(loadCats().filter(c=>!sameCat(c,name)));await loadData();refreshFilter();
+   notify('Category “'+name+'” removed.');return true;
+  }catch(err){notify(dbMsg(err));return false;}
+ }
+ function refreshFilter(){const sel=$('inventoryCategoryFilter');if(!sel)return;const cur=window.inventoryCategory||'';const list=window.allCats();sel.innerHTML='<option value="">All categories</option>'+list.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('');if(list.includes(cur))sel.value=cur;else{sel.value='';window.inventoryCategory='';}}
+ const _rp=renderProducts;renderProducts=function(){refreshFilter();_rp();};
+ function makeCombo(id){
+  const input=$(id);if(!input)return;const list=input.parentElement.querySelector('.combo-list');
+  const hide=()=>list.classList.remove('show');
+  function render(){
+   const t=input.value.trim().toLowerCase(),all=window.allCats(),f=all.filter(c=>!t||c.toLowerCase().includes(t));
+   let h='';
+   if(t&&!all.some(c=>c.toLowerCase()===t))h+='<div class="combo-row combo-add"><button type="button" class="combo-pick" data-add="1">+ Add “'+esc(input.value.trim())+'”</button></div>';
+   h+=f.map(c=>'<div class="combo-row"><button type="button" class="combo-pick" data-name="'+esc(c)+'">'+esc(c)+'</button><button type="button" class="combo-del" data-del="'+esc(c)+'" aria-label="Remove '+esc(c)+'">×</button></div>').join('');
+   if(!h)h='<div class="combo-empty">No categories yet. Type a name to add one.</div>';
+   list.innerHTML=h;list.classList.add('show');
+  }
+  input.addEventListener('focus',render);input.addEventListener('input',render);
+  list.addEventListener('pointerdown',e=>e.preventDefault());
+  list.addEventListener('click',async e=>{
+   const pick=e.target.closest('.combo-pick'),del=e.target.closest('.combo-del');
+   if(del){const removed=await removeCat(del.dataset.del);if(removed&&sameCat(input.value,del.dataset.del))input.value='';render();return;}
+   if(pick){input.value=pick.dataset.add?canonCat(input.value):pick.dataset.name;hide();refreshFilter();}
+  });
+  document.addEventListener('click',e=>{if(!e.target.closest('#'+id)&&!list.contains(e.target))hide();});
+ }
+ makeCombo('itemCategory');makeCombo('editCategory');refreshFilter();
+})();
+
+/* order date default = today */
+(function(){
+ const d=$('orderDate');if(!d)return;d.value=todayStr();
+ $('orderForm').addEventListener('reset',()=>setTimeout(()=>{d.value=todayStr();},0));
+})();
+
+/* quick action buttons + scan for order */
+(function(){
+ const go=(sec,cardId,btnId)=>{document.querySelector('.nav-btn[data-section="'+sec+'"]')?.click();const c=$(cardId);if(c&&c.hidden)$(btnId)?.click();else c?.scrollIntoView({behavior:'smooth',block:'start'});};
+ $('quickAddOrder')?.addEventListener('click',()=>go('orders','addOrderCard','toggleAddOrder'));
+ $('quickAddItem')?.addEventListener('click',()=>go('inventory','addProductCard','toggleAddProduct'));
+ $('scanOrderItemBtn')?.addEventListener('click',()=>window.openRayaScanner&&window.openRayaScanner('order'));
 })();
 </script>
 <div id="financialBreakdownModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3 id="financialBreakdownTitle">Financial breakdown</h3><p class="muted" id="financialBreakdownSub">Paid orders only.</p></div><button class="close" onclick="closeFinancialBreakdown()">×</button></div><div id="financialBreakdownBody"></div></div></div>
