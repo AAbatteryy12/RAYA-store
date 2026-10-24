@@ -1195,8 +1195,15 @@ function shrinkImage(file,maxW,q){return new Promise((res,rej)=>{const fr=new Fi
 async function loadAds(){try{const r=await db.from('ads').select('*').order('sort_order').order('created_at');ads=r.error?[]:(r.data||[]);}catch(e){ads=[];}window.renderAds();adsLoaded=true;}
 $('settingsBtn')?.addEventListener('click',()=>$('settingsModal').classList.add('show'));
 function closeSettings(){$('settingsModal').classList.remove('show');}
-$('adFile')?.addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;if(!f.type.startsWith('image/'))return notify('Please select an image.');
- try{const url=await shrinkImage(f,1200,.8);const {error}=await db.from('ads').insert({image_url:url,sort_order:ads.length});if(error)throw error;await loadAds();notify('Ad picture added successfully.');}catch(err){notify(setupMsg(err));}});
+async function adUpload(file){
+ const dataUrl=await shrinkImage(file,1200,.8);
+ try{const blob=await (await fetch(dataUrl)).blob();const path='ads/'+crypto.randomUUID()+'.jpg';
+  const {error}=await db.storage.from('product-images').upload(path,blob,{contentType:'image/jpeg',upsert:false});
+  if(!error)return db.storage.from('product-images').getPublicUrl(path).data.publicUrl;}catch(e){}
+ return dataUrl;}
+document.addEventListener('change',async e=>{const inp=e.target;if(!inp||inp.id!=='adFile')return;const f=inp.files&&inp.files[0];inp.value='';if(!f)return;
+ if(!/^image\//.test(f.type||'')&&!/\.(jpe?g|png|gif|webp|heic|heif|bmp)$/i.test(f.name||''))return notify('Please select an image.');
+ try{notify('Uploading ad picture...');const url=await adUpload(f);const {error}=await db.from('ads').insert({image_url:url,sort_order:ads.length});if(error)throw error;await loadAds();notify('Ad picture added successfully.');}catch(err){notify(setupMsg(err));}});
 document.addEventListener('click',async e=>{const d=e.target.closest('.ad-del');if(!d)return;
  if(!await rayaConfirm('Delete this ad picture?','Delete'))return;
  try{const {error}=await db.from('ads').delete().eq('id',d.dataset.ad);if(error)throw error;await loadAds();notify('Ad picture deleted.');}catch(err){notify(setupMsg(err));}});
@@ -1286,7 +1293,7 @@ function toggleBd(i){const d=$('bdd'+i),c=$('bdc'+i);if(!d)return;d.hidden=!d.hi
 
 document.querySelector('.nav-btn[data-section="checkouts"]')?.addEventListener('click',()=>loadCheckouts());
 </script>
-<div id="settingsModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3>Settings</h3><p class="muted">Ads and buyers page</p></div><button class="close" type="button" onclick="closeSettings()">×</button></div><div class="set-sec"><h4>Ads pictures</h4><p class="muted">These pictures swipe left and right on your dashboard and on the buyers page.</p><div class="ad-list" id="adsAdmin"></div><label class="btn btn-primary" style="cursor:pointer">+ Add ad picture<input type="file" id="adFile" accept="image/*" hidden></label></div><div class="set-sec"><h4>Buyers page</h4><p class="muted">Share <strong>buyers.html</strong> with your buyers. Their checkouts are sent to <strong>razhel.travinio@deped.gov.ph</strong> and appear in the Checkouts menu.</p></div></div></div>
+<div id="settingsModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3>Settings</h3><p class="muted">Ads and buyers page</p></div><button class="close" type="button" onclick="closeSettings()">×</button></div><div class="set-sec"><h4>Ads pictures</h4><p class="muted">These pictures swipe left and right on your dashboard and on the buyers page.</p><div class="ad-list" id="adsAdmin"></div><label class="btn btn-primary" style="cursor:pointer;position:relative">+ Add ad picture<input type="file" id="adFile" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></label></div><div class="set-sec"><h4>Buyers page</h4><p class="muted">Share <strong>buyers.html</strong> with your buyers. Their checkouts are sent to <strong>razhel.travinio@deped.gov.ph</strong> and appear in the Checkouts menu.</p></div></div></div>
 <div id="financialBreakdownModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3 id="financialBreakdownTitle">Financial breakdown</h3><p class="muted" id="financialBreakdownSub">Paid orders only.</p></div><button class="close" onclick="closeFinancialBreakdown()">×</button></div><div id="financialBreakdownBody"></div></div></div>
 </body>
 </html>
