@@ -389,6 +389,81 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 .sc-qty label{display:block;font-size:12px;font-weight:700;color:var(--g600);margin-bottom:6px}
 .sc-qty .qty-row{margin:0}
 </style>
+<style id="ui-update-7">
+/* nav: scan (center) + checkouts badge */
+.nav-btn{position:relative}
+.nav-icon svg{width:20px;height:20px;display:block;margin:auto}
+.nav-badge{position:absolute;top:50%;right:12px;transform:translateY(-50%);min-width:18px;height:18px;border-radius:9px;background:#fff;color:var(--blue);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.nav-badge[hidden]{display:none}
+.nav-scan{width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:13px;border-radius:10px;margin-bottom:5px;display:flex;align-items:center;gap:11px;font:inherit;font-weight:600;cursor:pointer}
+.nav-scan:hover{background:rgba(255,255,255,.18)}
+.nav-scan .ns-ring{display:flex;width:22px;justify-content:center}.nav-scan svg{width:20px;height:20px}
+.sidebar .nav-scan{width:auto;flex:0 0 auto;margin:0;padding:10px 14px;white-space:nowrap}
+@media(max-width:800px){
+ .sidebar{overflow:visible!important}
+ .sidebar .nav-scan{flex:0 0 66px;width:66px;height:66px;margin-top:-30px;padding:0;border-radius:50%;background:#fff!important;color:var(--blue)!important;box-shadow:0 6px 16px rgba(0,0,0,.28),0 0 0 5px #e64980;justify-content:center}
+ .sidebar .nav-scan .nav-label{display:none}.sidebar .nav-scan .ns-ring{width:auto}.sidebar .nav-scan svg{width:32px;height:32px}
+ .nav-badge{top:1px;right:auto;left:calc(50% + 6px);transform:none}
+ .sidebar .nav-btn{font-size:10.5px!important;padding:6px 2px!important}
+}
+/* header settings button */
+.icon-btn{width:38px;height:38px;border:0;border-radius:10px;background:rgba(255,255,255,.25);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto;cursor:pointer}
+.icon-btn svg{width:21px;height:21px}
+/* quick actions + fixed add buttons use the new logos */
+.qa-btn{width:72px!important;height:72px!important}.qa-btn svg{width:44px;height:44px;stroke-width:1.9}
+.add-cta .plus{background:none!important;width:30px!important;height:30px!important;color:#fff!important;font-size:30px!important;font-weight:400!important;display:flex;align-items:center;justify-content:center}
+.add-cta .plus svg{width:30px;height:30px}
+.add-cta.open .plus{color:var(--blue)!important}
+/* ads */
+.ads{margin-bottom:18px}.ads[hidden]{display:none}
+.ads-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;border-radius:18px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ads-track::-webkit-scrollbar{display:none}
+.ad{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:16/7;background:var(--g100)}
+.ad img{width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none}
+.dots{display:flex;justify-content:center;gap:6px;margin-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#e8c5d5;border:0;padding:0;transition:all .2s}
+.dot.on{background:var(--blue);width:22px;border-radius:5px}
+.ad-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:10px 0 14px}
+.ad-item{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:var(--g100)}
+.ad-item img{width:100%;height:100%;object-fit:cover}
+.ad-del{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.95);color:#d9480f;font-size:18px;font-weight:700;line-height:1}
+.set-sec{margin-bottom:18px}.set-sec h4{font-family:"Fredoka",sans-serif;font-size:16px;font-weight:600;color:var(--blue);margin-bottom:4px}
+/* export menu */
+.exp-menu{position:relative}
+.exp-btn{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 14px}
+.exp-btn svg{width:18px;height:18px}
+.exp-pop{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:90;background:#fff;border:1px solid var(--g200);border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,.16);padding:6px;min-width:190px;flex-direction:column;gap:4px}
+.exp-pop.show{display:flex}
+.exp-pop .btn{width:100%;justify-content:flex-start;text-align:left;background:transparent;box-shadow:none}
+.exp-pop .btn:hover{background:var(--g100)}
+.inv-combo{flex:0 1 190px;min-width:150px}.inv-combo input{width:100%;height:42px;border:1px solid var(--g200);border-radius:10px;padding:0 12px;background:#fff}
+.hist-combo{width:100%;height:34px;border:1px solid var(--g200);border-radius:9px;padding:0 10px;background:#fff;font-size:13px}
+.history-filter-grid .combo{width:100%}
+/* breakdown details */
+.bd-click{cursor:pointer}.bd-chev{color:var(--blue);font-size:12px;margin-left:4px}
+.bd-detail{background:var(--g50);border-radius:12px;padding:8px 10px;margin:-2px 0 10px}
+.bd-detail[hidden]{display:none}
+.bd-order{padding:8px 0;border-bottom:1px dashed var(--g200)}.bd-order:last-child{border-bottom:0}
+.bd-oh{display:flex;justify-content:space-between;font-size:12px;color:var(--g600);margin-bottom:4px}.bd-oh strong{color:var(--blue);font-size:14px}
+.bd-item{display:flex;align-items:center;gap:8px;font-size:13px;padding:2px 0}
+.bd-th{width:30px;height:30px;border-radius:8px;overflow:hidden;background:var(--g100);flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.bd-th img{width:100%;height:100%;object-fit:cover}
+.bd-tags{display:flex;gap:6px;margin-top:5px}
+.tag{font-size:10.5px;font-weight:800;border-radius:999px;padding:2px 9px}.tag.paid{background:#d3f9d8;color:#2b8a3e}.tag.unpaid{background:#ffe3e3;color:#c92a2a}
+/* checkouts page */
+.co-seg{max-width:460px;margin:0 0 14px}
+.co-card{background:#fff;border:1px solid var(--g200);border-radius:16px;padding:14px;margin-bottom:12px}
+.co-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.co-status{font-size:11px;font-weight:800;border-radius:999px;padding:4px 11px;background:#fff3bf;color:#e67700;white-space:nowrap}
+.co-status.s-Confirmed{background:#d0ebff;color:#1971c2}.co-status.s-Delivered{background:#d3f9d8;color:#2b8a3e}.co-status.s-Cancelled{background:#ffe3e3;color:#c92a2a}
+.co-where{margin:8px 0 6px;font-size:13px;font-weight:700;color:var(--blue);word-break:break-word}
+.co-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--g100)}
+.co-th{width:46px;height:46px;border-radius:10px;overflow:hidden;background:var(--g100);flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.co-th img{width:100%;height:100%;object-fit:cover}
+.co-im{flex:1;min-width:0}.co-im b{display:block;font-size:13px}.co-im small{color:var(--g600)}
+.co-total{display:flex;justify-content:space-between;align-items:center;padding:10px 0 8px;font-weight:700}.co-total strong{font-size:18px;color:var(--blue)}
+.co-actions{display:flex;flex-wrap:wrap;gap:6px}
+</style>
 </head>
 <body>
 <div id="authScreen" class="auth">
@@ -428,16 +503,19 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
   <div class="nav-title">Menu</div>
   <button class="nav-btn active" data-section="dashboard"><span class="nav-icon">▦</span><span class="nav-label">Dashboard</span></button>
   <button class="nav-btn" data-section="inventory"><span class="nav-icon">▣</span><span class="nav-label">Inventory</span></button>
+  <button type="button" class="nav-scan" id="navScan" aria-label="Scan barcode"><span class="ns-ring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8.5V7a2 2 0 0 1 2-2h1.5M15.5 5H17a2 2 0 0 1 2 2v1.5M19 15.5V17a2 2 0 0 1-2 2h-1.5M8.5 19H7a2 2 0 0 1-2-2v-1.5"/><path stroke-width="1.5" d="M7.6 9.5v5M9.8 9.5v5M12 9.5v5M14.2 9.5v5M16.4 9.5v5"/></svg></span><span class="nav-label">Scan</span></button>
   <button class="nav-btn" data-section="orders"><span class="nav-icon">☷</span><span class="nav-label">Orders</span></button>
+  <button class="nav-btn" data-section="checkouts"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2.5 3H5l2.7 11.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/></svg></span><span class="nav-label">Checkouts</span><span class="nav-badge" id="coBadge" hidden>0</span></button>
 </aside>
 <main class="main">
 <header class="topbar">
   <div><h2 id="pageTitle">Dashboard</h2><p id="pageSubtitle">Overview of your store</p></div>
-  <div class="top-actions"><span class="user-email" id="userEmail"></span><div class="store-status"><span class="status-dot"></span>Synced to Supabase</div><button id="signOutBtn" class="btn btn-secondary btn-small">Sign Out</button></div>
+  <div class="top-actions"><span class="user-email" id="userEmail"></span><div class="store-status"><span class="status-dot"></span>Synced to Supabase</div><button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button><button id="signOutBtn" class="btn btn-secondary btn-small">Sign Out</button></div>
 </header>
 <div class="content">
 <section id="dashboard" class="section active">
-<div class="quick-actions"><button type="button" class="qa-btn" id="openScanner" aria-label="Scan barcode" title="Scan barcode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8M11 8v8M15 8v8M18 8v8"/></svg></button><button type="button" class="qa-btn" id="quickAddOrder" aria-label="Add new order" title="Add new order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M12 10v6M9 13h6"/></svg></button><button type="button" class="qa-btn" id="quickAddItem" aria-label="Add new item" title="Add new item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 11l-7-4-7 4v6l7 4 7-4z"/><path d="M3 11l7 4 7-4M10 15v6"/><path d="M19 3v6M16 6h6"/></svg></button></div>
+<div class="quick-actions"><button type="button" class="qa-btn" id="openScanner" aria-label="Scan barcode" title="Scan barcode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8.5V7a2 2 0 0 1 2-2h1.5M15.5 5H17a2 2 0 0 1 2 2v1.5M19 15.5V17a2 2 0 0 1-2 2h-1.5M8.5 19H7a2 2 0 0 1-2-2v-1.5"/><path stroke-width="1.5" d="M7.6 9.5v5M9.8 9.5v5M12 9.5v5M14.2 9.5v5M16.4 9.5v5"/></svg></button><button type="button" class="qa-btn" id="quickAddOrder" aria-label="Add new order" title="Add new order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5H7.5A1.5 1.5 0 0 0 6 6.5v12A1.5 1.5 0 0 0 7.5 20H12"/><path d="M15 5h1.5A1.5 1.5 0 0 1 18 6.5V12"/><rect x="9" y="3" width="6" height="3.4" rx="1.2"/><path d="M9 10h6M9 13.5h3.5"/><circle cx="17" cy="17" r="4"/><path d="M17 15v4M15 17h4"/></svg></button><button type="button" class="qa-btn" id="quickAddItem" aria-label="Add new item" title="Add new item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12v5.6l7.5 4.2 7.5-4.2V12"/><path d="M12 21.8v-6.4"/><path d="M4.5 12l7.5 3.4 7.5-3.4"/><path d="M4.5 12L2.8 9.6 12 5.8l9.2 3.8-1.7 2.4"/><path d="M19 1.8v4.4M16.8 4h4.4"/></svg></button></div>
+<div class="ads" id="adsWrap" hidden><div class="ads-track" id="adsTrack"></div><div class="dots" id="adsDots"></div></div>
 <div class="stats">
 <div class="stat-card"><div class="stat-top"><span class="stat-label">Total Products</span><span class="stat-icon">▣</span></div><div class="stat-value" id="statProducts">0</div></div>
 <div class="stat-card clickable-stat" onclick="openStatBreakdown('stock')"><div class="stat-top"><span class="stat-label">Stock Value</span><span class="stat-icon">₱</span></div><div class="stat-value" id="statStockValue">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
@@ -455,7 +533,7 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 </section>
 
 <section id="inventory" class="section">
-<button type="button" id="toggleAddProduct" class="add-cta" aria-expanded="false" aria-controls="addProductCard"><span class="plus">+</span><span class="cta-text">Add Product</span></button>
+<button type="button" id="toggleAddProduct" class="add-cta" aria-expanded="false" aria-controls="addProductCard"><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12v5.6l7.5 4.2 7.5-4.2V12"/><path d="M12 21.8v-6.4"/><path d="M4.5 12l7.5 3.4 7.5-3.4"/><path d="M4.5 12L2.8 9.6 12 5.8l9.2 3.8-1.7 2.4"/><path d="M19 1.8v4.4M16.8 4h4.4"/></svg></span><span class="cta-text">Add Product</span></button>
 <div class="card reveal-card" id="addProductCard" hidden><div class="card-header"><div><h3>Add New Product</h3><p>Add products to your Raya Store inventory.</p></div></div>
 <form id="productForm"><div class="form-grid">
 <div class="field"><label>Item Name</label><input id="itemName" type="text" placeholder="e.g. Classic T-Shirt" required></div>
@@ -466,11 +544,11 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 <div class="field"><label>Barcode Number</label><div class="bc-row"><input id="itemBarcode" type="text" inputmode="numeric" autocomplete="off" placeholder="Scan or type barcode"><button type="button" class="btn btn-secondary scan-fill" data-target="itemBarcode">Scan</button></div></div>
 <div class="field"><label>Product Image</label><div class="image-options"><input class="file-input" id="itemImageFile" type="file" accept="image/*"><input id="itemImageUrl" type="url" placeholder="Or paste image URL"></div><img id="imagePreview" class="image-preview" alt="Preview"></div>
 </div><div class="form-actions"><button type="reset" class="btn btn-secondary">Clear</button><button type="submit" class="btn btn-primary">+ Add Product</button></div></form></div>
-<div class="card"><div class="card-header"><div><h3>Inventory</h3><p id="inventoryCount">0 products</p></div></div><div class="inventory-tools" style="margin-bottom:16px"><input id="inventorySearch" class="inventory-search" type="search" placeholder="Search name, barcode, category..." autocomplete="off"><select id="inventoryCategoryFilter" class="inv-cat-filter"><option value="">All categories</option><option value="Chocolate">Chocolate</option><option value="Detergent">Detergent</option><option value="Toothpaste">Toothpaste</option><option value="Soap">Soap</option><option value="Snack">Snack</option><option value="Milk">Milk</option><option value="Canned Goods">Canned Goods</option><option value="Other">Other</option></select><button id="exportInventoryBtn" class="btn btn-secondary">Export Excel</button><button id="exportPdfBtn" class="btn btn-secondary">Export PDF</button><button id="exportZipBtn" class="btn btn-secondary">Export Images (ZIP)</button></div><div id="productsGrid" class="products-grid"></div></div>
+<div class="card"><div class="card-header"><div><h3>Inventory</h3><p id="inventoryCount">0 products</p></div></div><div class="inventory-tools" style="margin-bottom:16px"><input id="inventorySearch" class="inventory-search" type="search" placeholder="Search name, barcode, category..." autocomplete="off"><div class="combo inv-combo"><input id="inventoryCategoryFilter" type="text" placeholder="All categories" autocomplete="off"><div class="combo-list"></div></div><div class="exp-menu"><button type="button" class="btn btn-secondary exp-btn" id="expToggle" aria-label="Export" title="Export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span>Export</span></button><div class="exp-pop" id="expPop"><button id="exportInventoryBtn" class="btn btn-secondary">Export Excel</button><button id="exportPdfBtn" class="btn btn-secondary">Export PDF</button><button id="exportZipBtn" class="btn btn-secondary">Export Images (ZIP)</button></div></div></div><div id="productsGrid" class="products-grid"></div></div>
 </section>
 
 <section id="orders" class="section">
-<button type="button" id="toggleAddOrder" class="add-cta" aria-expanded="false" aria-controls="addOrderCard"><span class="plus">+</span><span class="cta-text">Add New Order</span></button>
+<button type="button" id="toggleAddOrder" class="add-cta" aria-expanded="false" aria-controls="addOrderCard"><span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5H7.5A1.5 1.5 0 0 0 6 6.5v12A1.5 1.5 0 0 0 7.5 20H12"/><path d="M15 5h1.5A1.5 1.5 0 0 1 18 6.5V12"/><rect x="9" y="3" width="6" height="3.4" rx="1.2"/><path d="M9 10h6M9 13.5h3.5"/><circle cx="17" cy="17" r="4"/><path d="M17 15v4M15 17h4"/></svg></span><span class="cta-text">Add New Order</span></button>
 <div class="card reveal-card" id="addOrderCard" hidden><div class="card-header"><div><h3>Record New Order</h3><p>Add multiple or different items to one customer order.</p></div></div>
 <form id="orderForm">
 <div class="form-grid">
@@ -486,6 +564,9 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 <div id="orderSummary" class="card" style="margin-top:14px;padding:14px;background:var(--g50);box-shadow:none;text-align:right;font-size:14px;color:var(--blue)">0 items · 0 total quantity · ₱0.00</div><div class="form-actions"><button type="reset" class="btn btn-secondary">Clear</button><button type="submit" class="btn btn-primary">+ Record Order</button></div>
 </form></div>
 <div class="card"><div class="card-header"><div><h3>Order History</h3><p>Use multiple filters at the same time.</p></div></div><div class="history-filter-grid"><div class="customer-filter"><label class="muted">Name</label><select id="historyCustomerFilter"><option value="">All names</option></select></div><div class="customer-filter"><label class="muted">Product</label><select id="historyProductFilter"><option value="">All products</option></select></div><div class="customer-filter"><label class="muted">Payment</label><div class="seg" data-for="historyPaymentFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Paid">Paid</button><button type="button" class="seg-btn" data-val="Unpaid">Unpaid</button></div></div><select id="historyPaymentFilter" hidden><option value=""></option><option value="Paid"></option><option value="Unpaid"></option></select><div class="customer-filter"><label class="muted">Delivery</label><div class="seg" data-for="historyDeliveryFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Delivered">Delivered</button><button type="button" class="seg-btn" data-val="Not Delivered">Pending</button></div></div><select id="historyDeliveryFilter" hidden><option value=""></option><option value="Delivered"></option><option value="Not Delivered"></option></select><div class="customer-filter date-filter"><label class="muted">Date</label><div class="seg" id="historyDateMode"><button type="button" class="seg-btn active" data-mode="day">Date</button><button type="button" class="seg-btn" data-mode="month">Month</button></div><input id="historyDateFilter" type="date"></div><button class="btn btn-secondary btn-small" type="button" id="clearHistoryFilters">Clear filters</button></div><div id="historyUnpaidSummary"></div><div class="table-wrap"><table class="compact-order-table"><thead><tr><th>Customer</th><th>Items</th><th>Qty.</th><th>Total</th><th>Date / Time</th><th>Payment</th><th>Delivery</th><th>Action</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+</section>
+<section id="checkouts" class="section">
+<div class="card"><div class="card-header"><div><h3>Buyer Checkouts</h3><p id="coCount">0 checkouts</p></div><button type="button" class="btn btn-secondary btn-small" id="coRefresh">Refresh</button></div><div class="seg co-seg" id="coFilter"><button type="button" class="seg-btn active" data-val="">All</button><button type="button" class="seg-btn" data-val="Pending">Pending</button><button type="button" class="seg-btn" data-val="Confirmed">Confirmed</button><button type="button" class="seg-btn" data-val="Delivered">Delivered</button><button type="button" class="seg-btn" data-val="Cancelled">Cancelled</button></div><div id="coList"></div></div>
 </section>
 </div></main></div>
 
@@ -546,7 +627,7 @@ async function loadData(){
     db.from("order_items").select("*").order("created_at")
   ]);
   const bad=[pr.error,or.error,cr.error,oi.error].find(Boolean);if(bad)return notify(bad.message);
-  products=pr.data||[];orders=or.data||[];customers=cr.data||[];orderItemsData=oi.data||[];render();
+  products=pr.data||[];orders=or.data||[];customers=cr.data||[];orderItemsData=oi.data||[];render();loadExtras();
 }
 function render(){renderStats();renderProducts();renderCustomers();renderHistoryFilters();renderOrderItems();renderOrders();renderRecent();renderOverview();renderBestSeller();renderCalendar();}
 function renderStats(){
@@ -558,10 +639,10 @@ function renderStats(){
 }
 function renderProducts(){
   const q=(window.inventorySearchTerm||"").trim().toLowerCase();
-  const cf=window.inventoryCategory||"";const shown=products.filter(p=>(!q||[p.name,p.barcode,p.category].some(v=>String(v||"").toLowerCase().includes(q)))&&(!cf||p.category===cf)).sort((a,b)=>(Number(a.stock)>0?0:1)-(Number(b.stock)>0?0:1));
+  const cf=window.inventoryCategory||"";const shown=products.filter(p=>(!q||[p.name,p.barcode,p.category].some(v=>String(v||"").toLowerCase().includes(q)))&&(!cf||String(p.category||"").toLowerCase().includes(cf.toLowerCase()))).sort((a,b)=>(Number(a.stock)>0?0:1)-(Number(b.stock)>0?0:1));
   $("inventoryCount").textContent=q?`${shown.length} of ${products.length} products`:`${products.length} ${products.length===1?"product":"products"}`;
   if(!shown.length){$("productsGrid").innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">▣</div><p>No matching products.</p></div>';return}
-  $("productsGrid").innerHTML=shown.map(p=>{const c=(Number(p.stock)||0)<=0?"out":p.stock<=5?"low":"";const im=p.image_url?`<img class="product-image" src="${esc(p.image_url)}" alt="${esc(p.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="placeholder-image" style="display:none">▣</div>`:'<div class="placeholder-image">▣</div>';const out=(Number(p.stock)||0)<=0;return `<div class="product-card" onclick="openProductModal('${p.id}')"><div class="img-wrap${out?' is-out':''}">${im}${out?'<div class="out-mark"><span>OUT OF STOCK</span></div>':''}</div><div class="product-info"><div class="product-name">${esc(p.name)}</div>${p.category?`<div class="cat-chip">${esc(p.category)}</div>`:""}<div class="product-price">${money(p.price)}</div>${p.barcode?`<div class="barcode-line">▮▯▮ ${esc(p.barcode)}</div>`:""}<div class="stock ${c}">${(Number(p.stock)||0)<=0?"Out of stock":p.stock+" in stock"}</div></div><div class="product-actions"><button class="btn btn-secondary btn-small" style="width:100%" onclick="event.stopPropagation();openProductModal('${p.id}')">Edit / Stock</button></div></div>`}).join("");
+  $("productsGrid").innerHTML=shown.map(p=>{const c=(Number(p.stock)||0)<=0?"out":p.stock<=5?"low":"";const im=p.image_url?`<img class="product-image" src="${esc(p.image_url)}" alt="${esc(p.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="placeholder-image" style="display:none">▣</div>`:'<div class="placeholder-image">▣</div>';const out=(Number(p.stock)||0)<=0;return `<div class="product-card" onclick="openProductModal('${p.id}')"><div class="img-wrap${out?' is-out':''}">${im}${out?'<div class="out-mark"><span>OUT OF STOCK</span></div>':''}</div><div class="product-info"><div class="product-name">${esc(p.name)}</div>${p.category?`<div class="cat-chip">${esc(p.category)}</div>`:""}<div class="product-price">${money(p.price)}</div>${p.barcode?`<div class="barcode-line">${esc(p.barcode)}</div>`:""}<div class="stock ${c}">${(Number(p.stock)||0)<=0?"Out of stock":p.stock+" in stock"}</div></div><div class="product-actions"><button class="btn btn-secondary btn-small" style="width:100%" onclick="event.stopPropagation();openProductModal('${p.id}')">Edit / Stock</button></div></div>`}).join("");
 }
 function renderCustomers(){
   const cur=$("customerSelect").value;$("customerSelect").innerHTML='<option value="">Select customer</option>'+customers.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");if(customers.some(c=>c.id===cur))$("customerSelect").value=cur;
@@ -599,7 +680,7 @@ $('inventorySearch')?.addEventListener('input',e=>{window.inventorySearchTerm=e.
 $('exportInventoryBtn')?.addEventListener('click',exportInventoryExcel);
 ['historyCustomerFilter','historyProductFilter','historyPaymentFilter','historyDeliveryFilter','historyDateFilter'].forEach(id=>$(id)?.addEventListener(id==='historyDateFilter'?'change':'change',renderOrders)); $('clearHistoryFilters')?.addEventListener('click',()=>{['historyCustomerFilter','historyProductFilter','historyPaymentFilter','historyDeliveryFilter'].forEach(id=>$(id).value='');$('historyDateFilter').value='';renderOrders();});
 async function exportInventoryExcel(){try{if(!window.JSZip)return notify('Export library missing. Please reinstall the app.');
- const head=['Name','Category','Barcode','Price','Stock'],rows=products.map(p=>[String(p.name||''),String(p.category||''),String(p.barcode||''),Number(p.price)||0,Number(p.stock)||0]);
+ const head=['Name','Category','Barcode','Price','Stock'],rows=sortedForExport().map(p=>[String(p.name||''),String(p.category||''),String(p.barcode||''),Number(p.price)||0,Number(p.stock)||0]);
  const blob=await makeXlsx([head,...rows],[38,16,18,12,10]);
  await saveFile(blob,'Raya_Store_Inventory.xlsx',{kind:'table',head,rows});
 }catch(e){notify('Excel export failed: '+(e&&e.message||e))}}
@@ -667,12 +748,12 @@ let bdType='',bdSort='desc';
 function openStatBreakdown(t){bdType=t;bdSort='desc';renderStatBreakdown();$('financialBreakdownModal').classList.add('show');}
 function renderStatBreakdown(){let rows,title,label,sub;
  if(bdType==='stock'){rows=products.map(p=>({t:p.name,s:`${Number(p.stock)||0} pcs × ${money(p.price)}`,v:(Number(p.price)||0)*(Number(p.stock)||0)}));title='Stock value breakdown';label='Total Stock Value';sub='Selling price × stock, per product.';}
- else if(bdType==='revenue'||bdType==='profit'){const pf=bdType==='profit';const paid=orders.filter(o=>o.payment_status==='Paid');rows=paid.map(o=>({t:o.customer_name||'Order',d:o.created_at,s:date(o.created_at)+' · '+(o.item_summary||o.item_name||''),v:Number(pf?o.profit_total:o.total_price)||0}));title=pf?'Profit breakdown':'Revenue breakdown';label=pf?'Total Profit':'Total Revenue';sub='Paid orders only.';}
- else{const pend=bdType==='pending';const list=pend?orders.filter(o=>o.payment_status!=='Paid'):orders;rows=list.map(o=>({t:o.customer_name||'Order',d:o.created_at,s:date(o.created_at)+' · '+(o.item_summary||o.item_name||''),v:Number(o.total_price)||0}));title=pend?'Pending balance breakdown':'Total orders breakdown';label=pend?'Total Pending':`Total of ${rows.length} orders`;sub=pend?'Unpaid orders only.':'All orders.';}
- if(bdType!=='stock'){const g={};rows.forEach(r=>{const k=String(r.t).trim().toLowerCase();const e=g[k]||(g[k]={t:r.t,v:0,n:0,d:r.d});e.v+=r.v;e.n++;if(new Date(r.d)>new Date(e.d))e.d=r.d;});rows=Object.values(g).map(e=>({t:e.t,v:e.v,s:e.n+' order'+(e.n>1?'s':'')+' · latest '+date(e.d)}));}
+ else if(bdType==='revenue'||bdType==='profit'){const pf=bdType==='profit';const paid=orders.filter(o=>o.payment_status==='Paid');rows=paid.map(o=>({t:o.customer_name||'Order',d:o.created_at,o:o,s:date(o.created_at)+' · '+(o.item_summary||o.item_name||''),v:Number(pf?o.profit_total:o.total_price)||0}));title=pf?'Profit breakdown':'Revenue breakdown';label=pf?'Total Profit':'Total Revenue';sub='Paid orders only.';}
+ else{const pend=bdType==='pending';const list=pend?orders.filter(o=>o.payment_status!=='Paid'):orders;rows=list.map(o=>({t:o.customer_name||'Order',d:o.created_at,o:o,s:date(o.created_at)+' · '+(o.item_summary||o.item_name||''),v:Number(o.total_price)||0}));title=pend?'Pending balance breakdown':'Total orders breakdown';label=pend?'Total Pending':`Total of ${rows.length} orders`;sub=pend?'Unpaid orders only.':'All orders.';}
+ if(bdType!=='stock'){const g={};rows.forEach(r=>{const k=String(r.t).trim().toLowerCase();const e=g[k]||(g[k]={t:r.t,v:0,n:0,d:r.d,os:[]});e.v+=r.v;e.n++;e.os.push(r.o);if(new Date(r.d)>new Date(e.d))e.d=r.d;});rows=Object.values(g).map(e=>({t:e.t,v:e.v,os:e.os,s:e.n+' order'+(e.n>1?'s':'')+' · latest '+date(e.d)}));}
  rows.sort((a,b)=>bdSort==='desc'?b.v-a.v:bdSort==='asc'?a.v-b.v:bdSort==='az'?a.t.localeCompare(b.t,undefined,{sensitivity:'base'})||b.v-a.v:b.t.localeCompare(a.t,undefined,{sensitivity:'base'})||b.v-a.v);const total=rows.reduce((s,r)=>s+r.v,0);
  $('financialBreakdownTitle').textContent=title;$('financialBreakdownSub').textContent=sub;
- $('financialBreakdownBody').innerHTML=`<div class="breakdown-total"><span>${label}</span><strong>${money(total)}</strong></div><select class="bd-sort" onchange="bdSort=this.value;renderStatBreakdown()"><option value="desc" ${bdSort==='desc'?'selected':''}>Sort: Highest first</option><option value="asc" ${bdSort==='asc'?'selected':''}>Sort: Lowest first</option><option value="az" ${bdSort==='az'?'selected':''}>Sort: Name A–Z</option><option value="za" ${bdSort==='za'?'selected':''}>Sort: Name Z–A</option></select>`+(rows.map(r=>`<div class="breakdown-row"><div><strong>${esc(r.t)}</strong><div class="muted">${esc(r.s)}</div></div><strong>${money(r.v)}</strong></div>`).join('')||'<div class="empty">No data.</div>');}
+ $('financialBreakdownBody').innerHTML=`<div class="breakdown-total"><span>${label}</span><strong>${money(total)}</strong></div><select class="bd-sort" onchange="bdSort=this.value;renderStatBreakdown()"><option value="desc" ${bdSort==='desc'?'selected':''}>Sort: Highest first</option><option value="asc" ${bdSort==='asc'?'selected':''}>Sort: Lowest first</option><option value="az" ${bdSort==='az'?'selected':''}>Sort: Name A–Z</option><option value="za" ${bdSort==='za'?'selected':''}>Sort: Name Z–A</option></select>`+(rows.map((r,i)=>r.os?`<div class="breakdown-row bd-click" onclick="toggleBd(${i})"><div><strong>${esc(r.t)} <span class="bd-chev" id="bdc${i}">▾</span></strong><div class="muted">${esc(r.s)}</div></div><strong>${money(r.v)}</strong></div><div class="bd-detail" id="bdd${i}" hidden>${bdOrders(r.os)}</div>`:`<div class="breakdown-row"><div><strong>${esc(r.t)}</strong><div class="muted">${esc(r.s)}</div></div><strong>${money(r.v)}</strong></div>`).join('')||'<div class="empty">No data.</div>');}
 const dkey=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
 let calY=new Date().getFullYear(),calM=new Date().getMonth(),calSel=dkey(new Date());
 function renderCalendar(){const g=$('calGrid');if(!g)return;const first=new Date(calY,calM,1),days=new Date(calY,calM+1,0).getDate(),today=dkey(new Date());
@@ -689,7 +770,7 @@ function renderCalendar(){const g=$('calGrid');if(!g)return;const first=new Date
 $('calPrev').onclick=()=>{calM--;if(calM<0){calM=11;calY--}renderCalendar();};
 $('calNext').onclick=()=>{calM++;if(calM>11){calM=0;calY++}renderCalendar();};
 const loadImg=s=>new Promise(r=>{if(!s)return r(null);const i=new Image();i.crossOrigin='anonymous';i.onload=()=>r(i);i.onerror=()=>r(null);i.src=s;});
-const sortedForExport=()=>[...products].sort((a,b)=>{const ao=(Number(a.stock)||0)<=0?1:0,bo=(Number(b.stock)||0)<=0?1:0;return ao-bo||String(a.name||'').localeCompare(String(b.name||''),undefined,{numeric:true,sensitivity:'base'});});
+const sortedForExport=()=>{const cmp=(a,b)=>String(a||'').localeCompare(String(b||''),undefined,{numeric:true,sensitivity:'base'});return [...products].sort((a,b)=>{const ao=(Number(a.stock)||0)<=0?1:0,bo=(Number(b.stock)||0)<=0?1:0;if(ao!==bo)return ao-bo;const ac=String(a.category||'').trim(),bc=String(b.category||'').trim();if(!ac!==!bc)return ac?-1:1;return cmp(ac,bc)||cmp(a.name,b.name);});};
 async function exportPricesPdf(){if(!products.length)return notify('No products to export.');
  const btn=$('exportPdfBtn');btn.disabled=true;btn.textContent='Preparing...';
  try{const list=sortedForExport();const imgs=await Promise.all(list.map(p=>loadImg(p.image_url)));
@@ -734,7 +815,7 @@ async function snapshotOrderPrices(){const [o,i]=await Promise.all([db.from("ord
 async function restoreOrderPrices(snap){let n=0;for(const [tbl,map] of [["orders",snap.orders],["order_items",snap.items]]){const {data}=await db.from(tbl).select("*");for(const r of data||[]){const old=map.get(r.id);if(!old)continue;const diff={};for(const k in old)if(Math.abs(Number(r[k])-old[k])>0.0001)diff[k]=old[k];if(Object.keys(diff).length){const {error}=await db.from(tbl).update(diff).eq("id",r.id);if(!error)n++;}}}return n;}
 
 function thumbFor(pid,name,size){const p=products.find(x=>pid&&String(x.id)===String(pid))||products.find(x=>name&&x.name===name);const u=p&&p.image_url;const c='thumb'+(size==='lg'?' lg':'');return u?`<img class="${c}" src="${esc(u)}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;${c} ph&quot;>▣</span>'">`:`<span class="${c} ph">▣</span>`;}
-document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>{const s=b.dataset.section;document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(s).classList.add("active");const info={dashboard:["Dashboard","Overview of your store"],inventory:["Inventory","Manage your products and stock"],orders:["Orders","Track customer orders and payments"]};$("pageTitle").textContent=info[s][0];$("pageSubtitle").textContent=info[s][1]});
+document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>{const s=b.dataset.section;document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(s).classList.add("active");const info={dashboard:["Dashboard","Overview of your store"],inventory:["Inventory","Manage your products and stock"],orders:["Orders","Track customer orders and payments"],checkouts:["Checkouts","Orders sent from your buyers page"]};$("pageTitle").textContent=info[s][0];$("pageSubtitle").textContent=info[s][1]});
 
 if(authConfigError){showAuth("signin","Supabase is not configured yet. Open config.js and enter your Supabase Project URL and public anon/publishable key.");["signInForm","signUpForm","resetForm"].forEach(id=>{$(id).querySelector("button[type=submit]").disabled=true});}
 else{
@@ -757,10 +838,10 @@ db.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){show
   const b=h.querySelector('.toggle-btn');if(b){b.setAttribute('aria-expanded',open);b.querySelector('.toggle-label').textContent=open?'Hide':'Show';}
  });
  function wireCta(btnId,cardId,openText,closeText){
-  const b=document.getElementById(btnId),c=document.getElementById(cardId);if(!b||!c)return;
+  const b=document.getElementById(btnId),c=document.getElementById(cardId);if(!b||!c)return;const pl=b.querySelector('.plus'),ico=pl.innerHTML;
   b.addEventListener('click',function(){
    const open=c.hidden;c.hidden=!open;b.classList.toggle('open',open);b.setAttribute('aria-expanded',open);
-   b.querySelector('.plus').textContent=open?'×':'+';b.querySelector('.cta-text').textContent=open?closeText:openText;
+   pl.innerHTML=open?'×':ico;b.querySelector('.cta-text').textContent=open?closeText:openText;
    if(open)c.scrollIntoView({behavior:'smooth',block:'start'});
   });
  }
@@ -897,7 +978,7 @@ async function makeXlsx(rows,widths){
 const normBc=v=>String(v||'').replace(/\s+/g,'').replace(/^0+/,'');
 const dupBarcode=(code,exceptId)=>{const n=normBc(code);return !!n&&products.some(p=>String(p.id)!==String(exceptId)&&normBc(p.barcode)===n);};
 const dbMsg=err=>{const m=String(err&&err.message||err);return /(category|barcode)/i.test(m)&&/(column|schema|cache)/i.test(m)?'The database needs the new Category and Barcode columns. Run add_category_barcode.sql in Supabase (SQL Editor), then try again.':m;};
-$('inventoryCategoryFilter')?.addEventListener('change',e=>{window.inventoryCategory=e.target.value;renderProducts();});
+
 (function(){
  const inp=$('stockInput');
  inp.addEventListener('input',()=>{const v=inp.value.replace(/\D+/g,'');if(v!==inp.value)inp.value=v;});
@@ -961,7 +1042,7 @@ $('inventoryCategoryFilter')?.addEventListener('change',e=>{window.inventoryCate
  function showFound(p,code){
   const out=(Number(p.stock)||0)<=0;
   const im=p.image_url?'<img src="'+esc(p.image_url)+'" alt="" onerror="this.style.display=\'none\'">':'<div class="sc-noimg">▣</div>';
-  result.innerHTML='<div class="sc-card ok">'+im+'<div class="sc-info"><div class="sc-name">'+esc(p.name)+'</div>'+(p.category?'<div class="cat-chip">'+esc(p.category)+'</div>':'')+'<div class="sc-price">'+money(p.price)+'</div><div class="stock '+(out?'out':Number(p.stock)<=5?'low':'')+'">'+(out?'Out of stock':p.stock+' in stock')+'</div><div class="barcode-line">▮▯▮ '+esc(p.barcode||code)+'</div></div></div>'
+  result.innerHTML='<div class="sc-card ok">'+im+'<div class="sc-info"><div class="sc-name">'+esc(p.name)+'</div>'+(p.category?'<div class="cat-chip">'+esc(p.category)+'</div>':'')+'<div class="sc-price">'+money(p.price)+'</div><div class="stock '+(out?'out':Number(p.stock)<=5?'low':'')+'">'+(out?'Out of stock':p.stock+' in stock')+'</div><div class="barcode-line">'+esc(p.barcode||code)+'</div></div></div>'
    +'<div class="sc-actions"><button type="button" class="btn btn-primary" id="scEdit">Edit / Stock</button><button type="button" class="btn btn-secondary" id="scAgain">Scan again</button></div>';
   status('Product found');
   result.querySelector('#scEdit').onclick=()=>{close();openProductModal(p.id);};
@@ -1049,7 +1130,7 @@ const todayStr=()=>{const x=new Date();return x.getFullYear()+'-'+String(x.getMo
    notify('Category “'+name+'” removed.');return true;
   }catch(err){notify(dbMsg(err));return false;}
  }
- function refreshFilter(){const sel=$('inventoryCategoryFilter');if(!sel)return;const cur=window.inventoryCategory||'';const list=window.allCats();sel.innerHTML='<option value="">All categories</option>'+list.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('');if(list.includes(cur))sel.value=cur;else{sel.value='';window.inventoryCategory='';}}
+ function refreshFilter(){}
  const _rp=renderProducts;renderProducts=function(){refreshFilter();_rp();};
  function makeCombo(id){
   const input=$(id);if(!input)return;const list=input.parentElement.querySelector('.combo-list');
@@ -1087,7 +1168,125 @@ const todayStr=()=>{const x=new Date();return x.getFullYear()+'-'+String(x.getMo
  $('quickAddItem')?.addEventListener('click',()=>go('inventory','addProductCard','toggleAddProduct'));
  $('scanOrderItemBtn')?.addEventListener('click',()=>window.openRayaScanner&&window.openRayaScanner('order'));
 })();
+
+/* ===== v7: ads, settings, checkouts, breakdown details, combos, export menu ===== */
+let ads=[],checkouts=[],coFilter='',coErr='',coSeen=null,adsLoaded=false;
+const setupMsg=err=>{const m=String(err&&err.message||err);return /(ads|checkouts)/i.test(m)&&/(relation|exist|schema|cache)/i.test(m)?'Database is not set up for this yet. Run buyers_setup.sql in Supabase (SQL Editor), then try again.':m;};
+
+function shrinkImage(file,maxW,q){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=()=>rej(new Error('Could not read the image.'));fr.onload=()=>{const im=new Image();im.onerror=()=>rej(new Error('That file is not a valid image.'));im.onload=()=>{const s=Math.min(1,maxW/im.width),w=Math.round(im.width*s),h=Math.round(im.height*s),c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);res(c.toDataURL('image/jpeg',q));};im.src=fr.result;};fr.readAsDataURL(file);});}
+
+/* ---- ads carousel (dashboard) + ads list (settings) ---- */
+(function(){
+ const tr=$('adsTrack'),dots=$('adsDots'),wrap=$('adsWrap');if(!tr)return;
+ let idx=0,pause=0;
+ const go=i=>tr.scrollTo({left:i*tr.clientWidth,behavior:'smooth'});
+ tr.addEventListener('scroll',()=>{idx=Math.round(tr.scrollLeft/Math.max(1,tr.clientWidth));[...dots.children].forEach((d,k)=>d.classList.toggle('on',k===idx));});
+ ['touchstart','pointerdown','wheel'].forEach(ev=>tr.addEventListener(ev,()=>{pause=Date.now()+8000;},{passive:true}));
+ dots.addEventListener('click',e=>{const d=e.target.closest('.dot');if(!d)return;pause=Date.now()+8000;go([...dots.children].indexOf(d));});
+ setInterval(()=>{if(Date.now()<pause||document.hidden||wrap.hidden||tr.children.length<2)return;go((idx+1)%tr.children.length);},4500);
+ window.renderAds=function(){
+  wrap.hidden=!ads.length;
+  tr.innerHTML=ads.map(a=>'<div class="ad"><img src="'+esc(a.image_url)+'" alt="'+esc(a.title||'Ad')+'" draggable="false"></div>').join('');
+  dots.innerHTML=ads.length>1?ads.map((a,i)=>'<button type="button" class="dot'+(i===0?' on':'')+'" aria-label="Ad '+(i+1)+'"></button>').join(''):'';
+  idx=0;tr.scrollLeft=0;
+  const list=$('adsAdmin');if(list)list.innerHTML=ads.length?ads.map(a=>'<div class="ad-item"><img src="'+esc(a.image_url)+'" alt=""><button type="button" class="ad-del" data-ad="'+esc(a.id)+'" aria-label="Delete ad">×</button></div>').join(''):'<p class="muted">No ads yet. Add a picture below.</p>';
+ };
+})();
+async function loadAds(){try{const r=await db.from('ads').select('*').order('sort_order').order('created_at');ads=r.error?[]:(r.data||[]);}catch(e){ads=[];}window.renderAds();adsLoaded=true;}
+$('settingsBtn')?.addEventListener('click',()=>$('settingsModal').classList.add('show'));
+function closeSettings(){$('settingsModal').classList.remove('show');}
+$('adFile')?.addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;if(!f.type.startsWith('image/'))return notify('Please select an image.');
+ try{const url=await shrinkImage(f,1200,.8);const {error}=await db.from('ads').insert({image_url:url,sort_order:ads.length});if(error)throw error;await loadAds();notify('Ad picture added successfully.');}catch(err){notify(setupMsg(err));}});
+document.addEventListener('click',async e=>{const d=e.target.closest('.ad-del');if(!d)return;
+ if(!await rayaConfirm('Delete this ad picture?','Delete'))return;
+ try{const {error}=await db.from('ads').delete().eq('id',d.dataset.ad);if(error)throw error;await loadAds();notify('Ad picture deleted.');}catch(err){notify(setupMsg(err));}});
+
+/* ---- checkouts (orders sent from buyers.html) ---- */
+async function loadCheckouts(){
+ if(!db)return;
+ try{const r=await db.from('checkouts').select('*').order('created_at',{ascending:false});if(r.error){coErr=r.error.message||'Error';checkouts=[];}else{coErr='';checkouts=r.data||[];}}
+ catch(e){coErr=String(e&&e.message||e);checkouts=[];}
+ const pend=checkouts.filter(c=>c.status==='Pending');
+ if(coSeen!==null&&pend.some(c=>!coSeen.has(c.id))){try{navigator.vibrate&&navigator.vibrate([200,100,200]);}catch(e){}}
+ coSeen=new Set(pend.map(c=>c.id));
+ renderCheckouts();
+}
+function renderCheckouts(){
+ const pend=checkouts.filter(c=>c.status==='Pending').length,b=$('coBadge');
+ if(b){b.textContent=pend>99?'99+':pend;b.hidden=!pend;}
+ const list=checkouts.filter(c=>!coFilter||c.status===coFilter);
+ $('coCount').textContent=checkouts.length+' checkout'+(checkouts.length===1?'':'s')+(pend?' · '+pend+' pending':'');
+ const box=$('coList');
+ if(coErr){box.innerHTML='<div class="empty">'+(/(relation|exist|schema|cache)/i.test(coErr)?'Checkouts are not set up yet.<br>Run <strong>buyers_setup.sql</strong> in Supabase (SQL Editor), then press Refresh.':'Could not load checkouts.<br><small>'+esc(coErr)+'</small>')+'</div>';return;}
+ if(!list.length){box.innerHTML='<div class="empty">No checkouts here yet. Orders from your buyers page will appear here.</div>';return;}
+ box.innerHTML=list.map(c=>{
+  const items=Array.isArray(c.items)?c.items:[];
+  const rows=items.map(x=>{const p=products.find(y=>String(y.id)===String(x.product_id));return '<div class="co-item"><span class="co-th">'+productImage(p,true)+'</span><span class="co-im"><b>'+esc(x.name||(p&&p.name)||'Item')+'</b><small>'+(Number(x.quantity)||0)+' × '+money(x.price)+'</small></span><strong>'+money(x.line_total!=null?x.line_total:(Number(x.price)||0)*(Number(x.quantity)||0))+'</strong></div>';}).join('');
+  const where=c.delivery_method==='Pickup'?'Pick up at store':(c.delivery_method==='Meet-up'?'Meet-up: ':'Deliver to: ')+esc(c.delivery_address||'');
+  const btn=(s,l)=>'<button type="button" class="btn btn-small '+(c.status===s?'btn-secondary':'btn-primary')+'" data-co="'+esc(c.id)+'" data-st="'+s+'"'+(c.status===s?' disabled':'')+'>'+l+'</button>';
+  return '<div class="co-card"><div class="co-top"><div><strong>'+esc(c.buyer_name)+'</strong><div class="muted">'+(c.buyer_phone?esc(c.buyer_phone)+' · ':'')+esc(date(c.created_at))+'</div></div><span class="co-status s-'+esc(c.status)+'">'+esc(c.status)+'</span></div>'
+   +'<div class="co-where">'+where+'</div>'+(c.note?'<div class="muted">Note: '+esc(c.note)+'</div>':'')+rows
+   +'<div class="co-total"><span>Total</span><strong>'+money(c.total)+'</strong></div>'
+   +'<div class="co-actions">'+btn('Confirmed','Confirm')+btn('Delivered','Delivered')+btn('Cancelled','Cancel')+'<button type="button" class="btn btn-danger btn-small" data-co-del="'+esc(c.id)+'">Delete</button></div></div>';
+ }).join('');
+}
+$('coList')?.addEventListener('click',async e=>{
+ const st=e.target.closest('[data-st]'),del=e.target.closest('[data-co-del]');
+ if(st){try{const {error}=await db.from('checkouts').update({status:st.dataset.st}).eq('id',st.dataset.co);if(error)throw error;await loadCheckouts();notify('Checkout updated: '+st.dataset.st+'.');}catch(err){notify(setupMsg(err));}}
+ else if(del){if(!await rayaConfirm('Delete this checkout from the list?','Delete'))return;try{const {error}=await db.from('checkouts').delete().eq('id',del.dataset.coDel);if(error)throw error;await loadCheckouts();notify('Checkout deleted.');}catch(err){notify(setupMsg(err));}}
+});
+$('coFilter')?.addEventListener('click',e=>{const b=e.target.closest('.seg-btn');if(!b)return;coFilter=b.dataset.val;$('coFilter').querySelectorAll('.seg-btn').forEach(x=>x.classList.toggle('active',x===b));renderCheckouts();});
+$('coRefresh')?.addEventListener('click',loadCheckouts);
+setInterval(()=>{if(!document.hidden&&db&&$('app')&&$('app').style.display!=='none')loadCheckouts();},45000);
+async function loadExtras(){if(!adsLoaded)await loadAds();await loadCheckouts();}
+
+/* ---- breakdown: clickable names ---- */
+function bdOrders(os){return os.slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(o=>{
+ const items=orderItemsData.filter(x=>String(x.order_id)===String(o.id));
+ const body=items.length?items.map(x=>{const p=products.find(y=>String(y.id)===String(x.product_id));return '<div class="bd-item"><span class="bd-th">'+productImage(p,true)+'</span><span>'+esc(p?p.name:(x.product_name||'Item'))+' × '+(Number(x.quantity)||0)+'</span></div>';}).join(''):'<div class="bd-item">'+esc(o.item_summary||o.item_name||'')+'</div>';
+ const dv=deliveredState(o);
+ return '<div class="bd-order"><div class="bd-oh"><span>'+esc(date(o.created_at))+'</span><strong>'+(bdType==='profit'?'Profit '+money(o.profit_total):money(o.total_price))+'</strong></div>'+body+'<div class="bd-tags"><span class="tag '+(o.payment_status==='Paid'?'paid':'unpaid')+'">'+esc(o.payment_status||'Unpaid')+'</span><span class="tag '+(dv?'paid':'unpaid')+'">'+(dv?'Delivered':'Not delivered')+'</span></div></div>';}).join('');}
+function toggleBd(i){const d=$('bdd'+i),c=$('bdc'+i);if(!d)return;d.hidden=!d.hidden;if(c)c.textContent=d.hidden?'▾':'▴';}
+
+/* ---- combo boxes: inventory category filter + history name/product ---- */
+(function(){
+ const inp=$('inventoryCategoryFilter');
+ if(inp){const list=inp.parentElement.querySelector('.combo-list');
+  const apply=()=>{window.inventoryCategory=inp.value.trim();renderProducts();};
+  const show=()=>{const t=inp.value.trim().toLowerCase();const f=window.allCats().filter(c=>!t||c.toLowerCase().includes(t));
+   list.innerHTML='<div class="combo-row"><button type="button" class="combo-pick" data-name="">All categories</button></div>'+f.map(c=>'<div class="combo-row"><button type="button" class="combo-pick" data-name="'+esc(c)+'">'+esc(c)+'</button></div>').join('');list.classList.add('show');};
+  inp.addEventListener('focus',show);inp.addEventListener('input',()=>{show();apply();});
+  list.addEventListener('pointerdown',e=>e.preventDefault());
+  list.addEventListener('click',e=>{const b=e.target.closest('.combo-pick');if(!b)return;inp.value=b.dataset.name;list.classList.remove('show');apply();});
+  document.addEventListener('click',e=>{if(!inp.contains(e.target)&&!list.contains(e.target))list.classList.remove('show');});
+ }
+ function enhance(selId,ph){const sel=$(selId);if(!sel)return;
+  const wrap=document.createElement('div');wrap.className='combo';wrap.innerHTML='<input type="text" class="hist-combo" placeholder="'+ph+'" autocomplete="off"><div class="combo-list"></div>';
+  sel.parentElement.insertBefore(wrap,sel);sel.style.display='none';
+  const i2=wrap.querySelector('input'),list=wrap.querySelector('.combo-list');
+  const show=()=>{const t=i2.value.trim().toLowerCase();const f=[...sel.options].filter(o=>o.value===''||!t||o.text.toLowerCase().includes(t));
+   list.innerHTML=f.map(o=>'<div class="combo-row"><button type="button" class="combo-pick" data-v="'+esc(o.value)+'">'+esc(o.value===''?ph:o.text)+'</button></div>').join('');list.classList.add('show');};
+  i2.addEventListener('focus',()=>{i2.select();show();});
+  i2.addEventListener('input',()=>{show();if(!i2.value.trim()&&sel.value){sel.value='';sel.dispatchEvent(new Event('change'));}});
+  list.addEventListener('pointerdown',e=>e.preventDefault());
+  list.addEventListener('click',e=>{const b=e.target.closest('.combo-pick');if(!b)return;sel.value=b.dataset.v;const o=sel.selectedOptions[0];i2.value=b.dataset.v===''?'':(o?o.text:'');list.classList.remove('show');sel.dispatchEvent(new Event('change'));});
+  document.addEventListener('click',e=>{if(!wrap.contains(e.target))list.classList.remove('show');});
+  sel._sync=()=>{const o=sel.selectedOptions[0];i2.value=sel.value===''?'':(o?o.text:'');};
+ }
+ enhance('historyCustomerFilter','All names');enhance('historyProductFilter','All products');
+ $('clearHistoryFilters')?.addEventListener('click',()=>setTimeout(()=>['historyCustomerFilter','historyProductFilter'].forEach(i=>{const s=$(i);if(s&&s._sync)s._sync();}),0));
+})();
+
+/* ---- export menu, footer scan button ---- */
+(function(){
+ const t=$('expToggle'),pop=$('expPop');
+ if(t&&pop){t.addEventListener('click',e=>{e.stopPropagation();pop.classList.toggle('show');});pop.addEventListener('click',()=>setTimeout(()=>pop.classList.remove('show'),0));document.addEventListener('click',e=>{if(!e.target.closest('.exp-menu'))pop.classList.remove('show');});}
+ $('navScan')?.addEventListener('click',()=>window.openRayaScanner&&window.openRayaScanner('lookup'));
+})();
+
+document.querySelector('.nav-btn[data-section="checkouts"]')?.addEventListener('click',()=>loadCheckouts());
 </script>
+<div id="settingsModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3>Settings</h3><p class="muted">Ads and buyers page</p></div><button class="close" type="button" onclick="closeSettings()">×</button></div><div class="set-sec"><h4>Ads pictures</h4><p class="muted">These pictures swipe left and right on your dashboard and on the buyers page.</p><div class="ad-list" id="adsAdmin"></div><label class="btn btn-primary" style="cursor:pointer">+ Add ad picture<input type="file" id="adFile" accept="image/*" hidden></label></div><div class="set-sec"><h4>Buyers page</h4><p class="muted">Share <strong>buyers.html</strong> with your buyers. Their checkouts are sent to <strong>razhel.travinio@deped.gov.ph</strong> and appear in the Checkouts menu.</p></div></div></div>
 <div id="financialBreakdownModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3 id="financialBreakdownTitle">Financial breakdown</h3><p class="muted" id="financialBreakdownSub">Paid orders only.</p></div><button class="close" onclick="closeFinancialBreakdown()">×</button></div><div id="financialBreakdownBody"></div></div></div>
 </body>
 </html>
