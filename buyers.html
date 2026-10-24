@@ -186,7 +186,10 @@ function render(){
  const topList=tops.map(t=>prod(t.product_id)).filter(Boolean).slice(0,12);
  if(topList.length)h+='<section class="sec"><div class="sec-h"><h2>Top Sellers</h2><span class="sub">Swipe →</span></div><div class="hrow">'+topList.map(card).join('')+'</div></section>';
  const groups={};products.forEach(p=>{const c=(p.category||'').trim()||'Others';(groups[c]=groups[c]||[]).push(p);});
- const names=Object.keys(groups).sort((a,b)=>a==='Others'?1:b==='Others'?-1:a.localeCompare(b,undefined,{sensitivity:'base'}));
+ const sold={};tops.forEach(t=>{const p=prod(t.product_id);if(p){const c=(p.category||'').trim()||'Others';sold[c]=(sold[c]||0)+(Number(t.units_sold)||0);}});
+ const FOOD=/food|snack|chocolate|candy|candies|sweet|milk|dairy|drink|beverage|juice|coffee|tea|water|soda|canned|noodle|pasta|rice|bread|biscuit|cookie|cracker|chip|cereal|sauce|condiment|spice|oil|egg|meat|fish|seafood|vegetable|fruit|frozen|instant|grocer|dessert|cake|jelly|sugar|salt|ice cream|chicken|pork|beef|bakery|pantry/i;
+ const tier=c=>c==='Others'?3:(sold[c]>0?0:(FOOD.test(c)?1:2));
+ const names=Object.keys(groups).sort((a,b)=>tier(a)-tier(b)||(tier(a)===0?(sold[b]-sold[a]):0)||a.localeCompare(b,undefined,{sensitivity:'base'}));
  if(names.length){h+='<section class="sec"><div class="sec-h"><h2>Categories</h2><span class="sub">Tap a category to expand</span></div>';
   names.forEach((c,i)=>{const list=groups[c].slice().sort((a,b)=>(stockOf(b)>0)-(stockOf(a)>0)||String(a.name).localeCompare(String(b.name),undefined,{sensitivity:'base'}));
    h+='<div class="cat" data-cat="'+i+'"><button class="cat-h" type="button"><span><span class="n">'+esc(c)+'</span><span class="c">'+list.length+' item'+(list.length===1?'':'s')+'</span></span><span class="x">Expand ▾</span></button><div class="hrow">'+list.map(card).join('')+'</div></div>';});
@@ -275,7 +278,7 @@ async function load(quiet){
    db.from('ads').select('*').order('sort_order').order('created_at'),
    db.from('public_top_sellers').select('*').order('units_sold',{ascending:false}).limit(12)]);
   if(pr.error)throw pr.error;
-  products=pr.data||[];ads=ad.error?[]:(ad.data||[]);tops=ts.error?[]:(ts.data||[]);
+  products=(pr.data||[]).filter(p=>stockOf(p)>0);ads=ad.error?[]:(ad.data||[]);tops=ts.error?[]:(ts.data||[]);
   cleanCart();
   if(quiet&&$('app').children.length>1){/* keep scroll position */const y=scrollY;const open=[...document.querySelectorAll('.cat.expanded')].map(c=>c.dataset.cat);render();open.forEach(i=>{const c=document.querySelector('.cat[data-cat="'+i+'"]');if(c){c.classList.add('expanded');c.querySelector('.x').textContent='Collapse ▴';}});scrollTo(0,y);}
   else render();
