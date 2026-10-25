@@ -1214,8 +1214,12 @@ async function loadCheckouts(){
  try{const r=await db.from('checkouts').select('*').order('created_at',{ascending:false});if(r.error){coErr=r.error.message||'Error';checkouts=[];}else{coErr='';checkouts=r.data||[];}}
  catch(e){coErr=String(e&&e.message||e);checkouts=[];}
  const pend=checkouts.filter(c=>c.status==='Pending');
- if(coSeen!==null&&pend.some(c=>!coSeen.has(c.id))){try{navigator.vibrate&&navigator.vibrate([200,100,200]);}catch(e){}}
- coSeen=new Set(pend.map(c=>c.id));
+ if(!coErr){let known=null;try{known=JSON.parse(localStorage.getItem('raya_co_seen')||'null');}catch(e){}
+  if(coSeen===null&&Array.isArray(known))coSeen=new Set(known);
+  const fresh=coSeen===null?[]:pend.filter(c=>!coSeen.has(c.id));
+  if(fresh.length)rayaCheckoutAlert(fresh);
+  coSeen=new Set(pend.map(c=>c.id));
+  try{localStorage.setItem('raya_co_seen',JSON.stringify([...coSeen]));}catch(e){}}
  renderCheckouts();
 }
 function renderCheckouts(){
@@ -1244,7 +1248,28 @@ $('coList')?.addEventListener('click',async e=>{
 });
 $('coFilter')?.addEventListener('click',e=>{const b=e.target.closest('.seg-btn');if(!b)return;coFilter=b.dataset.val;$('coFilter').querySelectorAll('.seg-btn').forEach(x=>x.classList.toggle('active',x===b));renderCheckouts();});
 $('coRefresh')?.addEventListener('click',loadCheckouts);
-setInterval(()=>{if(!document.hidden&&db&&$('app')&&$('app').style.display!=='none')loadCheckouts();},45000);
+setInterval(()=>{if(db&&$('app')&&$('app').style.display!=='none')loadCheckouts();},20000);
+
+/* ---- new checkout alerts (notification + sound + vibrate) ---- */
+function rayaBeep(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const c=new A(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=880;g.gain.setValueAtTime(.001,c.currentTime);g.gain.exponentialRampToValueAtTime(.3,c.currentTime+.05);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.6);o.start();o.stop(c.currentTime+.65);}catch(e){}}
+async function rayaCheckoutAlert(list){
+ const c=list[0],peso=v=>'₱'+(Number(v)||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+ const title=list.length>1?list.length+' new checkouts':'New checkout from '+(c.buyer_name||'a buyer');
+ const body=list.length>1?'Open the Checkouts menu to review them.':peso(c.total)+' · '+(c.delivery_method||'');
+ try{navigator.vibrate&&navigator.vibrate([200,100,200]);}catch(e){}
+ rayaBeep();
+ try{notify(title+' – '+body);}catch(e){}
+ try{if('Notification' in window&&Notification.permission==='granted'){
+   const opts={body,tag:'raya-checkout',renotify:true,icon:'og-cover.jpg',badge:'og-cover.jpg',data:{url:location.href}};
+   const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();
+   if(reg&&reg.showNotification)await reg.showNotification(title,opts);else{const n=new Notification(title,opts);n.onclick=()=>{window.focus();n.close();};}
+ }}catch(e){}
+}
+function rayaAskNotify(){try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();}catch(e){}}
+document.addEventListener('click',rayaAskNotify,{once:true});
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#enableNotifBtn')){try{if(!('Notification' in window))return notify('Notifications are not supported here.');Notification.requestPermission().then(r=>{notify(r==='granted'?'Notifications enabled.':'Notifications are blocked. Allow them in your phone/app settings.');if(r==='granted')rayaCheckoutAlert([{buyer_name:'Test',total:0,delivery_method:'Test notification'}]);});}catch(err){}}});
+/* realtime: alert the moment a checkout is placed */
+try{db.channel('raya-checkouts').on('postgres_changes',{event:'INSERT',schema:'public',table:'checkouts'},()=>loadCheckouts()).subscribe();}catch(e){}
 async function loadExtras(){if(!adsLoaded)await loadAds();await loadCheckouts();}
 
 /* ---- breakdown: clickable names ---- */
@@ -1293,7 +1318,7 @@ function toggleBd(i){const d=$('bdd'+i),c=$('bdc'+i);if(!d)return;d.hidden=!d.hi
 
 document.querySelector('.nav-btn[data-section="checkouts"]')?.addEventListener('click',()=>loadCheckouts());
 </script>
-<div id="settingsModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3>Settings</h3><p class="muted">Ads and buyers page</p></div><button class="close" type="button" onclick="closeSettings()">×</button></div><div class="set-sec"><h4>Ads pictures</h4><p class="muted">These pictures swipe left and right on your dashboard and on the buyers page.</p><div class="ad-list" id="adsAdmin"></div><label class="btn btn-primary" style="cursor:pointer;position:relative">+ Add ad picture<input type="file" id="adFile" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></label></div><div class="set-sec"><h4>Buyers page</h4><p class="muted">Share <strong>buyers.html</strong> with your buyers. Their checkouts are sent to <strong>razhel.travinio@deped.gov.ph</strong> and appear in the Checkouts menu.</p></div></div></div>
+<div id="settingsModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3>Settings</h3><p class="muted">Ads and buyers page</p></div><button class="close" type="button" onclick="closeSettings()">×</button></div><div class="set-sec"><h4>Ads pictures</h4><p class="muted">These pictures swipe left and right on your dashboard and on the buyers page.</p><div class="ad-list" id="adsAdmin"></div><label class="btn btn-primary" style="cursor:pointer;position:relative">+ Add ad picture<input type="file" id="adFile" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></label></div><div class="set-sec"><h4>Order notifications</h4><p class="muted">Get an alert with sound when a buyer places a checkout.</p><button type="button" class="btn btn-primary" id="enableNotifBtn">Enable notifications</button></div><div class="set-sec"><h4>Buyers page</h4><p class="muted">Share <strong>buyers.html</strong> with your buyers. Their checkouts are sent to <strong>razhel.travinio@deped.gov.ph</strong> and appear in the Checkouts menu.</p></div></div></div>
 <div id="financialBreakdownModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3 id="financialBreakdownTitle">Financial breakdown</h3><p class="muted" id="financialBreakdownSub">Paid orders only.</p></div><button class="close" onclick="closeFinancialBreakdown()">×</button></div><div id="financialBreakdownBody"></div></div></div>
 </body>
 </html>
