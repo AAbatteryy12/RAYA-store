@@ -510,7 +510,7 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 <main class="main">
 <header class="topbar">
   <div><h2 id="pageTitle">Dashboard</h2><p id="pageSubtitle">Overview of your store</p></div>
-  <div class="top-actions"><span class="user-email" id="userEmail"></span><div class="store-status"><span class="status-dot"></span>Synced to Supabase</div><button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button><button id="signOutBtn" class="btn btn-secondary btn-small">Sign Out</button></div>
+  <div class="top-actions"><span class="user-email" id="userEmail"></span><div class="store-status"><span class="status-dot"></span>Synced to Supabase</div><button id="msgBtn" class="icon-btn" type="button" aria-label="Messages" title="Messages" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span id="msgBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#e03131;color:#fff;font-size:11px;font-weight:800;align-items:center;justify-content:center;padding:0 4px">0</span></button><button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button><button id="signOutBtn" class="btn btn-secondary btn-small">Sign Out</button></div>
 </header>
 <div class="content">
 <section id="dashboard" class="section active">
@@ -1235,7 +1235,7 @@ function renderCheckouts(){
   const rows=items.map(x=>{const p=products.find(y=>String(y.id)===String(x.product_id));return '<div class="co-item"><span class="co-th">'+productImage(p,true)+'</span><span class="co-im"><b>'+esc(x.name||(p&&p.name)||'Item')+'</b><small>'+(Number(x.quantity)||0)+' × '+money(x.price)+'</small></span><strong>'+money(x.line_total!=null?x.line_total:(Number(x.price)||0)*(Number(x.quantity)||0))+'</strong></div>';}).join('');
   const where=c.delivery_method==='Pickup'?'Pick up at store':(c.delivery_method==='Meet-up'?'Meet-up: ':'Deliver to: ')+esc(c.delivery_address||'');
   const btn=(s,l)=>'<button type="button" class="btn btn-small '+(c.status===s?'btn-secondary':'btn-primary')+'" data-co="'+esc(c.id)+'" data-st="'+s+'"'+(c.status===s?' disabled':'')+'>'+l+'</button>';
-  return '<div class="co-card"><div class="co-top"><div><strong>'+esc(c.buyer_name)+'</strong><div class="muted">'+(c.buyer_phone?esc(c.buyer_phone)+' · ':'')+esc(date(c.created_at))+'</div></div><span class="co-status s-'+esc(c.status)+'">'+esc(c.status)+'</span></div>'
+  return '<div class="co-card"><div class="co-top"><div><strong>'+esc(c.buyer_name)+'</strong> <span class="muted" style="font-weight:800;letter-spacing:.5px">#'+esc(String(c.id).replace(/-/g,'').slice(0,8).toUpperCase())+'</span><div class="muted">'+(c.buyer_phone?esc(c.buyer_phone)+' · ':'')+esc(date(c.created_at))+'</div></div><span class="co-status s-'+esc(c.status)+'">'+esc(c.status)+'</span></div>'
    +'<div class="co-where">'+where+'</div>'+(c.note?'<div class="muted">Note: '+esc(c.note)+'</div>':'')+rows
    +'<div class="co-total"><span>Total</span><strong>'+money(c.total)+'</strong></div>'
    +'<div class="co-actions">'+btn('Confirmed','Confirm')+btn('Delivered','Delivered')+btn('Cancelled','Cancel')+'<button type="button" class="btn btn-danger btn-small" data-co-del="'+esc(c.id)+'">Delete</button></div></div>';
@@ -1267,10 +1267,108 @@ async function rayaCheckoutAlert(list){
 }
 function rayaAskNotify(){try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();}catch(e){}}
 document.addEventListener('click',rayaAskNotify,{once:true});
-document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#enableNotifBtn')){try{if(!('Notification' in window))return notify('Notifications are not supported here.');Notification.requestPermission().then(r=>{notify(r==='granted'?'Notifications enabled.':'Notifications are blocked. Allow them in your phone/app settings.');if(r==='granted')rayaCheckoutAlert([{buyer_name:'Test',total:0,delivery_method:'Test notification'}]);});}catch(err){}}});
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#enableNotifBtn')){try{if(!('Notification' in window))return notify('Notifications are not supported here.');Notification.requestPermission().then(r=>{notify(r==='granted'?'Notifications enabled.':'Notifications are blocked. Allow them in your phone/app settings.');if(r==='granted'){rayaSubscribePush().then(ok=>{if(!ok)notify('Could not turn on background alerts. Make sure buyers_setup_v2.sql was run and sw.js is uploaded.');});rayaCheckoutAlert([{buyer_name:'Test',total:0,delivery_method:'Test notification'}]);}});}catch(err){}}});
 /* realtime: alert the moment a checkout is placed */
 try{db.channel('raya-checkouts').on('postgres_changes',{event:'INSERT',schema:'public',table:'checkouts'},()=>loadCheckouts()).subscribe();}catch(e){}
-async function loadExtras(){if(!adsLoaded)await loadAds();await loadCheckouts();}
+
+/* ===== v8: background push, buyer messages ===== */
+const RAYA_VAPID='BLdDRTyCymP5TKBPi7PCbmsbbGgBD6dD8SioG2KSRncANU9UnrvjtlfpREBmNU3Gbak1SfMNM06zLIzRnQNzQBE';
+const b64u=k=>{const p='='.repeat((4-k.length%4)%4),b=(k+p).replace(/-/g,'+').replace(/_/g,'/'),r=atob(b);return Uint8Array.from([...r].map(c=>c.charCodeAt(0)));};
+async function rayaSw(){try{if(!('serviceWorker' in navigator))return null;return await navigator.serviceWorker.register('sw.js');}catch(e){return null;}}
+async function rayaSubscribePush(){
+ try{if(!db||!('PushManager' in window)||!('Notification' in window)||Notification.permission!=='granted')return false;
+  const reg=await rayaSw();if(!reg)return false;await navigator.serviceWorker.ready;
+  let sub=await reg.pushManager.getSubscription();
+  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(RAYA_VAPID)});
+  const j=sub.toJSON();
+  const {error}=await db.from('push_subscriptions').upsert({endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth},{onConflict:'endpoint'});
+  return !error;}catch(e){return false;}}
+rayaSw();
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const o=e.data&&e.data.open;if(o==='messages')openMsgs();else if(o==='checkouts')document.querySelector('.nav-btn[data-section="checkouts"]')?.click();});
+
+(function(){
+ const st=document.createElement('style');st.textContent=`
+ #msgOv{position:fixed;inset:0;z-index:9000;background:rgba(20,20,30,.5);display:none;align-items:center;justify-content:center}
+ #msgOv.show{display:flex}
+ .mbox{background:#fff;width:min(860px,100%);height:min(640px,100%);border-radius:18px;display:flex;overflow:hidden;position:relative}
+ .mlist{width:290px;border-right:1px solid #e9ecef;overflow-y:auto;flex:0 0 auto}
+ .mlist h3{padding:16px;font-size:17px}
+ .mth{display:block;width:100%;text-align:left;border:0;background:#fff;padding:12px 16px;border-top:1px solid #f1f3f5;cursor:pointer}
+ .mth.on,.mth:hover{background:#f1f5ff}.mth b{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+ .mth small{display:block;color:#868e96;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+ .mun{background:#e03131;color:#fff;border-radius:9px;min-width:18px;padding:0 5px;font-size:11px;text-align:center}
+ .mconv{flex:1;display:flex;flex-direction:column;min-width:0}
+ .mhead{padding:14px 50px 12px 16px;border-bottom:1px solid #e9ecef;font-weight:800;display:flex;align-items:center;gap:8px}
+ .mback{display:none;border:0;background:#f1f3f5;border-radius:8px;width:32px;height:32px;font-size:18px;cursor:pointer}
+ .mmsgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:#f8f9fa}
+ .mb{max-width:78%;padding:8px 12px;border-radius:14px;font-size:14px;line-height:1.35;word-break:break-word;white-space:pre-wrap}
+ .mb.buyer{align-self:flex-start;background:#fff;border:1px solid #e9ecef}
+ .mb.seller{align-self:flex-end;background:#1c7ed6;color:#fff}
+ .mb small{display:block;opacity:.65;font-size:10px;margin-top:3px}
+ .mb .pq{display:block;font-size:11px;font-weight:800;margin-bottom:3px;opacity:.85}
+ .mform{display:flex;gap:8px;padding:10px;border-top:1px solid #e9ecef}
+ .mform input{flex:1;border:1px solid #ced4da;border-radius:10px;padding:10px 12px;font:inherit}
+ .mclose{position:absolute;top:10px;right:12px;border:0;background:#f1f3f5;border-radius:50%;width:32px;height:32px;font-size:20px;cursor:pointer;z-index:2}
+ .mempty{margin:auto;color:#868e96;padding:20px;text-align:center}
+ @media(max-width:700px){.mbox{border-radius:0;height:100%}.mlist{width:100%}.mconv{display:none;width:100%}.mbox.chat .mlist{display:none}.mbox.chat .mconv{display:flex}.mback{display:block}}`;
+ document.head.appendChild(st);
+ const ov=document.createElement('div');ov.id='msgOv';
+ ov.innerHTML='<div class="mbox" id="mBox"><button class="mclose" id="mClose" aria-label="Close">×</button><div class="mlist"><h3>Buyer messages</h3><div id="mThreads"></div></div><div class="mconv"><div class="mhead"><button class="mback" id="mBack" aria-label="Back">‹</button><span id="mTitle">Select a conversation</span></div><div class="mmsgs" id="mMsgs"><div class="mempty">Messages from your buyers appear here.</div></div><form class="mform" id="mForm" style="display:none"><input id="mInput" placeholder="Type a reply…" maxlength="600" autocomplete="off"><button class="btn btn-primary" type="submit">Send</button></form></div></div>';
+ document.body.appendChild(ov);
+})();
+let msgs=[],curThread=null,msgSeenAt=null;
+const mTime=v=>{try{return new Intl.DateTimeFormat('en-PH',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(v));}catch(e){return '';}};
+async function loadMsgs(){
+ if(!db)return;
+ try{const r=await db.from('chat_messages').select('*').order('created_at',{ascending:true}).limit(1500);if(r.error)return;msgs=r.data||[];}catch(e){return;}
+ const lastBuyer=msgs.filter(m=>m.sender==='buyer').map(m=>m.created_at).pop()||null;
+ let silent=false;
+ if(msgSeenAt===null){let v=null;try{v=localStorage.getItem('raya_msg_seen');}catch(e){}if(v===null){silent=true;v=lastBuyer||'';}msgSeenAt=v;}
+ const fresh=silent?[]:msgs.filter(m=>m.sender==='buyer'&&!m.read_by_seller&&m.created_at>msgSeenAt&&m.thread_id!==curThread);
+ if(fresh.length){
+  try{navigator.vibrate&&navigator.vibrate([150,80,150]);}catch(e){}rayaBeep();
+  const m=fresh[fresh.length-1];try{notify('Message from '+(m.buyer_name||'a buyer')+': '+m.body.slice(0,80));}catch(e){}
+  try{if('Notification' in window&&Notification.permission==='granted'){const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();const o={body:m.body.slice(0,120),tag:'raya-chat',renotify:true,icon:'og-cover.jpg',data:{url:location.href,open:'messages'}};if(reg&&reg.showNotification)reg.showNotification('Message from '+(m.buyer_name||'a buyer'),o);}}catch(e){}
+ }
+ if(lastBuyer){msgSeenAt=lastBuyer;try{localStorage.setItem('raya_msg_seen',lastBuyer);}catch(e){}}
+ renderMsgs();
+}
+function threadsOf(){const t={};msgs.forEach(m=>{const x=t[m.thread_id]||(t[m.thread_id]={id:m.thread_id,name:'Guest',unread:0,last:null});if(m.buyer_name)x.name=m.buyer_name;if(m.sender==='buyer'&&!m.read_by_seller)x.unread++;x.last=m;});return Object.values(t).sort((a,b)=>String(b.last.created_at).localeCompare(String(a.last.created_at)));}
+function renderMsgs(){
+ const th=threadsOf(),un=th.reduce((s,t)=>s+t.unread,0),b=$('msgBadge');
+ if(b){b.textContent=un>99?'99+':un;b.style.display=un?'flex':'none';}
+ const box=$('mThreads');if(!box)return;
+ box.innerHTML=th.length?th.map(t=>'<button type="button" class="mth'+(t.id===curThread?' on':'')+'" data-th="'+esc(t.id)+'"><b><span>'+esc(t.name)+'</span>'+(t.unread?'<span class="mun">'+t.unread+'</span>':'')+'</b><small>'+(t.last.sender==='seller'?'You: ':'')+esc(t.last.body)+'</small></button>').join(''):'<div class="mempty">No messages yet.</div>';
+ if(curThread){const list=msgs.filter(m=>m.thread_id===curThread),el=$('mMsgs'),atEnd=el.scrollHeight-el.scrollTop-el.clientHeight<80;
+  const sig=list.length+':'+(list.length?list[list.length-1].id:'');
+  if(el.dataset.sig!==sig){el.innerHTML=list.map(m=>'<div class="mb '+m.sender+'">'+(m.product_name?'<span class="pq">Re: '+esc(m.product_name)+'</span>':'')+esc(m.body)+'<small>'+mTime(m.created_at)+'</small></div>').join('');el.dataset.sig=sig;if(atEnd||!el.dataset.init){el.scrollTop=el.scrollHeight;el.dataset.init='1';}}}
+}
+async function openThread(id){
+ curThread=id;const el=$('mMsgs');el.dataset.sig='';el.dataset.init='';$('mBox').classList.add('chat');$('mForm').style.display='flex';
+ const t=threadsOf().find(x=>x.id===id);$('mTitle').textContent=t?t.name:'Chat';
+ renderMsgs();
+ if(msgs.some(m=>m.thread_id===id&&m.sender==='buyer'&&!m.read_by_seller)){
+  msgs.forEach(m=>{if(m.thread_id===id&&m.sender==='buyer')m.read_by_seller=true;});renderMsgs();
+  try{await db.from('chat_messages').update({read_by_seller:true}).eq('thread_id',id).eq('sender','buyer');}catch(e){}}
+ setTimeout(()=>$('mInput')?.focus(),50);
+}
+function openMsgs(){$('msgOv').classList.add('show');loadMsgs();}
+document.addEventListener('click',e=>{
+ if(e.target.closest('#msgBtn'))return openMsgs();
+ if(e.target.closest('#mClose')||e.target===$('msgOv'))return $('msgOv').classList.remove('show');
+ if(e.target.closest('#mBack')){curThread=null;$('mBox').classList.remove('chat');$('mForm').style.display='none';$('mTitle').textContent='Select a conversation';$('mMsgs').innerHTML='<div class="mempty">Messages from your buyers appear here.</div>';$('mMsgs').dataset.sig='';renderMsgs();return;}
+ const th=e.target.closest('.mth');if(th)openThread(th.dataset.th);
+});
+document.addEventListener('submit',async e=>{
+ if(e.target.id!=='mForm')return;e.preventDefault();const inp=$('mInput'),body=inp.value.trim();if(!body||!curThread)return;inp.value='';
+ try{const {error}=await db.from('chat_messages').insert({thread_id:curThread,sender:'seller',body,read_by_seller:true});if(error)throw error;await loadMsgs();}
+ catch(err){inp.value=body;notify(/relation|exist|schema|cache/i.test(String(err.message))?'Run buyers_setup_v2.sql in Supabase first.':String(err.message||err));}
+});
+try{db.channel('raya-chat').on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},()=>loadMsgs()).subscribe();}catch(e){}
+setInterval(()=>{if(db&&$('app')&&$('app').style.display!=='none')loadMsgs();},15000);
+setInterval(()=>{if($('msgOv').classList.contains('show')&&curThread)loadMsgs();},4000);
+
+async function loadExtras(){if(!adsLoaded)await loadAds();await loadCheckouts();loadMsgs();rayaSubscribePush();}
 
 /* ---- breakdown: clickable names ---- */
 function bdOrders(os){return os.slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(o=>{
