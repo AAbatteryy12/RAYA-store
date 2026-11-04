@@ -551,7 +551,7 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 <div class="field"><label>Barcode Number</label><div class="bc-row"><input id="itemBarcode" type="text" inputmode="numeric" autocomplete="off" placeholder="Scan or type barcode"><button type="button" class="btn btn-secondary scan-fill" data-target="itemBarcode">Scan</button></div></div>
 <div class="field"><label>Product Image</label><div class="image-options"><input class="file-input" id="itemImageFile" type="file" accept="image/*"><input id="itemImageUrl" type="url" placeholder="Or paste image URL"></div><img id="imagePreview" class="image-preview" alt="Preview"></div>
 </div><div class="form-actions"><button type="reset" class="btn btn-secondary">Clear</button><button type="submit" class="btn btn-primary">+ Add Product</button></div></form></div>
-<div class="card"><div class="card-header"><div><h3>Inventory</h3><p id="inventoryCount">0 products</p></div></div><div class="inventory-tools" style="margin-bottom:16px"><input id="inventorySearch" class="inventory-search" type="search" placeholder="Search name, barcode, category..." autocomplete="off"><div class="combo inv-combo"><input id="inventoryCategoryFilter" type="text" placeholder="All categories" autocomplete="off"><div class="combo-list"></div></div><div class="exp-menu"><button type="button" class="btn btn-secondary exp-btn" id="expToggle" aria-label="Export" title="Export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span>Export</span></button><div class="exp-pop" id="expPop"><button id="exportInventoryBtn" class="btn btn-secondary">Export Excel</button><button id="exportPdfBtn" class="btn btn-secondary">Export PDF</button><button id="exportZipBtn" class="btn btn-secondary">Export Images (ZIP)</button></div></div></div><div id="productsGrid" class="products-grid"></div></div>
+<div class="card"><div class="card-header"><div><h3>Inventory</h3><p id="inventoryCount">0 products</p></div></div><div class="inventory-tools" style="margin-bottom:16px"><input id="inventorySearch" class="inventory-search" type="search" placeholder="Search name, barcode, category..." autocomplete="off"><div class="combo inv-combo"><input id="inventoryCategoryFilter" type="text" placeholder="All categories" autocomplete="off"><div class="combo-list"></div></div><div class="exp-menu"><button type="button" class="btn btn-secondary exp-btn" id="expToggle" aria-label="Export" title="Export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><span>Export</span></button><div class="exp-pop" id="expPop"><button id="exportInventoryBtn" class="btn btn-secondary">Export Excel</button><button id="exportPdfBtn" class="btn btn-secondary">Export PDF</button><button id="exportZipBtn" class="btn btn-secondary">Export Images (ZIP)</button><button type="button" class="btn btn-secondary" data-static-export>Export for GitHub (static ZIP)</button></div></div></div><div id="productsGrid" class="products-grid"></div></div>
 </section>
 
 <section id="orders" class="section">
@@ -626,6 +626,12 @@ function showAuth(mode="signin",message=""){
   $("authMessage").textContent=message;$("authMessage").classList.toggle("show",!!message);
 }
 function showApp(user){$("authScreen").classList.add("hidden");$("app").style.display="flex";$("userEmail").textContent=user?.email||"";loadData();}
+
+/* ===== static images (GitHub) ===== */
+var STATIC={products:{},ads:[],v:0};window.__stLoaded=false;var dbAds=[];
+async function loadStatic(){try{const r=await fetch('images/manifest.json',{cache:'no-cache'});if(!r.ok)throw new Error('none');const j=await r.json();STATIC={products:j.products||{},ads:j.ads||[],v:j.v||0};}catch(e){STATIC={products:{},ads:[],v:0};}window.__stLoaded=true;}
+const stUrl=p=>'images/'+String(p).split('/').map(encodeURIComponent).join('/')+'?v='+STATIC.v;
+function applyStatic(list){(list||[]).forEach(p=>{if(p._db===undefined)p._db=p.image_url;const f=STATIC.products[p.id];p.image_url=f?stUrl(f):p._db;});}
 async function loadData(){
   const [pr,or,cr,oi]=await Promise.all([
     db.from("products").select("*").order("name"),
@@ -634,7 +640,8 @@ async function loadData(){
     db.from("order_items").select("*").order("created_at")
   ]);
   const bad=[pr.error,or.error,cr.error,oi.error].find(Boolean);if(bad)return notify(bad.message);
-  products=pr.data||[];orders=or.data||[];customers=cr.data||[];orderItemsData=oi.data||[];render();loadExtras();
+  if(!window.__stLoaded)await loadStatic();
+  products=pr.data||[];applyStatic(products);orders=or.data||[];customers=cr.data||[];orderItemsData=oi.data||[];render();loadExtras();
 }
 function render(){renderStats();renderProducts();renderCustomers();renderHistoryFilters();renderOrderItems();renderOrders();renderRecent();renderOverview();renderBestSeller();renderCalendar();}
 function renderStats(){
@@ -697,13 +704,13 @@ $("itemImageUrl").oninput=e=>{selectedImageData=e.target.value.trim();$("imagePr
 $("productForm").onsubmit=async e=>{e.preventDefault();const name=$("itemName").value.trim(),price=Number($("itemPrice").value),stock=Number($("itemStock").value),principal=Number($("itemPrincipal").value);if(!name||price<0||principal<0||stock<0||!Number.isInteger(stock))return notify("Please enter valid product information.");let image=selectedImageData;const bcA=$("itemBarcode").value.trim();if(bcA&&dupBarcode(bcA,null))return notify("Another product already uses barcode "+bcA+".");try{if(image.startsWith("data:"))image=await uploadImage(image);const {error}=await db.from("products").insert({name,price,principal_price:principal,stock,image_url:image||null,category:canonCat($("itemCategory").value),barcode:$("itemBarcode").value.trim()||null});if(error)throw error;$("productForm").reset();selectedImageData="";$("imagePreview").style.display="none";await loadData();notify("Product added successfully.")}catch(err){notify(dbMsg(err))}};
 $("productForm").onreset=()=>setTimeout(()=>{$("imagePreview").style.display="none";selectedImageData=""},0);
 function readImage(input,cb){const f=input.files[0];if(!f)return;if(!f.type.startsWith("image/")){input.value="";return notify("Please select an image.")}const r=new FileReader();r.onload=e=>cb(e.target.result);r.readAsDataURL(f)}
-async function compressImage(data,maxSide=900,q=.78){return new Promise(res=>{const im=new Image();im.onerror=()=>res(null);im.onload=()=>{const sc=Math.min(1,maxSide/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*sc)),h=Math.max(1,Math.round(im.height*sc)),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);c.toBlob(b=>res(b),'image/jpeg',q);};im.src=data;});}
+async function compressImage(data,maxSide=700,q=.72){return new Promise(res=>{const im=new Image();im.onerror=()=>res(null);im.onload=()=>{const sc=Math.min(1,maxSide/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*sc)),h=Math.max(1,Math.round(im.height*sc)),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);c.toBlob(b=>res(b),'image/jpeg',q);};im.src=data;});}
 async function uploadImage(data){let blob=await compressImage(data);if(!blob)blob=await (await fetch(data)).blob();const ext=(blob.type.split("/")[1]||"jpg").replace("jpeg","jpg");const path=`${crypto.randomUUID()}.${ext}`;const {error}=await db.storage.from("product-images").upload(path,blob,{contentType:blob.type,upsert:false});if(error)throw error;return db.storage.from("product-images").getPublicUrl(path).data.publicUrl}
 async function openProductModal(id){selectedProduct=products.find(p=>p.id===id);if(!selectedProduct)return;$("modalTitle").textContent=`Edit: ${selectedProduct.name}`;$("editName").value=selectedProduct.name;$("editPrice").value=selectedProduct.price;$("editPrincipal").value=Number(selectedProduct.principal_price||0);$("editImageUrl").value=selectedProduct.image_url||"";editImageData=selectedProduct.image_url||"";$("editImagePreview").src=editImageData;$("editImagePreview").style.display=editImageData?"block":"none";$("adjustQty").value=1;$("stockInput").value=Number(selectedProduct.stock)||0;$("editCategory").value=selectedProduct.category||"";$("editBarcode").value=selectedProduct.barcode||"";if($("currentStockLabel"))$("currentStockLabel").textContent=Number(selectedProduct.stock)||0;$("productModal").classList.add("show");await renderHistory()}
 function closeProductModal(){$("productModal").classList.remove("show");selectedProduct=null}
 $("editImageFile").onchange=e=>readImage(e.target,data=>{editImageData=data;$("editImagePreview").src=data;$("editImagePreview").style.display="block"});
 $("editImageUrl").oninput=e=>{editImageData=e.target.value.trim();$("editImagePreview").src=editImageData;$("editImagePreview").style.display=editImageData?"block":"none"};
-$("editProductForm").onsubmit=async e=>{e.preventDefault();if(!selectedProduct)return;const bcE=$("editBarcode").value.trim();if(bcE&&dupBarcode(bcE,selectedProduct.id))return notify("Another product already uses barcode "+bcE+".");try{let image=editImageData;if(image.startsWith("data:"))image=await uploadImage(image);const snap=await snapshotOrderPrices();const {error}=await db.from("products").update({name:$("editName").value.trim(),price:Number($("editPrice").value),principal_price:Number($("editPrincipal").value),image_url:image||null,category:canonCat($("editCategory").value),barcode:$("editBarcode").value.trim()||null}).eq("id",selectedProduct.id);if(error)throw error;const fixed=await restoreOrderPrices(snap);await loadData();if(fixed)notify(`Product updated. ${fixed} old order record(s) were kept at their original prices.`);selectedProduct=products.find(p=>p.id===selectedProduct.id);await renderHistory();notify("Product updated.")}catch(err){notify(dbMsg(err))}};
+$("editProductForm").onsubmit=async e=>{e.preventDefault();if(!selectedProduct)return;const bcE=$("editBarcode").value.trim();if(bcE&&dupBarcode(bcE,selectedProduct.id))return notify("Another product already uses barcode "+bcE+".");try{let image=editImageData;if(selectedProduct&&image===selectedProduct.image_url&&selectedProduct._db!==undefined)image=selectedProduct._db||"";if(image.startsWith("data:"))image=await uploadImage(image);const snap=await snapshotOrderPrices();const {error}=await db.from("products").update({name:$("editName").value.trim(),price:Number($("editPrice").value),principal_price:Number($("editPrincipal").value),image_url:image||null,category:canonCat($("editCategory").value),barcode:$("editBarcode").value.trim()||null}).eq("id",selectedProduct.id);if(error)throw error;const fixed=await restoreOrderPrices(snap);await loadData();if(fixed)notify(`Product updated. ${fixed} old order record(s) were kept at their original prices.`);selectedProduct=products.find(p=>p.id===selectedProduct.id);await renderHistory();notify("Product updated.")}catch(err){notify(dbMsg(err))}};
 async function adjustSelectedStock(direction){if(!selectedProduct)return;const qty=Number($("adjustQty").value);if(!Number.isInteger(qty)||qty<1)return notify("Enter a valid whole-number quantity.");try{const {error}=await db.rpc("adjust_stock",{p_product_id:selectedProduct.id,p_change:direction*qty,p_reason:direction>0?"Stock added":"Stock used"});if(error)throw error;await loadData();selectedProduct=products.find(p=>p.id===selectedProduct.id);await renderHistory();$("modalTitle").textContent=`Edit: ${selectedProduct.name}`;if($("currentStockLabel"))$("currentStockLabel").textContent=Number(selectedProduct.stock)||0;notify(direction>0?"Stock added successfully.":"Stock subtracted successfully.")}catch(err){notify(err.message)}}
 async function renderHistory(){if(!selectedProduct)return;const {data,error}=await db.from("inventory_transactions").select("*").eq("product_id",selectedProduct.id).order("created_at",{ascending:false}).limit(30);if(error){$("stockHistory").innerHTML='<p class="muted">Unable to load history.</p>';return}if(!data?.length){$("stockHistory").innerHTML='<p class="muted">No stock movements yet.</p>';return}$("stockHistory").innerHTML=data.map(x=>`<div class="history-row"><span>${esc(x.reason)}</span><span class="${x.change_quantity>=0?"positive":"negative"}">${x.change_quantity>=0?"+":""}${x.change_quantity} → ${x.balance_after}</span><span>${date(x.created_at)}</span></div>`).join("")}
 async function deleteSelectedProduct(){if(!selectedProduct)return;if(!confirm(`Delete "${selectedProduct.name}"? This will also remove its stock history.`))return;const {error}=await db.from("products").delete().eq("id",selectedProduct.id);if(error)return notify(error.message);closeProductModal();await loadData()}
@@ -1197,10 +1204,14 @@ function shrinkImage(file,maxW,q){return new Promise((res,rej)=>{const fr=new Fi
   tr.innerHTML=ads.map(a=>'<div class="ad"><img src="'+esc(a.image_url)+'" alt="'+esc(a.title||'Ad')+'" draggable="false"></div>').join('');
   dots.innerHTML=ads.length>1?ads.map((a,i)=>'<button type="button" class="dot'+(i===0?' on':'')+'" aria-label="Ad '+(i+1)+'"></button>').join(''):'';
   idx=0;tr.scrollLeft=0;
-  const list=$('adsAdmin');if(list)list.innerHTML=ads.length?ads.map(a=>'<div class="ad-item"><img src="'+esc(a.image_url)+'" alt=""><button type="button" class="ad-del" data-ad="'+esc(a.id)+'" aria-label="Delete ad">×</button></div>').join(''):'<p class="muted">No ads yet. Add a picture below.</p>';
+  const note=$('adsStaticNote');if(note)note.textContent=STATIC.ads.length?('Now showing '+STATIC.ads.length+' static ad(s) from your GitHub images folder. Ads listed below are stored in Supabase; export again to publish changes.'):'';
+  const list=$('adsAdmin');if(list)list.innerHTML=dbAds.length?dbAds.map(a=>'<div class="ad-item"><img src="'+esc(a.image_url)+'" alt=""><button type="button" class="ad-del" data-ad="'+esc(a.id)+'" aria-label="Delete ad">×</button></div>').join(''):'<p class="muted">No ads yet. Add a picture below.</p>';
  };
 })();
-async function loadAds(){try{const r=await db.from('ads').select('*').order('sort_order').order('created_at');ads=r.error?[]:(r.data||[]);}catch(e){ads=[];}window.renderAds();adsLoaded=true;}
+async function loadAds(){try{const r=await db.from('ads').select('*').order('sort_order').order('created_at');dbAds=r.error?[]:(r.data||[]);}catch(e){dbAds=[];}
+ if(!window.__stLoaded)await loadStatic();
+ ads=STATIC.ads.length?STATIC.ads.map((u,i)=>({id:'static-'+i,image_url:stUrl(u),title:'Ad',static:true})):dbAds;
+ window.renderAds();adsLoaded=true;}
 $('settingsBtn')?.addEventListener('click',()=>$('settingsModal').classList.add('show'));
 function closeSettings(){$('settingsModal').classList.remove('show');}
 async function adUpload(file){
@@ -1211,7 +1222,7 @@ async function adUpload(file){
  return dataUrl;}
 document.addEventListener('change',async e=>{const inp=e.target;if(!inp||inp.id!=='adFile')return;const f=inp.files&&inp.files[0];inp.value='';if(!f)return;
  if(!/^image\//.test(f.type||'')&&!/\.(jpe?g|png|gif|webp|heic|heif|bmp)$/i.test(f.name||''))return notify('Please select an image.');
- try{notify('Uploading ad picture...');const url=await adUpload(f);const {error}=await db.from('ads').insert({image_url:url,sort_order:ads.length});if(error)throw error;await loadAds();notify('Ad picture added successfully.');}catch(err){notify(setupMsg(err));}});
+ try{notify('Uploading ad picture...');const url=await adUpload(f);const {error}=await db.from('ads').insert({image_url:url,sort_order:dbAds.length});if(error)throw error;await loadAds();notify('Ad picture added successfully.');}catch(err){notify(setupMsg(err));}});
 document.addEventListener('click',async e=>{const d=e.target.closest('.ad-del');if(!d)return;
  if(!await rayaConfirm('Delete this ad picture?','Delete'))return;
  try{const {error}=await db.from('ads').delete().eq('id',d.dataset.ad);if(error)throw error;await loadAds();notify('Ad picture deleted.');}catch(err){notify(setupMsg(err));}});
@@ -1384,6 +1395,41 @@ try{db.channel('raya-chat').on('postgres_changes',{event:'INSERT',schema:'public
 setInterval(()=>{if(db&&$('app')&&$('app').style.display!=='none')loadMsgs();},15000);
 setInterval(()=>{if($('msgOv').classList.contains('show')&&curThread)loadMsgs();},4000);
 
+
+/* ===== export compressed square pictures + ads for GitHub ===== */
+(function(){
+ const clean=t=>String(t||'product').replace(/[\\/:*?"<>|#%&]+/g,'').replace(/\s+/g,' ').replace(/[. ]+$/,'').trim().slice(0,80)||'product';
+ function square(im,size,q){const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,size,size);x.imageSmoothingQuality='high';
+  const box=size*.88,s=Math.min(1.5,box/im.width,box/im.height),w=Math.round(im.width*s),h=Math.round(im.height*s);x.drawImage(im,Math.round((size-w)/2),Math.round((size-h)/2),w,h);
+  return new Promise(r=>c.toBlob(r,'image/jpeg',q));}
+ function banner(im,w,h,q){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.imageSmoothingQuality='high';
+  const s=Math.max(w/im.width,h/im.height),dw=im.width*s,dh=im.height*s;x.drawImage(im,(w-dw)/2,(h-dh)/2,dw,dh);return new Promise(r=>c.toBlob(r,'image/jpeg',q));}
+ async function pool(items,n,fn){let i=0;await Promise.all(Array.from({length:n},async()=>{while(i<items.length){const k=i++;await fn(items[k],k);}}));}
+ async function run(btns){
+  if(!window.JSZip)return notify('ZIP library not loaded. Check your internet connection.');
+  if(!products.length&&!ads.length)return notify('Nothing to export yet.');
+  const keep=btns.map(b=>b.textContent);const prog=t=>btns.forEach(b=>{b.textContent=t;b.disabled=true;});
+  try{
+   const zip=new JSZip(),man={v:Date.now(),products:{},ads:[]},used=new Set();let ok=0,skip=0,done=0;
+   const withImg=products.filter(p=>p.image_url);
+   await pool(withImg,5,async p=>{
+    const im=await loadImg(p.image_url);prog('Preparing '+(++done)+'/'+withImg.length+'…');
+    if(!im){skip++;return;}
+    let base=clean(p.name),name=base,n=2;while(used.has(name.toLowerCase())){name=base+' ('+(n++)+')';}used.add(name.toLowerCase());
+    const blob=await square(im,600,.72);zip.file('images/products/'+name+'.jpg',blob);man.products[p.id]='products/'+name+'.jpg';ok++;});
+   const adSrc=dbAds.length?dbAds:ads;let ai=0;
+   for(const a of adSrc){const im=await loadImg(a.image_url);prog('Ads '+(++ai)+'/'+adSrc.length+'…');if(!im){skip++;continue;}
+    const fn='ads/ad-'+String(ai).padStart(2,'0')+'.jpg';zip.file('images/'+fn,await banner(im,1200,525,.75));man.ads.push(fn);}
+   zip.file('images/manifest.json',JSON.stringify(man,null,1));
+   zip.file('images/README.txt','Upload this whole "images" folder to the SAME folder as index.html in your GitHub repository (replace old files).\nWait about a minute, then reload the app and buyers page.\nProducts and ads listed in manifest.json are served from GitHub instead of Supabase.');
+   const out=await zip.generateAsync({type:'blob',compression:'DEFLATE'});
+   await saveFile(out,'Raya_Store_Static_Images.zip');
+   notify(ok+' product picture(s) and '+man.ads.length+' ad(s) packed ('+Math.max(1,Math.round(out.size/1024))+' KB).'+(skip?' '+skip+' could not be loaded and were skipped.':''));
+  }catch(e){notify('Export failed: '+(e&&e.message||e));}
+  finally{btns.forEach((b,i)=>{b.textContent=keep[i];b.disabled=false;});}}
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-static-export]');if(!b)return;run([...document.querySelectorAll('[data-static-export]')]);});
+})();
+
 async function loadExtras(){if(!adsLoaded)await loadAds();await loadCheckouts();loadMsgs();rayaSubscribePush();}
 
 /* ---- breakdown: clickable names ---- */
@@ -1432,7 +1478,7 @@ function toggleBd(i){const d=$('bdd'+i),c=$('bdc'+i);if(!d)return;d.hidden=!d.hi
 
 document.querySelector('.nav-btn[data-section="checkouts"]')?.addEventListener('click',()=>loadCheckouts());
 </script>
-<div id="settingsModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3>Settings</h3><p class="muted">Ads and buyers page</p></div><button class="close" type="button" onclick="closeSettings()">×</button></div><div class="set-sec"><h4>Ads pictures</h4><p class="muted">These pictures swipe left and right on your dashboard and on the buyers page.</p><div class="ad-list" id="adsAdmin"></div><label class="btn btn-primary" style="cursor:pointer;position:relative">+ Add ad picture<input type="file" id="adFile" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></label></div><div class="set-sec"><h4>Order notifications</h4><p class="muted">Get an alert with sound when a buyer places a checkout.</p><button type="button" class="btn btn-primary" id="enableNotifBtn">Enable notifications</button></div><div class="set-sec"><h4>Buyers page</h4><p class="muted">Share <strong>buyers.html</strong> with your buyers. Their checkouts are sent to <strong>razhel.travinio@deped.gov.ph</strong> and appear in the Checkouts menu.</p></div></div></div>
+<div id="settingsModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3>Settings</h3><p class="muted">Ads and buyers page</p></div><button class="close" type="button" onclick="closeSettings()">×</button></div><div class="set-sec"><h4>Ads pictures</h4><p class="muted">These pictures swipe left and right on your dashboard and on the buyers page.</p><p class="muted" id="adsStaticNote" style="color:#e0245a;font-weight:700"></p><div class="ad-list" id="adsAdmin"></div><button type="button" class="btn btn-secondary" data-static-export style="margin:0 8px 8px 0">⬇ Export pictures for GitHub (ZIP)</button><label class="btn btn-primary" style="cursor:pointer;position:relative">+ Add ad picture<input type="file" id="adFile" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></label></div><div class="set-sec"><h4>Order notifications</h4><p class="muted">Get an alert with sound when a buyer places a checkout.</p><button type="button" class="btn btn-primary" id="enableNotifBtn">Enable notifications</button></div><div class="set-sec"><h4>Buyers page</h4><p class="muted">Share <strong>buyers.html</strong> with your buyers. Their checkouts are sent to <strong>razhel.travinio@deped.gov.ph</strong> and appear in the Checkouts menu.</p></div></div></div>
 <div id="financialBreakdownModal" class="modal-backdrop"><div class="modal"><div class="modal-header"><div><h3 id="financialBreakdownTitle">Financial breakdown</h3><p class="muted" id="financialBreakdownSub">Paid orders only.</p></div><button class="close" onclick="closeFinancialBreakdown()">×</button></div><div id="financialBreakdownBody"></div></div></div>
 </body>
 </html>
