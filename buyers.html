@@ -230,12 +230,15 @@ const cfgBad=!cfg||!cfg.url||!cfg.anonKey||String(cfg.url).includes("YOUR-PROJEC
 let db=null;if(!cfgBad&&window.supabase&&window.supabase.createClient)db=window.supabase.createClient(cfg.url,cfg.anonKey);
 
 let products=[],ads=[],tops=[],cart=[];
+let STATIC={products:{},ads:[],v:0},stLoaded=false;
+async function loadStatic(){try{const r=await fetch('images/manifest.json',{cache:'no-cache'});if(!r.ok)throw 0;const j=await r.json();STATIC={products:j.products||{},ads:j.ads||[],v:j.v||0};}catch(e){STATIC={products:{},ads:[],v:0};}stLoaded=true;}
+const stUrl=p=>'images/'+String(p).split('/').map(encodeURIComponent).join('/')+'?v='+STATIC.v;
 const CART_KEY='raya_buyer_cart',INFO_KEY='raya_buyer_info';
 try{cart=JSON.parse(localStorage.getItem(CART_KEY)||'[]')||[];}catch(e){cart=[];}
 const saveCart=()=>{try{localStorage.setItem(CART_KEY,JSON.stringify(cart));}catch(e){}};
 const prod=id=>products.find(p=>String(p.id)===String(id));
 const stockOf=p=>Math.max(0,Number(p&&p.stock)||0);
-const imgOf=(p,cls)=>p&&p.image_url?'<img src="'+esc(p.image_url)+'" alt="'+esc(p.name)+'" loading="lazy" onerror="this.outerHTML=\'<div class=ph>▣</div>\'">':'<div class="ph">▣</div>';
+const imgOf=(p,cls)=>p&&p.image_url?'<img src="'+esc(p.image_url)+'" alt="'+esc(p.name)+'" loading="lazy"'+(p._db&&p._db!==p.image_url?' data-db="'+esc(p._db)+'"':'')+' onerror="if(this.dataset.db&&!this.dataset.f){this.dataset.f=1;this.src=this.dataset.db}else{this.outerHTML=\'<div class=ph>▣</div>\'}">':'<div class="ph">▣</div>';
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),1800);}
 
 /* ---------- cart helpers ---------- */
@@ -376,12 +379,13 @@ $('cartBtn').onclick=openCart;$('fbarBtn').onclick=openCart;
 async function load(quiet){
  if(!db){$('app').innerHTML='<div class="state"><b>Store not connected.</b><br>Open <code>config.js</code> and enter your Supabase URL and public key.</div>';return;}
  try{
+  if(!stLoaded)await loadStatic();
   const [pr,ad,ts]=await Promise.all([
    db.from('public_products').select('*').order('name'),
-   db.from('ads').select('*').order('sort_order').order('created_at'),
+   STATIC.ads.length?Promise.resolve({data:[],error:null}):db.from('ads').select('*').order('sort_order').order('created_at'),
    db.from('public_top_sellers').select('*').order('units_sold',{ascending:false}).limit(12)]);
   if(pr.error)throw pr.error;
-  products=(pr.data||[]).filter(p=>stockOf(p)>0);ads=ad.error?[]:(ad.data||[]);tops=ts.error?[]:(ts.data||[]);
+  products=(pr.data||[]).filter(p=>stockOf(p)>0);products.forEach(p=>{p._db=p.image_url;const f=STATIC.products[p.id];if(f)p.image_url=stUrl(f);});ads=STATIC.ads.length?STATIC.ads.map((u,i)=>({id:'static-'+i,image_url:stUrl(u),title:'Promo'})):(ad.error?[]:(ad.data||[]));tops=ts.error?[]:(ts.data||[]);
   cleanCart();
   if(quiet&&$('app').children.length>1){/* keep scroll position */const y=scrollY;const open=[...document.querySelectorAll('.cat.expanded')].map(c=>c.dataset.cat);render();open.forEach(i=>{const c=document.querySelector('.cat[data-cat="'+i+'"]');if(c){c.classList.add('expanded');c.querySelector('.x').textContent='Collapse ▴';}});scrollTo(0,y);}
   else render();
