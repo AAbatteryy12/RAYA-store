@@ -873,12 +873,16 @@ const sortedForExport=()=>{const cmp=(a,b)=>String(a||'').localeCompare(String(b
 async function exportPricesPdf(){if(!products.length)return notify('No products to export.');
  const btn=$('exportPdfBtn');btn.disabled=true;btn.textContent='Preparing...';
  try{const list=sortedForExport();const imgs=await Promise.all(list.map(p=>loadImg(p.image_url)));
-  const W=1240,H=1754,M=60,G=28,HEAD=110,cols=3,rws=4,per=12,cw=(W-2*M-(cols-1)*G)/cols,ch=(H-HEAD-M-(rws-1)*G)/rws,pages=Math.ceil(list.length/per);
+  const W=1240,H=1754,M=60,G=28,HEAD=110,cols=3,rws=4,per=12,cw=(W-2*M-(cols-1)*G)/cols,ch=(H-HEAD-M-(rws-1)*G)/rws;
+  const inS=list.filter(p=>(Number(p.stock)||0)>0),outS=list.filter(p=>(Number(p.stock)||0)<=0),pageList=[];
+  for(let i=0;i<inS.length;i+=per)pageList.push({label:'In stock',items:inS.slice(i,i+per)});
+  for(let i=0;i<outS.length;i+=per)pageList.push({label:'Out of stock',items:outS.slice(i,i+per)});
+  const pages=pageList.length;
   const shots=[];
-  for(let pg=0;pg<pages;pg++){const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);
-   x.fillStyle='#e0245a';x.font='bold 40px Arial';x.textAlign='left';x.fillText('Raya Store — Price List',M,72);
-   x.font='20px Arial';x.fillStyle='#5b6573';x.textAlign='right';x.fillText(new Date().toLocaleDateString('en-PH',{dateStyle:'long'})+' · Page '+(pg+1)+'/'+pages,W-M,72);
-   list.slice(pg*per,pg*per+per).forEach((p,i)=>{const cx=M+(i%cols)*(cw+G),cy=HEAD+Math.floor(i/cols)*(ch+G),ih=ch-92,im=imgs[pg*per+i];
+  for(let pg=0;pg<pages;pg++){const PG=pageList[pg];const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);
+   x.fillStyle='#e0245a';x.font='bold 40px Arial';x.textAlign='left';x.fillText('Raya Store — Price List · '+PG.label,M,72);
+   x.font='20px Arial';x.fillStyle='#5b6573';x.textAlign='right';x.fillText(new Date().toLocaleDateString('en-PH',{dateStyle:'medium'})+' · Page '+(pg+1)+'/'+pages,W-M,72);
+   PG.items.forEach((p,i)=>{const cx=M+(i%cols)*(cw+G),cy=HEAD+Math.floor(i/cols)*(ch+G),ih=ch-92,im=imgs[list.indexOf(p)];
     x.strokeStyle='#dfe4ea';x.lineWidth=2;x.strokeRect(cx,cy,cw,ch);
     if(im){const s=Math.min((cw-16)/im.width,(ih-16)/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,cx+(cw-w)/2,cy+8+(ih-16-h)/2,w,h);}
     else{x.fillStyle='#eef1f5';x.fillRect(cx+8,cy+8,cw-16,ih-16);x.fillStyle='#9aa5b1';x.font='44px Arial';x.textAlign='center';x.fillText('▣',cx+cw/2,cy+ih/2+14);}
