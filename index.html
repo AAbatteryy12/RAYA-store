@@ -896,18 +896,24 @@ $('exportPdfBtn')?.addEventListener('click',exportPricesPdf);
 const safeFile=t=>String(t||'product').replace(/[\\/:*?"<>|]+/g,'').replace(/\s+/g,' ').trim().slice(0,60)||'product';
 async function exportImagesZip(){if(!window.JSZip)return notify('ZIP library not loaded. Check your internet connection.');if(!products.length)return notify('No products to export.');
  const btn=$('exportZipBtn');btn.disabled=true;btn.textContent='Preparing...';
- try{const list=sortedForExport();const imgs=await Promise.all(list.map(p=>loadImg(p.image_url)));const zip=new JSZip();const cards=[];const pad=String(list.length).length;
-  for(let i=0;i<list.length;i++){const p=list[i],im=imgs[i],out=(Number(p.stock)||0)<=0;
-   const W=800,H=960,IH=760,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
-   x.fillStyle='#fff';x.fillRect(0,0,W,H);
-   if(im){const s=Math.min((W-40)/im.width,(IH-40)/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,(W-w)/2,20+(IH-40-h)/2,w,h);}
-   else{x.fillStyle='#eef1f5';x.fillRect(20,20,W-40,IH-40);x.fillStyle='#9aa5b1';x.font='120px Arial';x.textAlign='center';x.fillText('▣',W/2,IH/2+40);}
-   if(out){x.save();x.fillStyle='rgba(255,255,255,.55)';x.fillRect(0,0,W,IH);x.translate(W/2,IH/2);x.rotate(-Math.PI/7);x.font='bold 90px Arial';x.textAlign='center';x.textBaseline='middle';x.lineWidth=12;x.strokeStyle='rgba(255,255,255,.9)';x.strokeText('OUT OF STOCK',0,0);x.fillStyle='rgba(220,53,69,.92)';x.fillText('OUT OF STOCK',0,0);x.restore();}
-   x.strokeStyle='#d5e0ef';x.lineWidth=3;x.beginPath();x.moveTo(30,IH+5);x.lineTo(W-30,IH+5);x.stroke();
-   x.textAlign='center';x.textBaseline='alphabetic';x.fillStyle='#252b33';x.font='bold 40px Arial';let n=String(p.name);while(x.measureText(n).width>W-60&&n.length>3)n=n.slice(0,-2);if(n!==p.name)n=n.trimEnd()+'…';x.fillText(n,W/2,IH+60);
-   x.fillStyle='#e0245a';x.font='bold 56px Arial';x.fillText(money(p.price),W/2,IH+130);
+ try{const list=sortedForExport();const imgs=await Promise.all(list.map(p=>loadImg(p.image_url)));const zip=new JSZip();const cards=[];
+  const inS=list.filter(p=>(Number(p.stock)||0)>0),outS=list.filter(p=>(Number(p.stock)||0)<=0),pgs=[];
+  for(let i=0;i<inS.length;i+=6)pgs.push({label:'In stock',out:false,items:inS.slice(i,i+6)});
+  for(let i=0;i<outS.length;i+=6)pgs.push({label:'Out of stock',out:true,items:outS.slice(i,i+6)});
+  const pad=String(pgs.length).length,W=1200,H=1800,M=40,G=24,HEAD=90,cols=2,rws=3,cw=(W-2*M-G)/cols,ch=(H-HEAD-M-(rws-1)*G)/rws;
+  for(let k=0;k<pgs.length;k++){const PG=pgs[k],c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+   x.fillStyle='#fff';x.fillRect(0,0,W,H);x.textBaseline='alphabetic';
+   x.fillStyle='#e0245a';x.font='bold 38px Arial';x.textAlign='left';x.fillText('Raya Store · '+PG.label,M,62);
+   x.font='22px Arial';x.fillStyle='#5b6573';x.textAlign='right';x.fillText(new Date().toLocaleDateString('en-PH',{dateStyle:'medium'})+' · '+(k+1)+'/'+pgs.length,W-M,62);
+   PG.items.forEach((p,i)=>{const cx=M+(i%cols)*(cw+G),cy=HEAD+Math.floor(i/cols)*(ch+G),ih=ch-120,im=imgs[list.indexOf(p)];
+    x.strokeStyle='#d5e0ef';x.lineWidth=2;x.strokeRect(cx,cy,cw,ch);
+    if(im){const s=Math.min((cw-24)/im.width,(ih-24)/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,cx+(cw-w)/2,cy+12+(ih-24-h)/2,w,h);}
+    else{x.fillStyle='#eef1f5';x.fillRect(cx+12,cy+12,cw-24,ih-24);x.fillStyle='#9aa5b1';x.font='80px Arial';x.textAlign='center';x.fillText('▣',cx+cw/2,cy+ih/2+26);}
+    if(PG.out){x.save();x.fillStyle='rgba(255,255,255,.55)';x.fillRect(cx+2,cy+2,cw-4,ih-2);x.translate(cx+cw/2,cy+ih/2);x.rotate(-Math.PI/7);x.font='bold 54px Arial';x.textAlign='center';x.textBaseline='middle';x.lineWidth=8;x.strokeStyle='rgba(255,255,255,.9)';x.strokeText('OUT OF STOCK',0,0);x.fillStyle='rgba(220,53,69,.92)';x.fillText('OUT OF STOCK',0,0);x.restore();}
+    x.textAlign='center';x.textBaseline='alphabetic';x.fillStyle='#252b33';x.font='bold 30px Arial';let n=String(p.name);while(x.measureText(n).width>cw-30&&n.length>3)n=n.slice(0,-2);if(n!==p.name)n=n.trimEnd()+'…';x.fillText(n,cx+cw/2,cy+ih+40);
+    x.fillStyle='#e0245a';x.font='bold 40px Arial';x.fillText(money(p.price),cx+cw/2,cy+ih+90);});
    const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.9));
-   cards.push(URL.createObjectURL(blob));zip.file(String(i+1).padStart(pad,'0')+' - '+(out?'OUT OF STOCK - ':'')+safeFile(p.name)+'.jpg',blob);}
+   cards.push(URL.createObjectURL(blob));zip.file('Page '+String(k+1).padStart(pad,'0')+' - '+PG.label+'.jpg',blob);}
   const out=await zip.generateAsync({type:'blob'});await saveFile(out,'Raya_Store_Product_Images.zip',{kind:'images',urls:cards});
  }catch(e){notify('ZIP export failed: '+e.message)}finally{btn.disabled=false;btn.textContent='Export Images (ZIP)';}}
 $('exportZipBtn')?.addEventListener('click',exportImagesZip);
