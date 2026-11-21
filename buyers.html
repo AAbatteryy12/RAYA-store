@@ -263,12 +263,30 @@ img{display:block}
 .ost{font-size:11px;font-weight:800;border-radius:999px;padding:3px 10px}
 .oit{font-size:13px;color:var(--ink);margin:5px 0 4px;line-height:1.35}
 .osub{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}.osub b{color:var(--ink)}
+
+/* v24 compact cards + header chat button */
+.fdot{top:-3px;right:-3px}
+.hbtns{display:flex;align-items:center;gap:10px}
+.cat{margin-bottom:12px}
+.cat .hrow,.cat.expanded .hrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:10px;overflow:visible;padding-bottom:4px}
+.cat .hrow>.card,.cat.expanded .hrow>.card{flex:none}
+.cat-h{cursor:default;padding:8px 14px;margin-bottom:8px}
+.card .pimg{aspect-ratio:1/0.92}
+.pinfo,.pinfo{padding:6px 8px 8px;text-align:left}
+.pname{height:auto;min-height:0;font-size:12.5px;line-height:1.2;max-height:30px;margin:0}
+.prow{display:flex;align-items:flex-end;justify-content:space-between;gap:6px;margin-top:2px}
+.pprice{font-size:16px;margin-top:0;line-height:1.1}
+.pstock{font-size:10.5px;line-height:1.1}
+.addc{flex:none;width:32px;height:32px;border-radius:50%;border:0;padding:0;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(180deg,var(--pink2),var(--pink));box-shadow:0 3px 0 var(--pink-dark),0 5px 10px rgba(var(--pink-rgb),.28),inset 0 1px 0 rgba(255,255,255,.4)}
+.addc svg{width:16px;height:16px}.addc:active{transform:translateY(2px);box-shadow:0 1px 0 var(--pink-dark)}
+.oos .addc{display:none}
+.panel .hrow>.card{flex:0 0 138px}
 </style>
 </head>
 <body>
 <header class="hdr">
   <div class="brand"><div class="logo">R</div><div><h1>Raya Store</h1><small>Shop &amp; order online</small></div></div>
-  <div class="hbtns"><button class="cart-btn" id="cartBtn" aria-label="Open cart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2.5 3H5l2.7 11.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/></svg><span class="badge" id="badge">0</span></button></div>
+  <div class="hbtns"><button class="cart-btn" title="Message us" id="chatFab" aria-label="Message us" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><i class="fdot" id="fdot"></i></button><button class="cart-btn" id="cartBtn" aria-label="Open cart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2.5 3H5l2.7 11.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/></svg><span class="badge" id="badge">0</span></button></div>
 </header>
 
 <div class="sbwrap"><div class="sbar"><div class="sin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="sq" type="search" placeholder="Search products" autocomplete="off" enterkeyhint="search"><button class="sx" id="sqx" type="button" aria-label="Clear search">×</button></div><select id="scat" aria-label="Filter by category"><option value="">All categories</option></select></div></div>
@@ -281,7 +299,6 @@ img{display:block}
 <div class="ov" id="cartOv"><div class="sheet" id="cartSheet"></div></div>
 <div class="ov conf" id="confOv"><div class="cbox" id="confBox"></div></div>
 <div class="ov" id="chatOv"><div class="sheet" id="chatSheet"></div></div>
-<button class="fab" id="chatFab" aria-label="Message us" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Message us</span><i class="fdot" id="fdot"></i></button>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -327,7 +344,7 @@ function carousel(id){const tr=$(id);if(!tr)return;const slides=tr.children.leng
 const ASK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
 let searchQ='',catFilter='';
 const CART_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2.5 3H5l2.7 11.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/></svg>';
-function card(p){const s=stockOf(p);return '<div class="card" data-id="'+esc(p.id)+'" role="button" tabindex="0"><div class="pimg">'+imgOf(p)+'<button class="qask" type="button" data-ask="'+esc(p.id)+'" aria-label="Ask seller about this product" title="Ask seller">'+ASK_SVG+'</button></div><div class="pinfo"><div class="pname">'+esc(p.name)+'</div><div class="pprice">'+money(p.price)+'</div><div class="pstock'+(s>0&&s<=5?' low':'')+'">'+s+' available</div><button class="addpill" type="button" data-add="'+esc(p.id)+'" aria-label="Add to cart">'+CART_SVG+'Add to Cart</button></div></div>';}
+function card(p){const s=stockOf(p);return '<div class="card" data-id="'+esc(p.id)+'" role="button" tabindex="0"><div class="pimg">'+imgOf(p)+'</div><div class="pinfo"><div class="pname">'+esc(p.name)+'</div><div class="prow"><div><div class="pprice">'+money(p.price)+'</div><div class="pstock'+(s>0&&s<=5?' low':'')+'">'+s+' left</div></div><button class="addc" type="button" data-add="'+esc(p.id)+'" aria-label="Add '+esc(p.name)+' to cart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div></div>';}
 let view='';
 const listNew=()=>products.filter(p=>p.created_at).slice().sort((x,y)=>String(y.created_at).localeCompare(String(x.created_at)));
 const listBest=()=>tops.map(t=>prod(t.product_id)).filter(Boolean);
@@ -360,9 +377,9 @@ function render(){
   h+='<section class="sec"><div class="sec-h"><h2>Results</h2><span class="sub">'+res.length+' item'+(res.length===1?'':'s')+'</span></div>'+(res.length?'<div class="grid">'+res.map(card).join('')+'</div>':'<div class="state" style="margin-top:0">No products found for “'+esc(searchQ.trim())+'”.<br><small>Try another word, or message us and we will help.</small></div>')+'</section>';
  }else{
   const shown=catFilter?[catFilter]:names;
-  if(shown.length){h+='<section class="sec"><div class="sec-h"><h2>Categories</h2><span class="sub">'+(catFilter?'Showing '+esc(catFilter):'Tap a category to expand')+'</span></div>';
+  if(shown.length){h+='<section class="sec"><div class="sec-h"><h2>Categories</h2><span class="sub">'+(catFilter?'Showing '+esc(catFilter):'All products')+'</span></div>';
    shown.forEach((c,i)=>{const list=(groups[c]||[]).slice().sort((a,b)=>String(a.name).localeCompare(String(b.name),undefined,{sensitivity:'base'}));const ex=!!catFilter;
-    h+='<div class="cat'+(ex?' expanded':'')+'" data-cat="'+names.indexOf(c)+'"><button class="cat-h" type="button"><span><span class="n">'+esc(c)+'</span><span class="c">'+list.length+' item'+(list.length===1?'':'s')+'</span></span><span class="x">'+(ex?'Collapse ▴':'Expand ▾')+'</span></button><div class="hrow">'+list.map(card).join('')+'</div></div>';});
+    h+='<div class="cat expanded" data-cat="'+names.indexOf(c)+'"><div class="cat-h"><span><span class="n">'+esc(c)+'</span><span class="c">'+list.length+' item'+(list.length===1?'':'s')+'</span></span></div><div class="hrow">'+list.map(card).join('')+'</div></div>';});
    h+='</section>';}
  }
  if(!products.length)h+='<div class="state">No products yet. Please check back soon.</div>';
@@ -438,7 +455,6 @@ document.addEventListener('click',e=>{
  const oc=e.target.closest('[data-oref]');if(oc){$('trIn')&&($('trIn').value=oc.dataset.oref);doTrack(oc.dataset.oref).then(()=>{const t=$('trOut');t&&t.scrollIntoView({behavior:'smooth',block:'nearest'});});return;}
  const ask=e.target.closest('[data-ask]');if(ask){e.stopPropagation();const pp=prod(ask.dataset.ask);if(pp)openChat(pp);return;}
  const add=e.target.closest('[data-add]');if(add){e.stopPropagation();if(addToCart(add.dataset.add,1))toast('Added to cart');return;}
- const hd=e.target.closest('.cat-h');if(hd){const c=hd.parentElement;const ex=c.classList.toggle('expanded');hd.querySelector('.x').textContent=ex?'Collapse ▴':'Expand ▾';return;}
  const cd=e.target.closest('.card[data-id]');if(cd&&!e.target.closest('.ov')){openProduct(cd.dataset.id);return;}
  const m=e.target.closest('[data-m]'),pl=e.target.closest('[data-p]'),rm=e.target.closest('[data-r]'),dl=e.target.closest('[data-d]');
  if(m){const i=cart.find(x=>String(x.id)===String(m.dataset.m));if(i){i.qty--;if(i.qty<1)cart=cart.filter(x=>x!==i);saveCart();renderCart();}return;}
@@ -465,7 +481,7 @@ async function load(quiet){
   if(pr.error)throw pr.error;
   products=(pr.data||[]).filter(p=>stockOf(p)>0);products.forEach(p=>{p._db=p.image_url;const e=STATIC.products[p.id],f=e&&(typeof e==='string'?e:e.f);if(f&&!(typeof e==='object'&&e.src!==undefined&&e.src!==(p._db||'')))p.image_url=stUrl(f);});ads=STATIC.ads.length?STATIC.ads.map((u,i)=>({id:'static-'+i,image_url:stUrl(u),title:'Promo'})):(ad.error?[]:(ad.data||[]));tops=ts.error?[]:(ts.data||[]);
   cleanCart();
-  if(quiet&&$('app').children.length>1){/* keep scroll position */const y=scrollY;const open=[...document.querySelectorAll('.cat.expanded')].map(c=>c.dataset.cat);render();open.forEach(i=>{const c=document.querySelector('.cat[data-cat="'+i+'"]');if(c){c.classList.add('expanded');c.querySelector('.x').textContent='Collapse ▴';}});scrollTo(0,y);}
+  if(quiet&&$('app').children.length>1){/* keep scroll position */const y=scrollY;render();scrollTo(0,y);}
   else render();
  }catch(e){if(!quiet)$('app').innerHTML='<div class="state"><b>The store is not ready yet.</b><br>'+esc((e&&e.message)||'Please try again later.')+'</div>';}
 }
