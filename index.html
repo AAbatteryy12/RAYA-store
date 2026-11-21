@@ -79,7 +79,8 @@ try{rayaApplyTheme(JSON.parse(localStorage.getItem('raya_theme')||'null'));}catc
 /* data notice + record dialog */
 .dn-card{border:1.5px solid #f5c98b;background:#fff8ec;border-radius:16px;padding:14px 16px;margin-bottom:20px}
 .dn-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.dn-head b{color:#8a4b00;font-size:15px}
-.dn-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.dn-chip{font-size:12px;font-weight:800;background:#fff;border:1px solid #f5c98b;color:#8a4b00;border-radius:999px;padding:3px 10px}
+.dn-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.dn-chip{cursor:pointer;font-family:inherit;font-size:12px;font-weight:800;background:#fff;border:1px solid #f5c98b;color:#8a4b00;border-radius:999px;padding:3px 10px}
+.dn-chip.on{background:#f76707;color:#fff;border-color:#f76707}.dn-chip:active{transform:translateY(1px)}
 .dn-list{margin-top:10px;display:grid;gap:8px}.dn-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #f1dfc2;border-radius:12px;padding:8px 10px}
 .dn-row .dn-n{flex:1;min-width:0}.dn-row .dn-n b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dn-row .dn-n small{color:#c2410c;font-weight:700}
 .rec-ov{position:fixed;inset:0;background:rgba(20,25,40,.5);z-index:400;display:none;align-items:center;justify-content:center;padding:16px}.rec-ov.show{display:flex}
@@ -1367,16 +1368,17 @@ function renderCheckouts(){
  }).join('');
 }
 /* ===== dashboard notice: products with missing details ===== */
-let dnAll=false;
+let dnAll=false,dnFilter='';
 function productIssues(p){const i=[];if(!String(p.image_url||'').trim())i.push('No picture');if(!String(p.category||'').trim())i.push('No category');if(!(Number(p.principal_price)>0))i.push('No cost price');if(!String(p.barcode||'').trim())i.push('No barcode');return i;}
 function renderDataNotice(){const box=$('dataNotice');if(!box)return;
  const bad=products.map(p=>({p,i:productIssues(p)})).filter(x=>x.i.length);
  if(!bad.length){box.innerHTML='';return;}
- const cnt=k=>bad.filter(x=>x.i.includes(k)).length,chips=['No picture','No category','No cost price','No barcode'].filter(cnt).map(k=>'<span class="dn-chip">'+cnt(k)+' · '+k.toLowerCase()+'</span>').join('');
- const show=dnAll?bad:bad.slice(0,5);
- box.innerHTML='<div class="dn-card"><div class="dn-head"><b>⚠ '+bad.length+' product'+(bad.length===1?'':'s')+' need updating</b>'+(bad.length>5?'<button type="button" class="btn btn-secondary btn-small" id="dnMore">'+(dnAll?'Show less':'Show all')+'</button>':'')+'</div><div class="dn-chips">'+chips+'</div><div class="dn-list">'
+ const cnt=k=>bad.filter(x=>x.i.includes(k)).length;if(dnFilter&&!cnt(dnFilter))dnFilter='';
+ const chips=(dnFilter?'<button type="button" class="dn-chip dn-clear" data-dnf="">All ('+bad.length+')</button>':'')+['No picture','No category','No cost price','No barcode'].filter(cnt).map(k=>'<button type="button" class="dn-chip'+(dnFilter===k?' on':'')+'" data-dnf="'+k+'">'+cnt(k)+' · '+k.toLowerCase()+'</button>').join('');
+ const view=dnFilter?bad.filter(x=>x.i.includes(dnFilter)):bad,show=dnAll?view:view.slice(0,5);
+ box.innerHTML='<div class="dn-card"><div class="dn-head"><b>⚠ '+bad.length+' product'+(bad.length===1?'':'s')+' need updating</b>'+(view.length>5?'<button type="button" class="btn btn-secondary btn-small" id="dnMore">'+(dnAll?'Show less':'Show all')+'</button>':'')+'</div><div class="dn-chips">'+chips+'</div><div class="dn-list">'
   +show.map(x=>'<div class="dn-row"><span class="co-th">'+productImage(x.p,true)+'</span><span class="dn-n"><b>'+esc(x.p.name)+'</b><small>'+x.i.join(' · ')+'</small></span><button type="button" class="btn btn-primary btn-small" data-fix="'+esc(x.p.id)+'">Edit</button></div>').join('')+'</div></div>';}
-document.addEventListener('click',e=>{if(e.target.closest('#dnMore')){dnAll=!dnAll;renderDataNotice();return;}const f=e.target.closest('[data-fix]');if(f)openProductModal(f.dataset.fix);});
+document.addEventListener('click',e=>{const ch=e.target.closest('[data-dnf]');if(ch){dnFilter=dnFilter===ch.dataset.dnf?'':ch.dataset.dnf;dnAll=false;renderDataNotice();return;}if(e.target.closest('#dnMore')){dnAll=!dnAll;renderDataNotice();return;}const f=e.target.closest('[data-fix]');if(f)openProductModal(f.dataset.fix);});
 
 /* ===== checkout: record delivered order + reduce stock ===== */
 const REC_KEY='raya_co_recorded';
