@@ -75,6 +75,19 @@ try{rayaApplyTheme(JSON.parse(localStorage.getItem('raya_theme')||'null'));}catc
 .theme-sw.on{box-shadow:0 0 0 3px var(--pink),0 4px 8px rgba(30,40,70,.15)}
 .theme-grid{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
 .theme-cu{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px}.theme-cu input[type=color]{width:46px;height:36px;border:0;padding:0;background:none;cursor:pointer}
+
+/* data notice + record dialog */
+.dn-card{border:1.5px solid #f5c98b;background:#fff8ec;border-radius:16px;padding:14px 16px;margin-bottom:20px}
+.dn-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.dn-head b{color:#8a4b00;font-size:15px}
+.dn-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.dn-chip{font-size:12px;font-weight:800;background:#fff;border:1px solid #f5c98b;color:#8a4b00;border-radius:999px;padding:3px 10px}
+.dn-list{margin-top:10px;display:grid;gap:8px}.dn-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #f1dfc2;border-radius:12px;padding:8px 10px}
+.dn-row .dn-n{flex:1;min-width:0}.dn-row .dn-n b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dn-row .dn-n small{color:#c2410c;font-weight:700}
+.rec-ov{position:fixed;inset:0;background:rgba(20,25,40,.5);z-index:400;display:none;align-items:center;justify-content:center;padding:16px}.rec-ov.show{display:flex}
+.rec-box{background:#fff;border-radius:18px;max-width:420px;width:100%;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.3)}.rec-box h3{margin:0 0 6px}.rec-box label{display:block;font-weight:800;font-size:13px;margin:12px 0 4px}
+.rec-box select,.rec-box input{width:100%;padding:10px;border:1.5px solid var(--g200);border-radius:10px;font-size:15px}
+.rec-sum{background:var(--g50);border-radius:10px;padding:8px 10px;font-size:13px;margin-top:8px}
+.rec-act{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.co-rec{font-size:11px;font-weight:800;color:#2b8a3e;background:#d3f9d8;border-radius:999px;padding:3px 10px;align-self:center}
 </style>
 
 <style id="top-menu-override">
@@ -568,6 +581,7 @@ html,body{height:auto;min-height:100%;background:var(--g50)}
 <div class="stat-card clickable-stat" onclick="openStatBreakdown('profit')"><div class="stat-top"><span class="stat-label">Profit</span><span class="stat-icon">↗</span></div><div class="stat-value" id="statProfit">₱0.00</div><div class="stat-hint">Click for breakdown</div></div>
 </div>
 <div class="card cal-card collapsible collapsed" style="margin-bottom:20px"><div class="card-header"><div><h3>Sales Calendar</h3><p>Click a date to see that day's sales, orders and profit.</p></div><div class="cal-nav"><button class="btn btn-secondary btn-small" id="calPrev" type="button">‹</button><strong id="calTitle"></strong><button class="btn btn-secondary btn-small" id="calNext" type="button">›</button></div><button class="toggle-btn" type="button" aria-expanded="false"><span class="toggle-label">Show</span><span class="chev">▾</span></button></div><div class="collapse-body"><div class="cal-layout"><div class="cal-grid" id="calGrid"></div><div class="cal-day" id="calDay"></div></div></div></div>
+<div id="dataNotice"></div>
 <div class="dashboard-layout">
 <div class="card collapsible collapsed"><div class="card-header"><div><h3>Recent Orders</h3><p>Your latest transactions</p></div><button class="toggle-btn" type="button" aria-expanded="false"><span class="toggle-label">Show</span><span class="chev">▾</span></button></div><div class="collapse-body"><div id="recentOrders"></div></div></div>
 <div class="card collapsible collapsed"><div class="card-header"><div><h3>Inventory Overview</h3><p>Current stock levels</p></div><button class="toggle-btn" type="button" aria-expanded="false"><span class="toggle-label">Show</span><span class="chev">▾</span></button></div><div class="collapse-body"><div id="inventoryOverview"></div></div></div>
@@ -680,7 +694,7 @@ async function loadData(){
   if(!window.__stLoaded)await loadStatic();
   products=pr.data||[];applyStatic(products);orders=or.data||[];customers=cr.data||[];orderItemsData=oi.data||[];render();loadExtras();
 }
-function render(){renderStats();renderProducts();renderCustomers();renderHistoryFilters();renderOrderItems();renderOrders();renderRecent();renderOverview();renderBestSeller();renderCalendar();}
+function render(){renderStats();renderProducts();renderCustomers();renderHistoryFilters();renderOrderItems();renderOrders();renderRecent();renderOverview();renderBestSeller();renderCalendar();renderDataNotice();}
 function renderStats(){
   const stock=products.reduce((s,p)=>s+Number(p.price)*Number(p.stock),0);
   const rev=orders.filter(o=>o.payment_status==="Paid").reduce((s,o)=>s+Number(o.total_price),0);
@@ -1349,12 +1363,59 @@ function renderCheckouts(){
   return '<div class="co-card"><div class="co-top"><div><strong>'+esc(c.buyer_name)+'</strong> <span class="muted" style="font-weight:800;letter-spacing:.5px">#'+esc(String(c.id).replace(/-/g,'').slice(0,8).toUpperCase())+'</span><div class="muted">'+(c.buyer_phone?esc(c.buyer_phone)+' · ':'')+esc(date(c.created_at))+'</div></div><span class="co-status s-'+esc(c.status)+'">'+esc(c.status)+'</span></div>'
    +'<div class="co-where">'+where+'</div>'+(c.note?'<div class="muted">Note: '+esc(c.note)+'</div>':'')+rows
    +'<div class="co-total"><span>Total</span><strong>'+money(c.total)+'</strong></div>'
-   +'<div class="co-actions">'+btn('Confirmed','Confirm')+btn('Delivered','Delivered')+btn('Cancelled','Cancel')+'<button type="button" class="btn btn-danger btn-small" data-co-del="'+esc(c.id)+'">Delete</button></div></div>';
+   +'<div class="co-actions">'+btn('Confirmed','Confirm')+btn('Delivered','Delivered')+btn('Cancelled','Cancel')+(c.status==='Delivered'?(recSet().has(String(c.id))?'<span class="co-rec">✓ Recorded</span>':'<button type="button" class="btn btn-secondary btn-small" data-co-rec="'+esc(c.id)+'">Record order</button>'):'')+'<button type="button" class="btn btn-danger btn-small" data-co-del="'+esc(c.id)+'">Delete</button></div></div>';
  }).join('');
 }
+/* ===== dashboard notice: products with missing details ===== */
+let dnAll=false;
+function productIssues(p){const i=[];if(!String(p.image_url||'').trim())i.push('No picture');if(!String(p.category||'').trim())i.push('No category');if(!(Number(p.principal_price)>0))i.push('No cost price');if(!String(p.barcode||'').trim())i.push('No barcode');return i;}
+function renderDataNotice(){const box=$('dataNotice');if(!box)return;
+ const bad=products.map(p=>({p,i:productIssues(p)})).filter(x=>x.i.length);
+ if(!bad.length){box.innerHTML='';return;}
+ const cnt=k=>bad.filter(x=>x.i.includes(k)).length,chips=['No picture','No category','No cost price','No barcode'].filter(cnt).map(k=>'<span class="dn-chip">'+cnt(k)+' · '+k.toLowerCase()+'</span>').join('');
+ const show=dnAll?bad:bad.slice(0,5);
+ box.innerHTML='<div class="dn-card"><div class="dn-head"><b>⚠ '+bad.length+' product'+(bad.length===1?'':'s')+' need updating</b>'+(bad.length>5?'<button type="button" class="btn btn-secondary btn-small" id="dnMore">'+(dnAll?'Show less':'Show all')+'</button>':'')+'</div><div class="dn-chips">'+chips+'</div><div class="dn-list">'
+  +show.map(x=>'<div class="dn-row"><span class="co-th">'+productImage(x.p,true)+'</span><span class="dn-n"><b>'+esc(x.p.name)+'</b><small>'+x.i.join(' · ')+'</small></span><button type="button" class="btn btn-primary btn-small" data-fix="'+esc(x.p.id)+'">Edit</button></div>').join('')+'</div></div>';}
+document.addEventListener('click',e=>{if(e.target.closest('#dnMore')){dnAll=!dnAll;renderDataNotice();return;}const f=e.target.closest('[data-fix]');if(f)openProductModal(f.dataset.fix);});
+
+/* ===== checkout: record delivered order + reduce stock ===== */
+const REC_KEY='raya_co_recorded';
+const recSet=()=>{try{return new Set(JSON.parse(localStorage.getItem(REC_KEY)||'[]'));}catch(e){return new Set();}};
+const recAdd=id=>{const s=recSet();s.add(String(id));try{localStorage.setItem(REC_KEY,JSON.stringify([...s]));}catch(e){}};
+function recordDialog(c){return new Promise(res=>{
+ let ov=$('recOv');if(!ov){ov=document.createElement('div');ov.id='recOv';ov.className='rec-ov';document.body.appendChild(ov);}
+ const items=(Array.isArray(c.items)?c.items:[]).map(x=>({x,p:products.find(y=>String(y.id)===String(x.product_id))}));
+ const ok=items.filter(i=>i.p),miss=items.length-ok.length;
+ const done=v=>{ov.classList.remove('show');ov.innerHTML='';res(v);};
+ const nm=String(c.buyer_name||'').trim().toLowerCase(),match=customers.find(k=>String(k.name).trim().toLowerCase()===nm);
+ ov.innerHTML='<div class="rec-box"><h3>Record this order?</h3><div class="muted">Saves it to Order History and reduces the stock.</div>'
+  +'<div class="rec-sum">'+ok.map(i=>esc(i.p.name)+' × '+(Number(i.x.quantity)||0)+(Number(i.x.quantity)>i.p.stock?' <b style="color:#c92a2a">(only '+i.p.stock+' in stock)</b>':'')).join('<br>')+(miss?'<br><b style="color:#c92a2a">'+miss+' item(s) no longer exist and will be skipped.</b>':'')+'<br><b>Total '+money(c.total)+'</b></div>'
+  +'<label>Record under which name?</label><select id="recCust"><option value="">— Choose a customer —</option>'+customers.map(k=>'<option value="'+esc(k.id)+'"'+(match&&match.id===k.id?' selected':'')+'>'+esc(k.name)+'</option>').join('')+'<option value="__new">+ New name…</option></select>'
+  +'<input id="recNew" placeholder="New customer name" value="'+esc(c.buyer_name||'')+'" style="margin-top:8px;display:'+(match?'none':'block')+'">'
+  +'<label>Payment</label><select id="recPay"><option value="Paid">Paid</option><option value="Unpaid">Unpaid</option></select>'
+  +'<div class="rec-act"><button type="button" class="btn btn-secondary" id="recNo">Not now</button><button type="button" class="btn btn-primary" id="recYes">Record &amp; reduce stock</button></div></div>';
+ if(!match)$('recCust').value='__new';
+ ov.classList.add('show');
+ $('recCust').onchange=()=>{$('recNew').style.display=$('recCust').value==='__new'?'block':'none';};
+ $('recNo').onclick=()=>done(null);
+ $('recYes').onclick=()=>{const v=$('recCust').value;if(!v)return notify('Choose a customer name.');if(v==='__new'&&!$('recNew').value.trim())return notify('Type the new customer name.');done({cust:v,newName:$('recNew').value.trim(),pay:$('recPay').value});};});}
+async function recordCheckout(c){
+ if(recSet().has(String(c.id))&&!await rayaConfirm('This checkout was already recorded. Record it again?','Record again'))return;
+ const r=await recordDialog(c);if(!r)return;
+ try{
+  let cid=r.cust;
+  if(cid==='__new'){const ex=customers.find(k=>String(k.name).trim().toLowerCase()===r.newName.toLowerCase());
+   if(ex)cid=ex.id;else{const {data:u}=await db.auth.getUser();if(!u||!u.user)throw new Error('Please sign in again.');const {data,error}=await db.from('customers').insert({name:r.newName,created_by:u.user.id}).select().single();if(error)throw error;customers.push(data);customers.sort((a,b)=>a.name.localeCompare(b.name));cid=data.id;}}
+  const items=(Array.isArray(c.items)?c.items:[]).filter(x=>products.find(p=>String(p.id)===String(x.product_id))).map(x=>({product_id:String(x.product_id),quantity:Number(x.quantity)||0})).filter(x=>x.quantity>0);
+  if(!items.length)throw new Error('No matching products to record.');
+  const {error}=await db.rpc('record_order_multi',{p_customer_id:cid,p_items:items,p_payment_status:r.pay});if(error)throw error;
+  recAdd(c.id);await loadData();renderCheckouts();notify('Order recorded and stock reduced.');
+ }catch(err){notify(String(err.message||err));}}
+
 $('coList')?.addEventListener('click',async e=>{
  const st=e.target.closest('[data-st]'),del=e.target.closest('[data-co-del]');
- if(st){try{const {error}=await db.from('checkouts').update({status:st.dataset.st}).eq('id',st.dataset.co);if(error)throw error;await loadCheckouts();notify('Checkout updated: '+st.dataset.st+'.');}catch(err){notify(setupMsg(err));}}
+ const rc=e.target.closest('[data-co-rec]');if(rc){const c=checkouts.find(x=>String(x.id)===rc.dataset.coRec);if(c)recordCheckout(c);return;}
+ if(st){try{const {error}=await db.from('checkouts').update({status:st.dataset.st}).eq('id',st.dataset.co);if(error)throw error;await loadCheckouts();notify('Checkout updated: '+st.dataset.st+'.');if(st.dataset.st==='Delivered'){const c=checkouts.find(x=>String(x.id)===st.dataset.co);if(c&&!recSet().has(String(c.id)))recordCheckout(c);}}catch(err){notify(setupMsg(err));}}
  else if(del){if(!await rayaConfirm('Delete this checkout from the list?','Delete'))return;try{const {error}=await db.from('checkouts').delete().eq('id',del.dataset.coDel);if(error)throw error;await loadCheckouts();notify('Checkout deleted.');}catch(err){notify(setupMsg(err));}}
 });
 $('coFilter')?.addEventListener('click',e=>{const b=e.target.closest('.seg-btn');if(!b)return;coFilter=b.dataset.val;$('coFilter').querySelectorAll('.seg-btn').forEach(x=>x.classList.toggle('active',x===b));renderCheckouts();});
